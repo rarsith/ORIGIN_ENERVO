@@ -11,7 +11,7 @@ from common_utils.users import Users
 
 class DbSyncTasks(object):
     def __init__(self):
-        self.db = mdbconn.server.xchange
+        self.db = mdbconn.server[mdbconn.database_name]
 
     @staticmethod
     def create_from_template():

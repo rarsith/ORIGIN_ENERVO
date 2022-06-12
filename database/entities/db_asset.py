@@ -2,7 +2,7 @@ from database import db_connection as mdbconn
 from database.db_ids import DbIds
 from database.db_paths import DbPaths
 from database.db_defaults import DbDefaults
-from database.db_references import DbRef
+from database.db_references import DbReferences
 from database.entities.db_project import DbProject
 from database.entities.properties.db_sync_tasks import DbSyncTasks
 from envars.envars import Envars
@@ -16,16 +16,18 @@ class DbAsset(object):
 
     def create(self, name):
         root_id = DbIds.db_show_id()
+        print (root_id)
         asset_id = DbPaths.origin_path(DbPaths.db_category_path(), name)
+        print(asset_id)
         collection = self.db[DbProject().get_branch_type]
         get_tasks_config = DbDefaults().get_show_defaults(DbDefaults().root_tasks)
 
         entity_attributes = dict(
             _id= asset_id,
-            show_name= Envars.show_name,
+            show_name= Envars().show_name,
             entry_name= name,
             type= DbProject().get_branch_type,
-            category= Envars.category,
+            category= Envars().category,
             status= " ",
             assignment= {},
             tasks= get_tasks_config[0],
@@ -42,8 +44,9 @@ class DbAsset(object):
         try:
             collection.insert_one(entity_attributes)
 
-            insert_entry = DbPaths.origin_path("structure", Envars.branch_name, Envars.category)
-            DbRef.add_db_id_reference("show", root_id, insert_entry, asset_id, DbProject().get_branch_type)
+            insert_entry = DbPaths.origin_path("structure", Envars().branch_name, Envars().category)
+            print (insert_entry)
+            DbReferences.add_db_id_reference("show", root_id, insert_entry, asset_id, DbProject().get_branch_type)
             print("{} Origin Asset created!".format(name))
 
         except Exception as e:
@@ -76,10 +79,10 @@ class DbAsset(object):
         except:
             pass
 
-    def get_is_active(self, is_active=True):
+    def set_active(self, is_active=True):
         cursor = self.db[DbProject().get_branch_type]
         cursor.update_one({"_id": DbIds.db_entry_id()},{"$set": {"active": is_active}})
-        print("{} Omitted!".format(DbIds.db_entry_id()))
+        print("{0} active Status set to {1}!".format(DbIds.db_entry_id(), is_active))
 
     def set_definition(self, definition):
         cursor = self.db[DbProject().get_branch_type]

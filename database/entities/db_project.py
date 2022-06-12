@@ -55,14 +55,14 @@ class DbProject(object):
         except Exception as e:
             print("{} Error! Nothing created!".format(e))
 
-    def db_show_branch(self, name, branch_type):
+    def add_branch(self, name, branch_type):
         root_id = DbIds().db_show_id()
         insert_entry = "structure" + "." + name
         self.db.show.update_one({"_id": root_id}, {"$set": {insert_entry: {"type": branch_type}}})
         print("{} Origin Branch created!".format(name))
         return name
 
-    def db_category(self, name, tasks_type):
+    def add_category(self, name, tasks_type):
         root_id = DbIds().db_show_id()
         insert_entry = DbPaths.origin_path("structure", Envars.branch_name, name)
         insert_tasks_definition = DbPaths.origin_path("show_defaults", (name + "_tasks"))
@@ -138,4 +138,4 @@ if __name__ == '__main__':
 
 
     proj = DbProject()
-    proj.create(name="Test")
+    proj.create(name="Black")

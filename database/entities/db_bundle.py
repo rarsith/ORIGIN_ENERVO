@@ -10,7 +10,7 @@ from common_utils.date_time import DateTime
 from common_utils.users import Users
 
 
-class OriginBundle(object):
+class DbBundle(object):
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
 

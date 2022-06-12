@@ -4,7 +4,7 @@ class DbRef(object):
     def __init__(self, collection="", entity_id=""):
         self.collection = collection
         self.entity_id = entity_id
-        self.db = mdbconn.server.xchange
+        self.db = mdbconn.server[mdbconn.database_name]
 
 
     @property

@@ -5,13 +5,13 @@ from database.db_ids import DbIds
 from common_utils.users import Users
 from common_utils.output_paths import OutputPaths
 from common_utils.date_time import DateTime
-from database.db_references import DbRef
+from database.db_references import DbReferences
 from database.entities.properties.db_pub_slot import DbPubSlot
 from database.entities.db_project import DbProject
 from database.entities.properties.db_sync_tasks import DbSyncTasks
 from envars.envars import Envars
 
-class OriginPublish(object):
+class DbPublish(object):
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
 
@@ -129,8 +129,8 @@ class OriginPublish(object):
             status= "PENDING-REVIEW",
             version_origin= "created",
             version= version,
-            date= DateTime().return_date(),
-            time= DateTime().return_time(),
+            date= DateTime().return_date,
+            time= DateTime().return_time,
             publish_packaging= "slots",
             parent_collection= collection_name,
             display_name= set_display_name ,
@@ -161,13 +161,13 @@ class OriginPublish(object):
 
             pub_slots_publish = self.db_slot_publish(pub_slot)
 
-            DbRef.add_db_id_reference(collection=main_publish[1],
+            DbReferences.add_db_id_reference(collection=main_publish[1],
                                       parent_doc_id=main_publish[0],
                                       destination_slot="publishing_slots",
                                       id_to_add=pub_slots_publish[0],
                                       from_collection=pub_slots_publish[1])
 
-            DbRef.add_db_id_reference(collection=DbProject().get_branch_type,
+            DbReferences.add_db_id_reference(collection=DbProject().get_branch_type,
                                       parent_doc_id=DbIds.db_entry_id(),
                                       destination_slot=get_sync_path,
                                       id_to_add=pub_slots_publish[0],
@@ -178,9 +178,12 @@ class OriginPublish(object):
 
     def db_publish_sel(self, sel_pub_slots=[]):
         current_task = Envars().task_name
+        print (current_task)
         task_pub_slots = DbPubSlot().get_pub_slots()
         get_sync_tasks = DbSyncTasks().capture_all()
+        print (get_sync_tasks)
         sync_to_curr_task = get_sync_tasks[current_task]
+        print (sync_to_curr_task)
 
         if len(sel_pub_slots)==0:
             sel_pub_slots = task_pub_slots
@@ -196,13 +199,13 @@ class OriginPublish(object):
 
             pub_slots_publish = self.db_slot_publish(pub_slot)
 
-            DbRef.add_db_id_reference(collection=main_publish[1],
+            DbReferences.add_db_id_reference(collection=main_publish[1],
                                       parent_doc_id=main_publish[0],
                                       destination_slot="publishing_slots",
                                       id_to_add=pub_slots_publish[0],
                                       from_collection=pub_slots_publish[1])
 
-            DbRef.add_db_id_reference(collection=DbProject().get_branch_type,
+            DbReferences.add_db_id_reference(collection=DbProject().get_branch_type,
                                       parent_doc_id=DbIds.db_entry_id(),
                                       destination_slot=get_sync_path,
                                       id_to_add=pub_slots_publish[0],
@@ -212,7 +215,7 @@ class OriginPublish(object):
         for inherited_slot in sync_to_curr_task.items():
             get_collection = inherited_slot[1].split(",")
 
-            DbRef.add_db_id_reference(collection=main_publish[1],
+            DbReferences.add_db_id_reference(collection=main_publish[1],
                                       parent_doc_id=main_publish[0],
                                       destination_slot="publishing_slots",
                                       id_to_add=get_collection[1],
@@ -226,7 +229,7 @@ class OriginPublish(object):
 
     def db_work_file_save(self, file_name):
         version = DBVersionControl().db_wip_files_version_increase("work_files")
-        set_display_name = "_".join([Envars.entry_name,Envars.task_name, "work_file"])
+        set_display_name = "_".join([Envars.entry_name,Envars.task_name, "work_file", version])
 
         common_id = DbIds.db_wip_file_id(version)
         collection_name = "work_files"
@@ -242,8 +245,8 @@ class OriginPublish(object):
             description=[],
             artist=Users.get_current_user(),
             version=version,
-            date=DateTime().return_date(),
-            time=DateTime().return_time(),
+            date=DateTime().return_date,
+            time=DateTime().return_time,
             publish_packaging="wip_scene",
             display_name=set_display_name,
             origin=[],
