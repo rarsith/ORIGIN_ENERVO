@@ -8,27 +8,27 @@ from common_utils.date_time import DateTime
 from common_utils.users import Users
 
 
+class GenerateProjectCode:
+    """Generates a unique code for the project"""
+    data: str
+
+    def __init__(self, data):
+        self.data = data
+
+    def code(self) -> str:
+        addition = "this is a code"
+        return self.data+"-"+addition
+
 
 class DbProject(object):
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
 
-
-    def db_query(self, db_branch, item, **anchor):
-        data = []
-        cursor = self.db[db_branch]
-        results = cursor.find(anchor, {"_id": 0, item: 1})
-        for result in results:
-            for k, v in result.items():
-                data.append(v)
-        return data
-
-
     def create(self, name):
         entity_id = DbIds.create_id("root", name)
         save_data = dict(
             _id= entity_id,
-            show_code=" ",
+            show_code=GenerateProjectCode(data=name).code(),
             show_name=name,
             structure=db_templates.show_structure(),
             show_defaults= dict(asset_definition=db_templates.entry_definition("build"),
@@ -64,9 +64,9 @@ class DbProject(object):
 
     def add_category(self, name, tasks_type):
         root_id = DbIds().db_show_id()
-        insert_entry = DbPaths.origin_path("structure", Envars.branch_name, name)
-        insert_tasks_definition = DbPaths.origin_path("show_defaults", (name + "_tasks"))
-        insert_definition = DbPaths.origin_path("show_defaults", (name + "_definition"))
+        insert_entry = DbPaths.make_path("structure", Envars.branch_name, name)
+        insert_tasks_definition = DbPaths.make_path("show_defaults", (name + "_tasks"))
+        insert_definition = DbPaths.make_path("show_defaults", (name + "_definition"))
         self.db.show.update_one({"_id": root_id}, {"$set": {insert_entry: []}})
         self.db.show.update_one({"_id": root_id}, {"$set": {insert_tasks_definition: db_templates.tasks_schema(tasks_type)}})
         self.db.show.update_one({"_id": root_id}, {"$set": {insert_definition: db_templates.entry_definition(tasks_type)}})
@@ -97,8 +97,8 @@ class DbProject(object):
         show_structure = self.get_structure()
         all_referenced_entities = list(show_structure[branch][category])
         for entity in all_referenced_entities:
-            x,y = entity.split(",")
-            entities_found.append(DbRef().oderef(ref_string=entity, get_field="entry_name"))
+            name = DbRef().db_deref(ref_string=entity, get_field="entry_name")
+            entities_found.append(name)
         return entities_found
 
     @property

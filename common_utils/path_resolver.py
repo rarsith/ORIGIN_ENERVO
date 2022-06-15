@@ -6,4 +6,4 @@ def get_path(filename):
     return path_loc
 
 if __name__ == '__main__':
-    get_path("show_structure.json")
+    get_path("show_default_schemas.json")

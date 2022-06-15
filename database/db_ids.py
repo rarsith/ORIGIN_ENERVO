@@ -12,7 +12,10 @@ class DbIds(object):
         id_elements = list()
         for elem in data:
             id_elements.append(elem)
+
         return str(".".join(id_elements))
+
+
 
     @classmethod
     def db_show_id(cls):

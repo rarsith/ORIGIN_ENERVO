@@ -6,7 +6,6 @@ from database.entities.properties.db_sync_tasks import DbSyncTasks
 from database.entities.properties.db_tasks import DbTasks
 from database.publishing.db_publish import DbPublish
 from database.db_types import Branch, Tasks
-
 from envars.envars import Envars
 
 existing_modeling_pub_slots = ['rend_geo', 'proxy_geo', 'utility', 'lidar', 'proj_geo', 'vport_mat', 'tex_object', 'curvature_map', 'ao_map', 'selection_map']
@@ -17,46 +16,83 @@ Envars.category = "characters"
 Envars.entry_name = "hulk"
 Envars.task_name = "modeling"
 
-print(Envars().show_name, Envars().branch_name, Envars().category, Envars().entry_name, Envars().task_name)
+#print(Envars().show_name, Envars().branch_name, Envars().category, Envars().entry_name, Envars().task_name)
 
+
+# OBJECTS
 project = DbProject()
 assets = DbAsset()
+tasks = DbTasks()
+sync_tasks = DbSyncTasks()
+pub_slot = DbPubSlot()
 publish = DbPublish()
+bundle = DbBundle()
 
 
-# CREATORS
-# project.create("Test")
-# project.add_branch(name="references", branch_type=Branch.reference())
-# project.add_category(name="grass`", tasks_type=Tasks.props())
 
-# assets.create(name="hulk")
-# publish.db_publish_sel(sel_pub_slots=["rend_geo", "proxy_geo"])
-publish.db_work_file_save(file_name="cache.abc")
+# SWITHCHES
+test_project = False
+test_assets = False
+test_tasks = False
+test_sync_tasks = False
+test_pub_slot = False
+test_publish = True
+test_bundle = False
+
 
 # PROJECT METHODS
-project_type = project.get_project_type()
-print(project_type)
-branch_type = project.get_branch_type
-print (branch_type)
-project_struct = project.get_structure()
-print (project_struct)
+if test_project:
+    # project.create("Test")
+    # project.add_branch(name="references", branch_type=Branch.reference())
+    # project.add_category(name="grass`", tasks_type=Tasks.props())
+    project_type = project.get_project_type()
+    branch_type = project.get_branch_type
+    project_struct = project.get_structure()
+    # print(project_type)
+    # print (branch_type)
+    # print (project_struct)
 
-proj_branches=project.get_branches()
-print (proj_branches)
-branch_categories = project.get_categories(branch=Envars().branch_name)
-print (branch_categories)
-assets_names = project.get_entities_names(Envars().branch_name, Envars().category)
-print(assets_names)
+    proj_branches=project.get_branches()
+    branch_categories = project.get_categories(branch=Envars().branch_name)
+    assets_names = project.get_entities_names(Envars().branch_name, Envars().category)
+    # print (proj_branches)
+    # print (branch_categories)
+    print(assets_names)
 
 # ASSET METHODS
-asset_type = assets.get_entry_type()
-print (asset_type)
-asset_definition=assets.get_definition()
-print (asset_definition[0])
-asset_is_active=assets.set_active(is_active=True)
-print (asset_is_active)
+if test_assets:
+    # assets.create(name="hulk")
+    asset_type = assets.get_entry_type()
+    asset_definition=assets.get_definition()
+    asset_is_active=assets.set_active(is_active=True)
+    print (asset_type)
+    print (asset_definition[0])
+    print (asset_is_active)
 
 
+# TASKS METHODS
+if test_tasks:
+    # tasks.create("painting")
+    tasks_asset = tasks.get_tasks()
+    full_tasks_asset = tasks.get_tasks_full()
+    tasks_imp_from = tasks.get_imports_from()
+    task_status=tasks.get_status()
+    task_active=tasks.get_is_active()
+    tasks.set_is_active(is_active=True)
+    print (task_active)
+    print (task_status)
+    print (tasks_imp_from)
+    print(tasks_asset)
+    print(full_tasks_asset)
 
+if test_publish:
 
+    # publish.db_publish_sel()
+    # publish.db_work_file_save(file_name="cache.abc")
+    pass
 
+# BUNDLES METHODS
+
+if test_bundle:
+    # bundle.create_stream("BUBU")
+    pass

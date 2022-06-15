@@ -41,16 +41,16 @@ class DbSyncTasks(object):
         return existing_sync_tasks.update(data)
 
     def add_sync_task(self, name):
-        asset_id = DbPaths().db_entry_path()
+        asset_id = DbPaths().path_to_entry()
         cursor = self.db[DbProject().get_branch_type]
-        sync_task_db_path = DbPaths.origin_path(DbPaths.db_sync_task_path(), name)
+        sync_task_db_path = DbPaths.make_path(DbPaths.path_to_sync_tasks(), name)
         cursor.update_one({"_id": asset_id}, {"$set": {sync_task_db_path:{}}})
         print("{} Sync Tasks saved!".format(name))
 
     def add_sync_task_slot(self, name):
         asset_id = DbIds().db_entry_id()
         cursor = self.db[DbProject().get_branch_type]
-        sync_task_db_path = DbPaths.origin_path(DbPaths.db_sync_slot_path(), name)
+        sync_task_db_path = DbPaths.make_path(DbPaths.path_to_sync_task_slot(), name)
         cursor.update_one({"_id": asset_id}, {"$set": {sync_task_db_path: {}}})
         print("{} Sync Slot saved!".format(name))
 
@@ -74,7 +74,7 @@ class DbSyncTasks(object):
         )
 
         try:
-            self.db.task_sync.insert_one(entity_attributes)
+            self.db.sync_tasks.insert_one(entity_attributes)
 
         except Exception as e:
             print("{} Error! Nothing Created!".format(e))
@@ -82,7 +82,7 @@ class DbSyncTasks(object):
     def get_sync_task_slots(self):
         try:
             cursor = self.db[DbProject().get_branch_type]
-            sync_task_db_path = DbPaths.origin_path(DbPaths.db_sync_slot_path())
+            sync_task_db_path = DbPaths.make_path(DbPaths.path_to_sync_task_slot())
             tasks_list = cursor.find({"_id": DbIds.db_entry_id()}, {'_id': 0, sync_task_db_path: 1})
             for elements in tasks_list:
                 sync_task_values = list(elements["sync_tasks"].values())[0]

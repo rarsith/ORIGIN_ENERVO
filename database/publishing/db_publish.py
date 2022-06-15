@@ -65,7 +65,7 @@ class DbPublish(object):
 
     def db_main_publish(self):
 
-        version = DBVersionControl().db_task_ver_increase()
+        version = DBVersionControl().db_main_pub_ver_increase()
         set_display_name = "_".join([Envars.entry_name, "main_publish"])
 
         common_id = DbIds.db_main_pub_id(version)
@@ -75,9 +75,9 @@ class DbPublish(object):
             _id= common_id,
             reviewable_component= "insert_movie",
             show_name= Envars.show_name,
+            branch_name=Envars.branch_name,
+            category=Envars.category,
             entry_name= Envars.entry_name,
-            category= Envars.category,
-            branch= Envars.branch_name,
             task_name= Envars.task_name,
             status= "PENDING_REVIEW",
             description= [],
@@ -118,11 +118,11 @@ class DbPublish(object):
             _id=common_id,
             reviewable_component = "insert_movie_path",
             slot_thumbnail= "insert_thumbnail_path",
-            show_name= Envars.show_name,
-            entry_name= Envars.entry_name,
-            category= Envars.category,
-            branch= Envars.branch_name,
-            task_name= Envars.task_name,
+            show_name=Envars.show_name,
+            branch_name=Envars.branch_name,
+            category=Envars.category,
+            entry_name=Envars.entry_name,
+            task_name=Envars.task_name,
             update_type="non-critical",
             artist= Users.get_current_user(),
             slot_name= pub_slot,
@@ -162,17 +162,17 @@ class DbPublish(object):
             pub_slots_publish = self.db_slot_publish(pub_slot)
 
             DbReferences.add_db_id_reference(collection=main_publish[1],
-                                      parent_doc_id=main_publish[0],
-                                      destination_slot="publishing_slots",
-                                      id_to_add=pub_slots_publish[0],
-                                      from_collection=pub_slots_publish[1])
+                                             parent_doc_id=main_publish[0],
+                                             destination_slot="publishing_slots",
+                                             id_to_add=pub_slots_publish[0],
+                                             from_collection=pub_slots_publish[1])
 
             DbReferences.add_db_id_reference(collection=DbProject().get_branch_type,
-                                      parent_doc_id=DbIds.db_entry_id(),
-                                      destination_slot=get_sync_path,
-                                      id_to_add=pub_slots_publish[0],
-                                      from_collection=pub_slots_publish[1],
-                                      replace=True)
+                                             parent_doc_id=DbIds.db_entry_id(),
+                                             destination_slot=get_sync_path,
+                                             id_to_add=pub_slots_publish[0],
+                                             from_collection=pub_slots_publish[1],
+                                             replace=True)
 
         return main_publish
 
@@ -200,30 +200,26 @@ class DbPublish(object):
             pub_slots_publish = self.db_slot_publish(pub_slot)
 
             DbReferences.add_db_id_reference(collection=main_publish[1],
-                                      parent_doc_id=main_publish[0],
-                                      destination_slot="publishing_slots",
-                                      id_to_add=pub_slots_publish[0],
-                                      from_collection=pub_slots_publish[1])
+                                             parent_doc_id=main_publish[0],
+                                             destination_slot="publishing_slots",
+                                             id_to_add=pub_slots_publish[0],
+                                             from_collection=pub_slots_publish[1])
 
             DbReferences.add_db_id_reference(collection=DbProject().get_branch_type,
-                                      parent_doc_id=DbIds.db_entry_id(),
-                                      destination_slot=get_sync_path,
-                                      id_to_add=pub_slots_publish[0],
-                                      from_collection=pub_slots_publish[1],
-                                      replace=True)
+                                             parent_doc_id=DbIds.db_entry_id(),
+                                             destination_slot=get_sync_path,
+                                             id_to_add=pub_slots_publish[0],
+                                             from_collection=pub_slots_publish[1],
+                                             replace=True)
 
         for inherited_slot in sync_to_curr_task.items():
             get_collection = inherited_slot[1].split(",")
 
             DbReferences.add_db_id_reference(collection=main_publish[1],
-                                      parent_doc_id=main_publish[0],
-                                      destination_slot="publishing_slots",
-                                      id_to_add=get_collection[1],
-                                      from_collection=get_collection[0])
-
-
-
-
+                                             parent_doc_id=main_publish[0],
+                                             destination_slot="publishing_slots",
+                                             id_to_add=get_collection[1],
+                                             from_collection=get_collection[0])
 
         return main_publish
 
@@ -237,9 +233,9 @@ class DbPublish(object):
         save_content = dict(
             _id=common_id,
             show_name=Envars.show_name,
-            entry_name=Envars.entry_name,
+            branch_name=Envars.branch_name,
             category=Envars.category,
-            branch=Envars.branch_name,
+            entry_name=Envars.entry_name,
             task_name=Envars.task_name,
             status="WIP",
             description=[],

@@ -30,7 +30,7 @@ class DbUsers(object):
 
     def get_user(self):
         try:
-            task_path = DbPaths.origin_path("tasks", Envars.task_name, "artist")
+            task_path = DbPaths.make_path("tasks", Envars.task_name, "artist")
             cursor = self.db[DbProject().get_branch_type]
             tasks_list = cursor.find({"_id": DbIds.db_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:

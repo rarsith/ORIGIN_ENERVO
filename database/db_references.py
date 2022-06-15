@@ -7,7 +7,7 @@ class DbReferences(object):
         db = mdbconn.server[mdbconn.database_name]
         if not replace:
             db[collection].update_one({"_id": parent_doc_id},
-                                      {"$push": {destination_slot: DbRef(from_collection, id_to_add).odbref}})
+                                      {"$push": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
         else:
             db[collection].update_one({"_id": parent_doc_id},
-                                      {"$set": {destination_slot: DbRef(from_collection, id_to_add).odbref}})
+                                      {"$set": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})

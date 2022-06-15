@@ -13,8 +13,8 @@ class DbCollections(object):
         return 'bundles'
 
     @classmethod
-    def task_sync(cls):
-        return 'task_sync'
+    def sync_tasks(cls):
+        return 'sync_tasks'
 
     @classmethod
     def wip(cls):

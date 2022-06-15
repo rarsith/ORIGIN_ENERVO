@@ -11,13 +11,8 @@ def read_dictionary(source_data, attribute_to_read):
     return source_data[attribute_to_read]
 
 if __name__=="__main__":
-    import pprint
-    json_load = open_json("../database/defaults/tasks_schemas.json")
+    json_load = open_json("../database/defaults/tasks_default_schemas.json")
     tasks_read = read_dictionary(json_load, 'prop')
     print (tasks_read)
-
-    # gog = tasks_read["task"]
-
-    # pprint.pprint(gog)
 
 

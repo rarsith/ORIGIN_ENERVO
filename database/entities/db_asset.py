@@ -17,7 +17,7 @@ class DbAsset(object):
     def create(self, name):
         root_id = DbIds.db_show_id()
         print (root_id)
-        asset_id = DbPaths.origin_path(DbPaths.db_category_path(), name)
+        asset_id = DbPaths.make_path(DbPaths.path_to_category(), name)
         print(asset_id)
         collection = self.db[DbProject().get_branch_type]
         get_tasks_config = DbDefaults().get_show_defaults(DbDefaults().root_tasks)
@@ -25,9 +25,10 @@ class DbAsset(object):
         entity_attributes = dict(
             _id= asset_id,
             show_name= Envars().show_name,
+            branch_name = Envars.branch_name,
+            category=Envars().category,
             entry_name= name,
             type= DbProject().get_branch_type,
-            category= Envars().category,
             status= " ",
             assignment= {},
             tasks= get_tasks_config[0],
@@ -44,7 +45,7 @@ class DbAsset(object):
         try:
             collection.insert_one(entity_attributes)
 
-            insert_entry = DbPaths.origin_path("structure", Envars().branch_name, Envars().category)
+            insert_entry = DbPaths.make_path("structure", Envars().branch_name, Envars().category)
             print (insert_entry)
             DbReferences.add_db_id_reference("show", root_id, insert_entry, asset_id, DbProject().get_branch_type)
             print("{} Origin Asset created!".format(name))
@@ -106,7 +107,6 @@ class DbAsset(object):
             pass
 
 
-
 if __name__ == '__main__':
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
@@ -114,4 +114,4 @@ if __name__ == '__main__':
     # Envars.category = "some_category"
 
     asset = DbAsset()
-    asset.create(name="bruce")
+    asset.create(name="hulk")
