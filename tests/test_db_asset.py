@@ -1,11 +1,12 @@
 from database.entities.db_project import DbProject
 from database.entities.db_asset import DbAsset
 from database.entities.db_bundle import DbBundle
-from database.entities.properties.db_pub_slot import DbPubSlot
+from database.entities.db_properties import DbPubSlot
+from database.entities.db_structures import DbProjectBranch
+from database.entities.properties.db_asset_categories import DbAssetCategories
 from database.entities.properties.db_sync_tasks import DbSyncTasks
 from database.entities.properties.db_tasks import DbTasks
 from database.publishing.db_publish import DbPublish
-from database.db_types import Branch, Tasks
 from envars.envars import Envars
 
 existing_modeling_pub_slots = ['rend_geo', 'proxy_geo', 'utility', 'lidar', 'proj_geo', 'vport_mat', 'tex_object', 'curvature_map', 'ao_map', 'selection_map']
@@ -14,7 +15,7 @@ Envars.show_name = "Test"
 Envars.branch_name = "assets"
 Envars.category = "characters"
 Envars.entry_name = "hulk"
-Envars.task_name = "modeling"
+Envars.task_name = "surfacing"
 
 #print(Envars().show_name, Envars().branch_name, Envars().category, Envars().entry_name, Envars().task_name)
 
@@ -42,26 +43,28 @@ test_bundle = False
 
 # PROJECT METHODS
 if test_project:
-    # project.create("Test")
-    # project.add_branch(name="references", branch_type=Branch.reference())
-    # project.add_category(name="grass`", tasks_type=Tasks.props())
+    project.create("Green")
+    # DbProjectBranch().add_branch(name="references", branch_type=Branch.reference())
+    # DbAssetCategories().add_category(name="grass`", tasks_type=Tasks.props())
     project_type = project.get_project_type()
-    branch_type = project.get_branch_type
-    project_struct = project.get_structure()
+    branch_type = DbProjectBranch().get_branch_type
+    project_struct = DbProjectBranch().get_structure()
     # print(project_type)
-    # print (branch_type)
+    # print (branch_type, "<<")
     # print (project_struct)
 
-    proj_branches=project.get_branches()
-    branch_categories = project.get_categories(branch=Envars().branch_name)
-    assets_names = project.get_entities_names(Envars().branch_name, Envars().category)
+    proj_branches=DbProjectBranch().get_branches()
+    branch_categories = DbAssetCategories().get_categories()
+    # assets_names = project.get_entities_names()
     # print (proj_branches)
     # print (branch_categories)
     print(assets_names)
 
 # ASSET METHODS
 if test_assets:
-    # assets.create(name="hulk")
+    assets_list = ["red_hulk", "blue_hulk", "yellow_hulk"]
+    for asset in assets_list:
+        assets.create(name=asset)
     asset_type = assets.get_entry_type()
     asset_definition=assets.get_definition()
     asset_is_active=assets.set_active(is_active=True)
@@ -87,7 +90,7 @@ if test_tasks:
 
 if test_publish:
 
-    # publish.db_publish_sel()
+    publish.db_publish_sel()
     # publish.db_work_file_save(file_name="cache.abc")
     pass
 
@@ -95,4 +98,5 @@ if test_publish:
 
 if test_bundle:
     # bundle.create_stream("BUBU")
+    bundle.create()
     pass

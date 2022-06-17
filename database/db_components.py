@@ -1,7 +1,81 @@
 from envars.envars import Envars
-from database.db_collections import DbCollections
 
-class DbPaths(object):
+class DbId(object):
+    """
+    Takes a list and joins the elements into a string
+    Ex: list = ["element1", "element2"] >>>> result > "element1.element2"
+    To be used for generating ids for entities at creation time
+    """
+
+    @classmethod
+    def create_id(cls, *data):
+        id_elements = list()
+        for elem in data:
+            id_elements.append(elem)
+
+        return str(".".join(id_elements))
+
+    @classmethod
+    def curr_project_id(cls):
+        return cls.create_id("root", Envars.show_name)
+
+    @classmethod
+    def curr_entry_id(cls):
+        return cls.create_id(Envars.show_name,
+                             Envars.branch_name,
+                             Envars.category,
+                             Envars.entry_name)
+
+    @classmethod
+    def get_wip_file_id(cls, version):
+        return cls.create_id(Envars.show_name,
+                             Envars.branch_name,
+                             Envars.category,
+                             Envars.entry_name,
+                             Envars.task_name,
+                             "wip",
+                             version)
+
+    @classmethod
+    def get_main_pub_id(cls, version):
+        return cls.create_id(Envars.show_name,
+                             Envars.branch_name,
+                             Envars.category,
+                             Envars.entry_name,
+                             Envars.task_name,
+                             "main_pub",
+                             version)
+
+    @classmethod
+    def get_pub_slot_id(cls, pub_slot, version):
+        return cls.create_id(Envars.show_name,
+                             Envars.branch_name,
+                             Envars.category,
+                             Envars.entry_name,
+                             Envars.task_name,
+                             pub_slot,
+                             version)
+
+    @classmethod
+    def get_master_bundle_id(cls, version):
+        return cls.create_id(Envars.show_name,
+                             Envars.branch_name,
+                             Envars.category,
+                             Envars.entry_name,
+                             "bundle",
+                             version)
+
+    @classmethod
+    def get_sync_tasks_id(cls, version):
+        return cls.create_id(Envars.show_name,
+                             Envars.branch_name,
+                             Envars.category,
+                             Envars.entry_name,
+                             "sync_tasks",
+                             version)
+
+
+class DbPath(object):
 
     @classmethod
     def make_path(cls, *data, **kwargs):
@@ -13,9 +87,18 @@ class DbPaths(object):
             return dotted_path
         return kwargs
 
+    @property
+    def get_path(self, *data, **kwargs):
+        if data:
+            id_elements = list()
+            for elem in data:
+                id_elements.append(elem)
+            dotted_path = str(".".join(id_elements))
+            return dotted_path
+        return kwargs
 
     @classmethod
-    def path_root(cls, dict_packed=False):
+    def to_base(cls, dict_packed=False):
         if dict_packed:
             return cls.make_path(show_name=Envars.show_name,
                                  branch_name=Envars.branch_name,
@@ -28,7 +111,7 @@ class DbPaths(object):
                              Envars.entry_name)
 
     @classmethod
-    def path_root_full(cls, dict_packed=False):
+    def to_root_full(cls, dict_packed=False):
         if dict_packed:
             return cls.make_path(show_name=Envars.show_name,
                                  branch_name=Envars.branch_name,
@@ -43,9 +126,8 @@ class DbPaths(object):
                              Envars.task_name
                              )
 
-
     @classmethod
-    def path_to_branch(cls, dict_packed=False):
+    def to_branch(cls, dict_packed=False):
         if dict_packed:
             return cls.make_path(show_name=Envars.show_name,
                                  branch_name=Envars.branch_name)
@@ -55,7 +137,7 @@ class DbPaths(object):
                              )
 
     @classmethod
-    def path_to_category(cls, dict_packed=False):
+    def to_category(cls, dict_packed=False):
         if dict_packed:
             return cls.make_path(show_name=Envars.show_name,
                                  branch_name=Envars.branch_name,
@@ -67,7 +149,7 @@ class DbPaths(object):
                              )
 
     @classmethod
-    def path_to_entry(cls, dict_packed=False):
+    def to_entry(cls, dict_packed=False):
         if dict_packed:
             return cls.make_path(show_name = Envars.show_name,
                                  branch_name = Envars.branch_name,
@@ -80,7 +162,7 @@ class DbPaths(object):
                              Envars.entry_name)
 
     @classmethod
-    def path_to_task(cls, relative=True):
+    def to_task(cls, relative=True):
         if relative:
             return cls.make_path("tasks", Envars.task_name)
 
@@ -92,7 +174,7 @@ class DbPaths(object):
                              Envars.task_name)
 
     @classmethod
-    def path_to_sync_tasks(cls, relative=True):
+    def to_sync_tasks(cls, relative=True):
         if relative:
             return "sync_tasks"
 
@@ -103,7 +185,7 @@ class DbPaths(object):
                                "sync_tasks")
 
     @classmethod
-    def path_to_task_imports_from(cls, relative=True):
+    def to_task_imports_from(cls, relative=True):
         if relative:
             return cls.make_path("tasks", Envars.task_name, "imports_from")
 
@@ -117,7 +199,7 @@ class DbPaths(object):
                              )
 
     @classmethod
-    def path_to_task_pub_slots(cls, relative=True):
+    def to_pub_slots(cls, relative=True):
         if relative:
             return cls.make_path("tasks", Envars.task_name, 'pub_slots')
 
@@ -131,7 +213,7 @@ class DbPaths(object):
                              )
 
     @classmethod
-    def path_to_sync_task_slot(cls, relative=True):
+    def to_sync_task_slot(cls, relative=True):
         if relative:
             return cls.make_path("sync_tasks", Envars.task_name)
 
@@ -145,7 +227,7 @@ class DbPaths(object):
                              )
 
     @classmethod
-    def path_to_pub_slot_used_by(cls, pub_slot, relative=True):
+    def to_pub_slot_used_by(cls, pub_slot, relative=True):
         if relative:
             return cls.make_path("tasks", Envars.task_name, 'pub_slots', pub_slot, "used_by")
 
@@ -162,7 +244,7 @@ class DbPaths(object):
                              )
 
     @classmethod
-    def path_to_entry_definition(cls, relative=True):
+    def to_entry_definition(cls, relative=True):
         if relative:
             return "definition"
         return cls.make_path(Envars.show_name,
@@ -173,7 +255,7 @@ class DbPaths(object):
                              )
 
     @classmethod
-    def path_to_master_bundle(cls, relative=True):
+    def to_master_bundle(cls, relative=True):
         if relative:
             return "master_bundle"
 
@@ -181,11 +263,11 @@ class DbPaths(object):
                              Envars.branch_name,
                              Envars.category,
                              Envars.entry_name,
-                               "master_bundle"
+                             "master_bundle"
                              )
 
     @classmethod
-    def path_to_entry_assignment(cls, relative=True):
+    def to_entry_assignment(cls, relative=True):
         if relative:
             return "assignment"
 
@@ -193,8 +275,60 @@ class DbPaths(object):
                              Envars.branch_name,
                              Envars.category,
                              Envars.entry_name,
-                           "assignment"
+                             "assignment"
                              )
+
+
+class DbAttr(object):
+
+    @classmethod
+    def custom(cls, attr):
+        """Access path to get the Type of an Entity"""
+        return attr
+
+    @classmethod
+    def type(cls):
+        """Access path to get the Type of an Entity"""
+        return "type"
+
+    @classmethod
+    def is_active(cls):
+        """Access path to get if an Entity is active"""
+        return "active"
+
+    @classmethod
+    def branches(cls):
+        """Access path for branches of the project"""
+        return "structure"
+
+    @classmethod
+    def categories(cls):
+        """Access path for categories of the branch"""
+        access_path = DbPath.make_path("structure", Envars.branch_name)
+        return access_path
+
+    @classmethod
+    def entries(cls):
+        """Access path for entries of the category"""
+        access_path = DbPath.make_path("structure", Envars.branch_name, Envars.category)
+        return access_path
+
+    @classmethod
+    def tasks(cls):
+        """Access path for tasks of the entry"""
+        return "tasks"
+
+    @classmethod
+    def task_curr(cls):
+        """Access path for the current task of the entry"""
+        path_to_task = DbPath.to_task()
+        return path_to_task
+
+    @classmethod
+    def task_artist(cls):
+        """Access path for the current task of the entry"""
+        path_to_artist = DbPath.make_path(DbPath.to_task(), "artist")
+        return path_to_artist
 
 
 if __name__ == '__main__':
@@ -206,20 +340,10 @@ if __name__ == '__main__':
 
     import pprint
     from database.utils.db_find_key import db_find
-    from database.db_types import Entity
-
-    pp = DbPaths()
-    pp_path = pp.path_root(dict_packed=True)
-    # get_pub_slots = db_find(Entity.build(), pp.path_to_task_pub_slots(), **pp_path)
-    # print (get_pub_slots[0]["modeling"])
-
-    # for slot in get_pub_slots_list:
-    #     x = fkey(Entity.build(), pp.path_to_pub_slot_used_by(slot), **pp_path)
-    #     pprint.pprint (x[0])
-
+    from database.db_types import EntityTypes
 
     # pp_path = pp.db_task_pub(relative=False, dict_packed=True)
     # print (pp_path)
-    asset_id = DbPaths.path_to_entry()
-    xxx = pp.path_to_entry(dict_packed=False)
+    asset_id = DbPath.to_category()
+
     print (asset_id)

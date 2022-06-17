@@ -1,4 +1,47 @@
-class Tasks(object):
+class BranchTypes(object):
+    @classmethod
+    def build(cls):
+        return "build"
+
+    @classmethod
+    def sequences(cls):
+        return "shots"
+
+    @classmethod
+    def library(cls):
+        return 'lib_asset'
+
+    @classmethod
+    def reference(cls):
+        return 'ref_asset'
+
+
+class CategoryTypes(object):
+    @classmethod
+    def characters(cls):
+        return "characters"
+
+    @classmethod
+    def props(cls):
+        return "props"
+
+    @classmethod
+    def environments(cls):
+        return 'environments'
+
+
+class EntityTypes(object):
+
+    @classmethod
+    def build(cls):
+        return "build"
+
+    @classmethod
+    def shot(cls):
+        return "shots"
+
+
+class TaskTypes(object):
 
     @classmethod
     def characters(cls):
@@ -17,35 +60,7 @@ class Tasks(object):
         return 'shot'
 
 
-class Branch(object):
-    @classmethod
-    def build(cls):
-        return "build"
-
-    @classmethod
-    def sequences(cls):
-        return "shots"
-
-    @classmethod
-    def library(cls):
-        return 'lib_asset'
-
-    @classmethod
-    def reference(cls):
-        return 'ref_asset'
-
-
-class Entity(object):
-
-    @classmethod
-    def build(cls):
-        return "build"
-
-    @classmethod
-    def shot(cls):
-        return "shots"
-
 
 if __name__ == "__main__":
-    x = Branch.sequences()
+    x = BranchTypes.sequences()
     print (x)

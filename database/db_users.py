@@ -1,9 +1,8 @@
-from database import db_connection as mdbconn
-from database.db_ids import DbIds
-from database.db_paths import DbPaths
-from database.entities.db_project import DbProject
+from database.db_components import DbId, DbPath
 from envars.envars import Envars
 from common_utils.date_time import DateTime
+from database import db_connection as mdbconn
+from database.entities.db_structures import DbProjectBranch
 
 
 class DbUsers(object):
@@ -30,9 +29,9 @@ class DbUsers(object):
 
     def get_user(self):
         try:
-            task_path = DbPaths.make_path("tasks", Envars.task_name, "artist")
-            cursor = self.db[DbProject().get_branch_type]
-            tasks_list = cursor.find({"_id": DbIds.db_entry_id()}, {'_id': 0, task_path: 1})
+            task_path = DbPath.make_path("tasks", Envars.task_name, "artist")
+            cursor = self.db[DbProjectBranch().get_branch_type]
+            tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]['artist']
 
