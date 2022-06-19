@@ -279,6 +279,143 @@ class DbPath(object):
                              )
 
 
+class DbProjectAttributes(object):
+    @classmethod
+    def branches(cls):
+        """Access path for branches of the project"""
+        return "structure"
+
+    @classmethod
+    def categories(cls):
+        """Access path for categories of the branch"""
+        access_path = DbPath.make_path("structure", Envars.branch_name)
+        return access_path
+
+    @classmethod
+    def entries(cls):
+        """Access path for categories of the branch"""
+        access_path = DbPath.make_path("structure", Envars.branch_name, Envars.category)
+        return access_path
+
+    @classmethod
+    def is_active(cls):
+        """Access path to get if an Entity is active"""
+        return "active"
+
+    @classmethod
+    def type(cls):
+        """Access path to get the Type of an Entity"""
+        return "type"
+
+
+class DbEntityAttributes(object):
+    @classmethod
+    def is_active(cls):
+        """Access path to get if an Entity is active"""
+        return "active"
+
+    @classmethod
+    def type(cls):
+        """Access path to get the Type of an Entity"""
+        return "type"
+
+    @classmethod
+    def tasks(cls):
+        """Access path for tasks of the entry"""
+        return "tasks"
+
+    @classmethod
+    def sync_tasks(cls):
+        """Access path for tasks of the entry"""
+        return "sync_tasks"
+
+    @classmethod
+    def assignments(cls):
+        """Access path for tasks of the entry"""
+        return "assignment"
+
+    @classmethod
+    def definition(cls):
+        """Access path for tasks of the entry"""
+        return "definition"
+
+    @classmethod
+    def master_bundle(cls):
+        """Access path for tasks of the entry"""
+        return "master_bundle"
+
+
+class DbTaskAttributes(object):
+
+    @classmethod
+    def make_path(cls, *data, **kwargs):
+        if data:
+            id_elements = list()
+            for elem in data:
+                id_elements.append(elem)
+            dotted_path = str(".".join(id_elements))
+            return dotted_path
+        return kwargs
+
+    @classmethod
+    def is_active(cls):
+        return cls.make_path("tasks", Envars.task_name,"active")
+
+    @classmethod
+    def status(cls):
+        return cls.make_path("tasks", Envars.task_name,"status")
+
+    @classmethod
+    def artist(cls):
+        return cls.make_path("tasks", Envars.task_name,"artist")
+
+    @classmethod
+    def imports_from(cls):
+        return cls.make_path("tasks", Envars.task_name, "imports_from")
+
+    @classmethod
+    def pub_slots(cls):
+        return cls.make_path("tasks", Envars.task_name, "pub_slots")
+
+
+class DbPubSlotsAttributes(object):
+    def __init__(self, pub_slot):
+        self.pub_slot_name = pub_slot
+
+    def _pub_slot(self):
+        return self.pub_slot_name
+
+    @classmethod
+    def make_path(cls, *data, **kwargs):
+        if data:
+            id_elements = list()
+            for elem in data:
+                id_elements.append(elem)
+            dotted_path = str(".".join(id_elements))
+            return dotted_path
+        return kwargs
+
+    @classmethod
+    def is_active(cls):
+        return cls.make_path(cls._pub_slot, Envars.task_name,"active")
+
+    @classmethod
+    def is_reviewable(cls):
+        return cls.make_path(cls._pub_slot, Envars.task_name, "reviewable")
+
+    @classmethod
+    def used_by(cls):
+        return cls.make_path(cls._pub_slot, Envars.task_name, "used_by")
+
+    @classmethod
+    def method(cls):
+        return cls.make_path(cls._pub_slot, Envars.task_name, "method")
+
+    @classmethod
+    def type(cls):
+        return cls.make_path(cls._pub_slot, Envars.task_name, "type")
+
+
 class DbAttr(object):
 
     @classmethod

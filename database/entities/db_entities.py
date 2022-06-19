@@ -1,7 +1,7 @@
 from envars.envars import Envars
 from database import db_connection as mdbconn
 from database.origin import Origin, From
-from database.db_components import DbPath, DbId, DbAttr
+from database.db_components import DbPath, DbId, DbAttr, DbProjectAttributes, DbEntityAttributes
 from database.utils.db_utils import DbRef, DbReferences
 from database.entities.db_constructors import DbConstructors
 from database.entities.db_structures import DbProjectBranch
@@ -24,7 +24,7 @@ class DbProject(object):
 
     def get_entities_names(self):
         entities_found = list()
-        origin_q = Origin(From().project, DbId.curr_project_id(), DbAttr.entries()).get(as_key=True)
+        origin_q = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.entries()).get(attrib_names=True)
         for entity in origin_q:
             name = DbRef().oderef(ref_string=entity, get_field="entry_name")
             entities_found.append(name)
@@ -32,23 +32,17 @@ class DbProject(object):
 
     def get_project_type(self):
         try:
-            show_type = self.db.show.find({"_id": DbId.curr_project_id()},{'_id': 0, 'type': 1})
-            for each in list(show_type):
-                return each['type']
-        except:
-            pass
+            show_type = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
+            return show_type
+        except ValueError as val:
+            print ("{} Nothing Done!".format(val))
 
     def get_active(self):
         try:
-            shows_list = []
-            all_shows = self.db.show.find({"active": True}, {'_id': 0, 'show_name': 1})
-            for each in all_shows:
-                get_values = list(each.values())
-                shows_list.append(get_values[0])
-            return shows_list
-
-        except:
-            pass
+            is_active = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
+            return is_active
+        except ValueError as val:
+            print ("{} Nothing Done!".format(val))
 
 
 class DbAsset(object):
@@ -80,28 +74,22 @@ class DbAsset(object):
 
     def get_definition(self):
         try:
-            cursor = self.db[DbProjectBranch().get_branch_type]
-            definitions_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, 'definition': 1})
-            for definitions in definitions_list:
-                return definitions['definition']
+            result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.definition()).get(attrib_names=True)
+            return result
         except ValueError as val:
             print("{} Error! Nothing created!".format(val))
 
     def get_entry_type(self):
         try:
-            cursor = self.db[DbProjectBranch().get_branch_type]
-            definitions_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, 'type': 1})
-            for definitions in definitions_list:
-                return definitions['type']
+            result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.type()).get(attrib_names=True)
+            return result
         except ValueError as val:
             print("{} Error! Nothing Done!".format(val))
 
     def get_assignment(self):
         try:
-            cursor = self.db[DbProjectBranch().get_branch_type]
-            definitions_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, 'assignment': 1})
-            for definitions in definitions_list:
-                return definitions['assignment']
+            result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.assignments()).get(attrib_names=True)
+            return result
         except ValueError as val:
             print("{} Error! Nothing Done!".format(val))
 
@@ -127,7 +115,6 @@ class DbAsset(object):
             print('entry {} deleted from {} collection and removed from {} show structure'.format(entry_name,
                                                                                                   branch_category,
                                                                                                   show_name))
-
         except ValueError as val:
             print("{} Error! Nothing Done!".format(val))
 
@@ -213,5 +200,5 @@ if __name__ == '__main__':
     Envars.entry_name = "red_hulk"
     Envars.task_name = "rigging"
 
-    xx = DbProject().get_project_type()
+    xx = DbAsset().get_assignment()
     print (xx)

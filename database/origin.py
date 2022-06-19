@@ -1,4 +1,5 @@
 from database import db_connection as mdbconn
+from database.entities.db_structures import DbProjectBranch
 
 
 class From(object):
@@ -17,6 +18,11 @@ class From(object):
     @property
     def shots(self):
         return "sequences"
+
+    @property
+    def entities(self):
+        cursor = DbProjectBranch().get_branch_type
+        return cursor
 
     @property
     def publishes(self):
@@ -78,7 +84,9 @@ class Origin(object):
 
     def _get_keys(self, results: dict):
         data = self._get_values(results)
-        return list(data)
+        if isinstance(data, dict):
+            return list(data)
+        return data
 
     def get(self, attrib_names: bool = False ,attrib_values: bool = False):
         """
@@ -116,10 +124,11 @@ class Origin(object):
         self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: {}}})
 
 
+#TODO: refactor Origin to From --> create a decoarator to return data from the database
 if __name__ == '__main__':
     import pprint
     from envars.envars import Envars
-    from database.db_components import DbId, DbAttr
+    from database.db_components import DbId, DbAttr, DbProjectAttributes, DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
 
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
@@ -127,32 +136,10 @@ if __name__ == '__main__':
     Envars.entry_name = "red_hulk"
     Envars.task_name = "rigging"
 
-    # active_names = cc.active_projects
-    # for items in cc:
-    #     pprint.pprint (items)
-    # entry_id = DbIds.curr_project_id()
-    # attribute_to_q = DbAttr.entries()
-
-    # db = mdbconn.server[mdbconn.database_name]
-    # list_of = list()
-    # cursor = db["show"]
-    # for item in cursor.find({},{"_id":0,"show_name":1}):
-    #     list_of.append(item)
-    # pprint.pprint(list_of)
-
-    # vv = DbIds.curr_entry_id()
-    # print(vv)
-
-    source = From().builds
-    entity = DbId.curr_entry_id()
-    attr = DbAttr.task_curr()
-    print (attr)
+    source = From().entities
+    print (str(source))
+    entity = DbId.curr_project_id()
+    attr = DbProjectAttributes.categories()
 
     origin = Origin(source, entity, attr).get(attrib_names=True)
-    # print (origin)
-    # for i in origin:
-    #     print(i)
-    # origin = Origin(projects, entry_id, attribute_to_q).get(as_names=True)
-    # origin = Origin(cc, 'Test.assets.characters.hulk.modeling.main_pub.v0001', "publishing_slots").get(as_names=True)
-    # pprint.pprint (origin)
     print ("FROM <<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
