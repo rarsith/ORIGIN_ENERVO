@@ -1,6 +1,7 @@
 from envars.envars import Envars
 from database import db_templates
-from database.db_components import DbPath, DbId
+from database.origin import From, Origin
+from database.db_components import DbPath, DbId, DbProjectAttributes
 from database import db_connection as mdbconn
 
 
@@ -16,28 +17,21 @@ class DbProjectBranch(object):
         return name
 
     def get_branches(self):
-        show_structure = self.get_structure()
-        return list(show_structure.keys())
+        branches = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.branches()).get(attrib_names=True)
+        return branches
 
     def get_structure(self):
         try:
-            all_assets = self.db.show.find({"_id": DbId.curr_project_id(), "active": True},
-                                           {'_id': 0, 'structure': 1})
-            for each in list(all_assets):
-                return each['structure']
-        except:
-            pass
+            structure = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.structure()).get(attrib_values=True)
+            return structure
+
+        except ValueError as val:
+            raise("{} Error! Nothing created!".format(val))
 
     @property
-    def get_branch_type(self):
-        branch_name = Envars.branch_name
-        try:
-            show_structure = self.db.show.find({"_id": DbId.curr_project_id()},
-                                               {'_id': 0, 'structure': 1})
-            for each in list(show_structure):
-                return each['structure'][branch_name]["type"]
-        except:
-            pass
+    def get_type(self):
+        branch_type = From().entities
+        return branch_type
 
 
 class DbAssetCategories(object):
@@ -59,11 +53,10 @@ class DbAssetCategories(object):
         return name
 
     def get_categories(self):
-        branch = Envars().branch_name
-        show_structure = DbProjectBranch().get_structure()
-        full_list = list(show_structure[branch])
-        full_list.remove("type")
-        return full_list
+        categories = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.categories()).get(attrib_names=True)
+        categories.remove("type")
+        return categories
+
 
 
 if __name__ == '__main__':
@@ -73,5 +66,6 @@ if __name__ == '__main__':
     Envars.entry_name = "hulk"
     Envars.task_name = "surfacing"
 
-    cc = DbProjectBranch().get_branch_type
+    cc = DbAssetCategories().get_categories()
     print (cc)
+

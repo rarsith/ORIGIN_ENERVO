@@ -53,7 +53,7 @@ class DbConstructors(object):
             branch_name=Envars.branch_name,
             category=Envars.category,
             entry_name=name,
-            type=DbProjectBranch().get_branch_type,
+            type=DbProjectBranch().get_type,
             status=" ",
             assignment={},
             tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks)[0],

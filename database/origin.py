@@ -1,6 +1,6 @@
+from envars.envars import Envars
 from database import db_connection as mdbconn
-from database.entities.db_structures import DbProjectBranch
-
+from database.db_components import DbId, DbProjectAttributes
 
 class From(object):
 
@@ -21,8 +21,15 @@ class From(object):
 
     @property
     def entities(self):
-        cursor = DbProjectBranch().get_branch_type
-        return cursor
+        branch_name = Envars.branch_name
+        try:
+            cursor = self.db.show.find({"_id": DbId.curr_project_id()},
+                                       {'_id': 0, DbProjectAttributes.structure(): 1})
+            for each in list(cursor):
+                return each['structure'][branch_name]["type"]
+
+        except ValueError as val:
+            raise("{} Error! Nothing Done!".format(val))
 
     @property
     def publishes(self):
@@ -127,8 +134,7 @@ class Origin(object):
 #TODO: refactor Origin to From --> create a decoarator to return data from the database
 if __name__ == '__main__':
     import pprint
-    from envars.envars import Envars
-    from database.db_components import DbId, DbAttr, DbProjectAttributes, DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
+    from database.db_components import DbAttr, DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
 
     Envars.show_name = "Test"
     Envars.branch_name = "assets"

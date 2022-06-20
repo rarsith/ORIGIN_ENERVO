@@ -1,10 +1,10 @@
 from envars.envars import Envars
-from database import db_connection as mdbconn
 from database.origin import Origin, From
-from database.db_components import DbPath, DbId, DbAttr, DbProjectAttributes, DbEntityAttributes
+from database import db_connection as mdbconn
 from database.utils.db_utils import DbRef, DbReferences
-from database.entities.db_constructors import DbConstructors
 from database.entities.db_structures import DbProjectBranch
+from database.entities.db_constructors import DbConstructors
+from database.db_components import DbPath, DbId, DbProjectAttributes, DbEntityAttributes
 
 
 class DbProject(object):
@@ -30,14 +30,14 @@ class DbProject(object):
             entities_found.append(name)
         return entities_found
 
-    def get_project_type(self):
+    def get_type(self):
         try:
             show_type = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
             return show_type
         except ValueError as val:
             print ("{} Nothing Done!".format(val))
 
-    def get_active(self):
+    def is_active(self):
         try:
             is_active = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
             return is_active
@@ -50,7 +50,7 @@ class DbAsset(object):
         self.db = mdbconn.server[mdbconn.database_name]
 
     def create(self, name):
-        collection = self.db[DbProjectBranch().get_branch_type]
+        collection = self.db[From().entities]
         entity_id = DbId.create_id(DbPath.to_category(), name)
 
         created_id, save_data = DbConstructors().asset_construct(name=name, entity_id=entity_id)
@@ -65,7 +65,7 @@ class DbAsset(object):
                                              DbId.curr_project_id(),
                                              insert_entry,
                                              created_id,
-                                             DbProjectBranch().get_branch_type)
+                                             DbProjectBranch().get_type)
 
             print("{} Origin Asset created!".format(name))
 
@@ -77,29 +77,29 @@ class DbAsset(object):
             result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.definition()).get(attrib_names=True)
             return result
         except ValueError as val:
-            print("{} Error! Nothing created!".format(val))
+            raise("{} Error! Nothing created!".format(val))
 
     def get_entry_type(self):
         try:
             result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.type()).get(attrib_names=True)
             return result
         except ValueError as val:
-            print("{} Error! Nothing Done!".format(val))
+            raise("{} Error! Nothing Done!".format(val))
 
     def get_assignment(self):
         try:
             result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.assignments()).get(attrib_names=True)
             return result
         except ValueError as val:
-            print("{} Error! Nothing Done!".format(val))
+            raise("{} Error! Nothing Done!".format(val))
 
     def set_active(self, is_active=True):
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         cursor.update_one({"_id": DbId.curr_entry_id()}, {"$set": {"active": is_active}})
         print("{0} active Status set to {1}!".format(DbId.curr_entry_id(), is_active))
 
     def set_definition(self, definition):
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         cursor.update({"_id": DbId.curr_entry_id()}, {"$set": {"definition": definition}})
         print("{} Definition Updated!".format(Envars.entry_name))
 
@@ -110,13 +110,13 @@ class DbAsset(object):
             self.db.show.update({"show_name": show_name}, {"$unset": {entry_path: 1}})
 
             # remove entry from its collection
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             cursor.remove({"_id": DbId.curr_entry_id()})
             print('entry {} deleted from {} collection and removed from {} show structure'.format(entry_name,
                                                                                                   branch_category,
                                                                                                   show_name))
         except ValueError as val:
-            print("{} Error! Nothing Done!".format(val))
+            raise("{} Error! Nothing Done!".format(val))
 
 
 class DbBundle(object):
@@ -132,7 +132,7 @@ class DbBundle(object):
     def create_stream(self, name):
         try:
             asset_id = DbId.curr_entry_id()
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             db_path = DbPath.make_path(DbPath.to_master_bundle(), (name + "_" + "stream"))
 
             cursor.update_one({"_id": asset_id}, {"$set": {db_path:[]}})
@@ -144,11 +144,11 @@ class DbBundle(object):
 
     def add_to_bundle(self, entity_id, bundle_id, slot):
         DbReferences.add_db_id_reference("bundles",
-                                        bundle_id,
+                                         bundle_id,
                                         "master_bundle.{}".format(slot),
-                                        entity_id,
-                                        DbProjectBranch().get_branch_type,
-                                        replace=True)
+                                         entity_id,
+                                         DbProjectBranch().get_type,
+                                         replace=True)
         return bundle_id
 
     def add_slot(self, name):
@@ -164,7 +164,7 @@ class DbBundle(object):
         pass
 
     def set_as_current(self, bundle_id, add_to_stream="main_stream"):
-        DbReferences.add_db_id_reference(DbProjectBranch().get_branch_type,
+        DbReferences.add_db_id_reference(DbProjectBranch().get_type,
                                          DbId.curr_entry_id(),
                                         "master_bundle.{}".format(add_to_stream),
                                          bundle_id,
@@ -187,11 +187,12 @@ class DbBundle(object):
         try:
             task_path = DbPath.to_pub_slots()
             print(task_path)
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             cursor.update_one({"_id": DbId.curr_entry_id()}, {"$unset": {task_path: 1}})
             cursor.update_one({"_id": DbId.curr_entry_id()}, {"$set": {task_path: {}}})
         except:
             pass
+
 
 if __name__ == '__main__':
     Envars.show_name = "Test"

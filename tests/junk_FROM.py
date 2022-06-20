@@ -9,7 +9,7 @@ class From(object):
 
     @property
     def entity(self):
-        db_collection = DbProjectBranch().get_branch_type
+        db_collection = DbProjectBranch().get_type
         results = self.db[db_collection].find({"_id": DbIds.curr_entry_id()})
         for item in results:
             return item

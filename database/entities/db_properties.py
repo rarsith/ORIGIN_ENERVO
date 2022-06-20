@@ -15,7 +15,7 @@ class DbTasks(object):
 
     def create(self, name):
         asset_id = DbPath().to_entry()
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         task_db_path = DbPath.make_path(DbPath.to_task(), name)
         tasks_defaults = db_templates.task_defaults()
 
@@ -28,7 +28,7 @@ class DbTasks(object):
 
     def get_tasks(self):
         try:
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, 'tasks': 1})
             for elements in tasks_list:
                 return list(elements["tasks"].keys())
@@ -37,7 +37,7 @@ class DbTasks(object):
 
     def get_tasks_full(self):
         try:
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, 'tasks': 1})
             for elements in tasks_list:
                 return elements["tasks"]
@@ -48,7 +48,7 @@ class DbTasks(object):
         # TODO, needs to be checked for what it is used
         try:
             task_path = DbPath.make_path("tasks", task)
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return (tasks["tasks"][task])
@@ -58,7 +58,7 @@ class DbTasks(object):
     def get_imports_from(self):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "imports_from")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 for tsk, tsk_name in tasks.items():
@@ -70,7 +70,7 @@ class DbTasks(object):
     def get_status(self):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "status")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]['status']
@@ -81,7 +81,7 @@ class DbTasks(object):
     def get_is_active(self):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "active")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]['active']
@@ -98,25 +98,25 @@ class DbTasks(object):
 
     def set_status(self, task_status):
         asset_id = DbPath().to_entry()
-        db_collection = self.db[DbProjectBranch().get_branch_type]
+        db_collection = self.db[DbProjectBranch().get_type]
         db_address = DbPath.make_path(DbPath.to_task(), "status")
         db_collection.update_one({"_id": asset_id}, {'$set': {db_address: task_status}})
 
     def set_user(self, artist_name):
         asset_id = DbPath().to_entry()
-        db_collection = self.db[DbProjectBranch().get_branch_type]
+        db_collection = self.db[DbProjectBranch().get_type]
         db_address = DbPath.make_path(DbPath.to_task(), "artist")
         db_collection.update_one({"_id": asset_id}, {'$set': {db_address: artist_name}})
 
     def set_is_active(self, is_active=True):
-        db_collection = self.db[DbProjectBranch().get_branch_type]
+        db_collection = self.db[DbProjectBranch().get_type]
         db_address = DbPath.make_path(DbPath.to_task(), "active")
         db_collection.update_one({"_id": DbId.curr_entry_id()}, {'$set': {db_address: is_active}})
 
     def rem_import_slots(self):
         try:
             task_path = DbPath.to_task_imports_from()
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             cursor.update_one({"_id": DbId.curr_entry_id()}, {"$unset": {task_path: 1}})
             cursor.update_one({"_id": DbId.curr_entry_id()}, {"$set": {task_path: {}}})
         except:
@@ -143,7 +143,7 @@ class DbSyncTasks(object):
 
     def capture_all(self):
         try:
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, 'sync_tasks': 1})
             for elements in tasks_list:
                 return (elements["sync_tasks"])
@@ -156,14 +156,14 @@ class DbSyncTasks(object):
 
     def add_sync_task(self, name):
         asset_id = DbPath().to_entry()
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         sync_task_db_path = DbPath.make_path(DbPath.to_sync_tasks(), name)
         cursor.update_one({"_id": asset_id}, {"$set": {sync_task_db_path:{}}})
         print("{} Sync Tasks saved!".format(name))
 
     def add_sync_task_slot(self, name):
         asset_id = DbId().curr_entry_id()
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         sync_task_db_path = DbPath.make_path(DbPath.to_sync_task_slot(), name)
         cursor.update_one({"_id": asset_id}, {"$set": {sync_task_db_path: {}}})
         print("{} Sync Slot saved!".format(name))
@@ -195,7 +195,7 @@ class DbSyncTasks(object):
 
     def get_sync_task_slots(self):
         try:
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             sync_task_db_path = DbPath.make_path(DbPath.to_sync_task_slot())
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, sync_task_db_path: 1})
             for elements in tasks_list:
@@ -217,7 +217,7 @@ class DbPubSlot(object):
 
     def create(self, name):
         asset_id = DbPath().to_entry()
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         task_pub_slot_db_path = DbPath.make_path(DbPath.to_pub_slots(), name)
         tasks_pub_slot_defaults = db_templates.tasks_pub_slot_schema()
 
@@ -246,7 +246,7 @@ class DbPubSlot(object):
     def get_pub_slots(self):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "pub_slots")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 for tsk, tsk_name in tasks.items():
@@ -258,7 +258,7 @@ class DbPubSlot(object):
     def get_type(self, pub_slot):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "pub_slots", pub_slot, "type")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]["pub_slots"][pub_slot]["type"]
@@ -269,7 +269,7 @@ class DbPubSlot(object):
     def get_method(self, pub_slot):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "pub_slots", pub_slot, "method")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]["pub_slots"][pub_slot]["method"]
@@ -280,7 +280,7 @@ class DbPubSlot(object):
     def get_used_by(self, pub_slot):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "pub_slots", pub_slot, "used_by")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]["pub_slots"][pub_slot]["used_by"]
@@ -299,7 +299,7 @@ class DbPubSlot(object):
     def get_is_reviewable(self, pub_slot):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "pub_slots", pub_slot, "reviewable")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]["pub_slots"][pub_slot]["reviewable"]
@@ -310,7 +310,7 @@ class DbPubSlot(object):
     def get_is_active(self, pub_slot):
         try:
             task_path = DbPath.make_path("tasks", Envars.task_name, "pub_slots", pub_slot, "active")
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             tasks_list = cursor.find({"_id": DbId.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]["pub_slots"][pub_slot]["active"]
@@ -319,7 +319,7 @@ class DbPubSlot(object):
             pass
 
     def set_used_by(self, pub_slot, used_by, remove_action=False):
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         pub_slot_path = DbPath.make_path(DbPath().to_pub_slots(), pub_slot, "used_by")
         asset_id = DbId.curr_entry_id()
 
@@ -336,31 +336,8 @@ class DbPubSlot(object):
         try:
             task_path = DbPath.to_pub_slots()
             print(task_path)
-            cursor = self.db[DbProjectBranch().get_branch_type]
+            cursor = self.db[DbProjectBranch().get_type]
             cursor.update_one({"_id": DbId.curr_entry_id()}, {"$unset": {task_path: 1}})
             cursor.update_one({"_id": DbId.curr_entry_id()}, {"$set": {task_path: {}}})
         except:
             pass
-
-
-class DbCollections(object):
-
-    @classmethod
-    def show(cls):
-        return "show"
-
-    @classmethod
-    def main_publishes(cls):
-        return 'publishes'
-
-    @classmethod
-    def bundles(cls):
-        return 'bundles'
-
-    @classmethod
-    def sync_tasks(cls):
-        return 'sync_tasks'
-
-    @classmethod
-    def wip(cls):
-        return 'wip_scenes'

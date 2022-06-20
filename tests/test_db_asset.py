@@ -46,8 +46,8 @@ if test_project:
     project.create("Green")
     # DbProjectBranch().add_branch(name="references", branch_type=Branch.reference())
     # DbAssetCategories().add_category(name="grass`", tasks_type=Tasks.props())
-    project_type = project.get_project_type()
-    branch_type = DbProjectBranch().get_branch_type
+    project_type = project.get_type()
+    branch_type = DbProjectBranch().get_type
     project_struct = DbProjectBranch().get_structure()
     # print(project_type)
     # print (branch_type, "<<")

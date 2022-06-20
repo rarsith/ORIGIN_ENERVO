@@ -7,7 +7,7 @@ class DbUpdate(object):
         self.db = mdbconn.server[mdbconn.database_name]
 
     def origin_update(self, entity_id, db_path, data=[]):
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         cursor.update_one({"_id": entity_id}, {"$set": {db_path: data}})
 
 
@@ -120,7 +120,7 @@ class Combiner(object):
 
 
     def origin_update(self, entity_id, db_path, data=[]):
-        cursor = self.db[DbProjectBranch().get_branch_type]
+        cursor = self.db[DbProjectBranch().get_type]
         cursor.update_one({"_id": entity_id}, {"$set": {db_path: data}})
 
 

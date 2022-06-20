@@ -166,7 +166,7 @@ class DbPublish(object):
                                              id_to_add=pub_slots_publish[0],
                                              from_collection=pub_slots_publish[1])
 
-            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_branch_type,
+            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_type,
                                              parent_doc_id=DbId.curr_entry_id(),
                                              destination_slot=get_sync_path,
                                              id_to_add=pub_slots_publish[0],
@@ -204,7 +204,7 @@ class DbPublish(object):
                                              id_to_add=pub_slots_publish[0],
                                              from_collection=pub_slots_publish[1])
 
-            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_branch_type,
+            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_type,
                                              parent_doc_id=DbId.curr_entry_id(),
                                              destination_slot=get_sync_path,
                                              id_to_add=pub_slots_publish[0],

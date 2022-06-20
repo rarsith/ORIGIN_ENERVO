@@ -279,7 +279,66 @@ class DbPath(object):
                              )
 
 
+class DbAttr(object):
+
+    @classmethod
+    def custom(cls, attr):
+        """Access path to get the Type of an Entity"""
+        return attr
+
+    @classmethod
+    def type(cls):
+        """Access path to get the Type of an Entity"""
+        return "type"
+
+    @classmethod
+    def is_active(cls):
+        """Access path to get if an Entity is active"""
+        return "active"
+
+    @classmethod
+    def branches(cls):
+        """Access path for branches of the project"""
+        return "structure"
+
+    @classmethod
+    def categories(cls):
+        """Access path for categories of the branch"""
+        access_path = DbPath.make_path("structure", Envars.branch_name)
+        return access_path
+
+    @classmethod
+    def entries(cls):
+        """Access path for entries of the category"""
+        access_path = DbPath.make_path("structure", Envars.branch_name, Envars.category)
+        return access_path
+
+    @classmethod
+    def tasks(cls):
+        """Access path for tasks of the entry"""
+        return "tasks"
+
+    @classmethod
+    def task_curr(cls):
+        """Access path for the current task of the entry"""
+        path_to_task = DbPath.to_task()
+        return path_to_task
+
+    @classmethod
+    def task_artist(cls):
+        """Access path for the current task of the entry"""
+        path_to_artist = DbPath.make_path(DbPath.to_task(), "artist")
+        return path_to_artist
+
+
 class DbProjectAttributes(object):
+
+    @classmethod
+    def structure(cls):
+        """Access path for branches of the project"""
+        return "structure"
+
+
     @classmethod
     def branches(cls):
         """Access path for branches of the project"""
@@ -415,57 +474,6 @@ class DbPubSlotsAttributes(object):
     def type(cls):
         return cls.make_path(cls._pub_slot, Envars.task_name, "type")
 
-
-class DbAttr(object):
-
-    @classmethod
-    def custom(cls, attr):
-        """Access path to get the Type of an Entity"""
-        return attr
-
-    @classmethod
-    def type(cls):
-        """Access path to get the Type of an Entity"""
-        return "type"
-
-    @classmethod
-    def is_active(cls):
-        """Access path to get if an Entity is active"""
-        return "active"
-
-    @classmethod
-    def branches(cls):
-        """Access path for branches of the project"""
-        return "structure"
-
-    @classmethod
-    def categories(cls):
-        """Access path for categories of the branch"""
-        access_path = DbPath.make_path("structure", Envars.branch_name)
-        return access_path
-
-    @classmethod
-    def entries(cls):
-        """Access path for entries of the category"""
-        access_path = DbPath.make_path("structure", Envars.branch_name, Envars.category)
-        return access_path
-
-    @classmethod
-    def tasks(cls):
-        """Access path for tasks of the entry"""
-        return "tasks"
-
-    @classmethod
-    def task_curr(cls):
-        """Access path for the current task of the entry"""
-        path_to_task = DbPath.to_task()
-        return path_to_task
-
-    @classmethod
-    def task_artist(cls):
-        """Access path for the current task of the entry"""
-        path_to_artist = DbPath.make_path(DbPath.to_task(), "artist")
-        return path_to_artist
 
 
 if __name__ == '__main__':
