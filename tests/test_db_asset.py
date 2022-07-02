@@ -1,11 +1,9 @@
-from database.entities.db_project import DbProject
-from database.entities.db_asset import DbAsset
-from database.entities.db_bundle import DbBundle
+from database.entities.db_entities import DbProject
+from database.entities.db_entities import DbAsset
+from database.entities.db_entities import DbBundle
 from database.entities.db_properties import DbPubSlot
-from database.entities.db_structures import DbProjectBranch
-from database.entities.properties.db_asset_categories import DbAssetCategories
-from database.entities.properties.db_sync_tasks import DbSyncTasks
-from database.entities.properties.db_tasks import DbTasks
+from database.entities.db_structures import DbProjectBranch, DbAssetCategories
+from database.entities.db_properties import DbTasks, DbSyncTasks
 from database.publishing.db_publish import DbPublish
 from envars.envars import Envars
 
@@ -14,7 +12,7 @@ existing_modeling_pub_slots = ['rend_geo', 'proxy_geo', 'utility', 'lidar', 'pro
 Envars.show_name = "Test"
 Envars.branch_name = "assets"
 Envars.category = "characters"
-Envars.entry_name = "hulk"
+Envars.entry_name = "red_hulk"
 Envars.task_name = "surfacing"
 
 #print(Envars().show_name, Envars().branch_name, Envars().category, Envars().entry_name, Envars().task_name)
@@ -90,7 +88,7 @@ if test_tasks:
 
 if test_publish:
 
-    publish.db_publish_sel()
+    publish.db_publish()
     # publish.db_work_file_save(file_name="cache.abc")
     pass
 

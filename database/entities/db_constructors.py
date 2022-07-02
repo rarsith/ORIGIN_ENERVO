@@ -1,11 +1,11 @@
 from envars.envars import Envars
-from database.db_components import DbId
+from database.db_attributes import DbId
 from database import db_templates
 from common_utils.users import Users
 from database.db_statuses import DbStatuses
 from database.db_defaults import DbDefaults
 from common_utils.date_time import DateTime
-from database.utils.db_utils import DBVersionControl
+from database.utils.db_version_control import DBVersionControl
 from database.entities.db_properties import DbProjectBranch, DbSyncTasks, DbTasks
 
 
@@ -23,7 +23,8 @@ class DbProjectCode:
 
 class DbConstructors(object):
 
-    def project_construct(self, name, entity_id, project_type="vfx"):
+    @staticmethod
+    def project_construct(name, entity_id, project_type="vfx"):
         entity_attributes = dict(
             _id=entity_id,
             show_code=DbProjectCode(data=name).code(),
@@ -46,7 +47,8 @@ class DbConstructors(object):
 
         return entity_id, entity_attributes
 
-    def asset_construct(self, name, entity_id):
+    @staticmethod
+    def asset_construct(name, entity_id):
         entity_attributes = dict(
             _id=entity_id,
             show_name=Envars.show_name,
@@ -67,10 +69,12 @@ class DbConstructors(object):
         )
         return entity_id, entity_attributes
 
+    @staticmethod
     def work_session_construct(self):
         pass
 
-    def bundle_construct(self):
+    @staticmethod
+    def bundle_construct():
         status = DbStatuses.pending_rev
         entity_tasks = DbTasks().get_tasks()
         version = DBVersionControl().db_master_bundle_ver_increase()

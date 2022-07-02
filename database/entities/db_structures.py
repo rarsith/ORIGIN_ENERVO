@@ -1,7 +1,7 @@
 from envars.envars import Envars
 from database import db_templates
-from database.origin import From, Origin
-from database.db_components import DbPath, DbId, DbProjectAttributes
+from database.utils.db_q_entity import From, QEntity
+from database.db_attributes import DbPath, DbId, DbProjectAttributes
 from database import db_connection as mdbconn
 
 
@@ -17,12 +17,12 @@ class DbProjectBranch(object):
         return name
 
     def get_branches(self):
-        branches = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.branches()).get(attrib_names=True)
+        branches = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.branches()).get(attrib_names=True)
         return branches
 
     def get_structure(self):
         try:
-            structure = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.structure()).get(attrib_values=True)
+            structure = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.structure()).get(attrib_values=True)
             return structure
 
         except ValueError as val:
@@ -53,7 +53,7 @@ class DbAssetCategories(object):
         return name
 
     def get_categories(self):
-        categories = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.categories()).get(attrib_names=True)
+        categories = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.categories()).get(attrib_names=True)
         categories.remove("type")
         return categories
 

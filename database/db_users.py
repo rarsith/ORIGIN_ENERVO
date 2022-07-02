@@ -1,4 +1,4 @@
-from database.db_components import DbId, DbPath
+from database.db_attributes import DbId, DbPath
 from envars.envars import Envars
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn

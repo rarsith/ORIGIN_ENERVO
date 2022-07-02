@@ -1,11 +1,12 @@
 from bson import ObjectId
 from envars.envars import Envars
-from database.db_components import DbId
+from database.db_attributes import DbId
 from common_utils.users import Users
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn
 from common_utils.output_paths import OutputPaths
-from database.utils.db_utils import DBVersionControl, DbReferences
+from database.utils.db_utils import DbReferences
+from database.utils.db_version_control import DBVersionControl
 from database.entities.db_properties import DbSyncTasks, DbPubSlot
 from database.entities.db_structures import DbProjectBranch
 
@@ -89,7 +90,6 @@ class DbPublish(object):
             display_name= set_display_name
         )
 
-
         published = self.db[collection_name].insert_one(save_content)
 
         print("{0} Main Publish Done!".format(set_display_name))
@@ -111,7 +111,6 @@ class DbPublish(object):
 
         common_id = DbId.get_pub_slot_id(pub_slot, version)
         bundle = 'current_bundle'
-
 
         save_content = dict(
             _id=common_id,
@@ -177,12 +176,9 @@ class DbPublish(object):
 
     def db_publish_sel(self, sel_pub_slots=[]):
         current_task = Envars().task_name
-        print (current_task)
         task_pub_slots = DbPubSlot().get_pub_slots()
         get_sync_tasks = DbSyncTasks().capture_all()
-        print (get_sync_tasks)
         sync_to_curr_task = get_sync_tasks[current_task]
-        print (sync_to_curr_task)
 
         if len(sel_pub_slots)==0:
             sel_pub_slots = task_pub_slots
@@ -193,9 +189,7 @@ class DbPublish(object):
         main_publish = self.db_main_publish()
 
         for pub_slot in sel_pub_slots:
-
             get_sync_path = ".".join(["sync_tasks", current_task, pub_slot])
-
             pub_slots_publish = self.db_slot_publish(pub_slot)
 
             DbReferences.add_db_id_reference(collection=main_publish[1],
@@ -247,7 +241,6 @@ class DbPublish(object):
             origin=[],
             components=dict(main_path=OutputPaths(version, output_file_name=file_name).wip_file_path()),
             session=[]
-
         )
 
         published = self.db[collection_name].insert_one(save_content)

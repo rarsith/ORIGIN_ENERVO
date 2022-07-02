@@ -1,6 +1,6 @@
 from envars.envars import Envars
 from database import db_connection as mdbconn
-from database.db_components import DbId, DbProjectAttributes
+from database.db_attributes import DbId, DbProjectAttributes, DbMainPubAttributes
 
 class From(object):
 
@@ -8,7 +8,7 @@ class From(object):
         self.db = mdbconn.server[mdbconn.database_name]
 
     @property
-    def project(self):
+    def projects(self):
         return "show"
 
     @property
@@ -40,17 +40,21 @@ class From(object):
         return "bundles"
 
     @property
+    def sync_tasks(self):
+        return "sync_tasks"
+
+    @property
     def work_files(self):
         return "work_files"
 
 
-class Origin(object):
+class QEntity(object):
 
-    def __init__(self, db_collection, db_id, attribute):
+    def __init__(self, db_collection, entry_id, attribute):
         self.db = mdbconn.server[mdbconn.database_name]
         self.collection = db_collection
         self.attribute = attribute
-        self.db_id = db_id
+        self.db_id = entry_id
 
     def _string_to_list(self, data, splitter="."):
         """ @data: takes in string with OR without a separator (".", "_"...)
@@ -95,14 +99,14 @@ class Origin(object):
             return list(data)
         return data
 
-    def get(self, attrib_names: bool = False ,attrib_values: bool = False):
+    def get(self, attrib_names: bool = False, attrib_values: bool = False, all: bool = False, all_active: bool = False):
         """
             will find all the key values from a collection and returns them as a dictionary
         """
         results = self.db[self.collection].find({"_id": self.db_id}, {"_id": 0, self.attribute: 1})
 
-        if attrib_names and attrib_values:
-            raise ValueError ("Choose either keys or values or leave default!")
+        if attrib_names and attrib_values and all and all_active:
+            raise ValueError ("Choose either attrib_names or attrib_values, or leave default!")
 
         elif attrib_names:
             return self._get_keys(results)
@@ -110,21 +114,30 @@ class Origin(object):
         elif attrib_values:
             return self._get_values(results)
 
+        elif all:
+            result = [x[self.attribute] for x in self.db[self.collection].find({}, {"_id": 0, self.attribute: 1})]
+            return result
+
+        elif all_active:
+            result = [x[self.attribute] for x in self.db[self.collection].find({"active":True}, {"_id": 0, self.attribute: 1})]
+            return result
+
         else:
             for result in results:
                 return result
 
-    def update(self,*data):
+    def update(self, data):
         self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: data}})
 
-    def add(self, multiple_values=False, data=[]):
-        if not multiple_values:
+    def add(self, data):
+        if not isinstance(data, list):
             self.db[self.collection].update_one({"_id": self.db_id}, {"$push": {self.attribute: data}})
-        for each in data:
-            self.db[self.collection].update_one({"_id": self.db_id}, {"$push": {self.attribute: each}})
+        else:
+            for each in data:
+                self.db[self.collection].update_one({"_id": self.db_id}, {"$push": {self.attribute: each}})
 
-    def remove(self, data=[]):
-        self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: data}})
+    def remove(self):
+        self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute}})
 
     def clear(self):
         self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: 1}})
@@ -134,7 +147,7 @@ class Origin(object):
 #TODO: refactor Origin to From --> create a decoarator to return data from the database
 if __name__ == '__main__':
     import pprint
-    from database.db_components import DbAttr, DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
+    from database.db_attributes import DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
 
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
@@ -142,10 +155,13 @@ if __name__ == '__main__':
     Envars.entry_name = "red_hulk"
     Envars.task_name = "rigging"
 
-    source = From().entities
+    source = From().projects
     print (str(source))
     entity = DbId.curr_project_id()
-    attr = DbProjectAttributes.categories()
+    print (entity)
+    attr = DbProjectAttributes.structure()
+    print (attr)
 
-    origin = Origin(source, entity, attr).get(attrib_names=True)
+    # origin = Origin(From().projects, DbId.all(), DbProjectAttributes.name()).get(all_active=True)
+    origin = QEntity(From().publishes, DbId().all_in_collection(), DbMainPubAttributes().version()).get(all=True)
     print ("FROM <<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))

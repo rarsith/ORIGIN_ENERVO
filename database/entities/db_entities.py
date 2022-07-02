@@ -1,10 +1,10 @@
 from envars.envars import Envars
-from database.origin import Origin, From
 from database import db_connection as mdbconn
 from database.utils.db_utils import DbRef, DbReferences
-from database.entities.db_structures import DbProjectBranch
+from database.utils.db_q_entity import From, QEntity
+from database.entities.db_structures import DbProjectBranch, DbAssetCategories
 from database.entities.db_constructors import DbConstructors
-from database.db_components import DbPath, DbId, DbProjectAttributes, DbEntityAttributes
+from database.db_attributes import DbPath, DbId, DbProjectAttributes, DbEntityAttributes
 
 
 class DbProject(object):
@@ -22,24 +22,27 @@ class DbProject(object):
         except ValueError as e:
             print("{} Error! Nothing created!".format(e))
 
-    def get_entities_names(self):
+    @staticmethod
+    def get_entities_names():
         entities_found = list()
-        origin_q = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.entries()).get(attrib_names=True)
+        origin_q = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.category_entries()).get(attrib_names=True)
         for entity in origin_q:
             name = DbRef().oderef(ref_string=entity, get_field="entry_name")
             entities_found.append(name)
         return entities_found
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         try:
-            show_type = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
+            show_type = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
             return show_type
         except ValueError as val:
             print ("{} Nothing Done!".format(val))
 
-    def is_active(self):
+    @staticmethod
+    def is_active():
         try:
-            is_active = Origin(From().project, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
+            is_active = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.is_active()).get(attrib_names=True)
             return is_active
         except ValueError as val:
             print ("{} Nothing Done!".format(val))
@@ -51,9 +54,7 @@ class DbAsset(object):
 
     def create(self, name):
         collection = self.db[From().entities]
-        entity_id = DbId.create_id(DbPath.to_category(), name)
-
-        created_id, save_data = DbConstructors().asset_construct(name=name, entity_id=entity_id)
+        created_id, save_data = DbConstructors().asset_construct(name=name, entity_id=DbId.create_entity_id(name))
 
         try:
             collection.insert_one(save_data)
@@ -72,49 +73,53 @@ class DbAsset(object):
         except Exception as e:
             print("{} Error! Nothing Created!".format(e))
 
-    def get_definition(self):
+    @staticmethod
+    def get_definition():
         try:
-            result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.definition()).get(attrib_names=True)
-            return result
-        except ValueError as val:
-            raise("{} Error! Nothing created!".format(val))
-
-    def get_entry_type(self):
-        try:
-            result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.type()).get(attrib_names=True)
+            result = QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.definition()).get(attrib_names=True)
             return result
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
-    def get_assignment(self):
+    @staticmethod
+    def get_entry_type():
         try:
-            result = Origin(From().entities, DbId.curr_entry_id(), DbEntityAttributes.assignments()).get(attrib_names=True)
+            result = QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.type()).get(attrib_names=True)
             return result
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
-    def set_active(self, is_active=True):
-        cursor = self.db[DbProjectBranch().get_type]
-        cursor.update_one({"_id": DbId.curr_entry_id()}, {"$set": {"active": is_active}})
+    @staticmethod
+    def get_assignment():
+        try:
+            result = QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.assignments()).get(attrib_names=True)
+            return result
+        except ValueError as val:
+            raise("{} Error! Nothing Done!".format(val))
+
+    @staticmethod
+    def set_active(is_active=True):
+        QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.is_active()).update(is_active)
         print("{0} active Status set to {1}!".format(DbId.curr_entry_id(), is_active))
 
-    def set_definition(self, definition):
-        cursor = self.db[DbProjectBranch().get_type]
-        cursor.update({"_id": DbId.curr_entry_id()}, {"$set": {"definition": definition}})
+    @staticmethod
+    def set_definition(data):
+        QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.definition).update(data)
         print("{} Definition Updated!".format(Envars.entry_name))
 
-    def remove(self, show_name, branch_category, entry_category, entry_name):
+    def remove(self):
         #TODO: refactor code to use fully the Envars
         try:
-            entry_path = "structure" + "." + branch_category + "." + entry_category + "." + entry_name
-            self.db.show.update({"show_name": show_name}, {"$unset": {entry_path: 1}})
+            QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.entry).remove()
+            entry_path = "structure" + "." + Envars().branch_name + "." + Envars().category + "." + Envars().entry_name
+            self.db.show.update({"show_name": Envars().show_name}, {"$unset": {entry_path: 1}})
 
             # remove entry from its collection
             cursor = self.db[DbProjectBranch().get_type]
             cursor.remove({"_id": DbId.curr_entry_id()})
-            print('entry {} deleted from {} collection and removed from {} show structure'.format(entry_name,
-                                                                                                  branch_category,
-                                                                                                  show_name))
+            print('entry {} deleted from {} collection and removed from {} show structure'.format(Envars().entry_name,
+                                                                                                  Envars().category,
+                                                                                                  Envars().branch_name))
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
@@ -142,7 +147,8 @@ class DbBundle(object):
         except ValueError as e:
             print("{} Error! Nothing Created!".format(e))
 
-    def add_to_bundle(self, entity_id, bundle_id, slot):
+    @staticmethod
+    def add_to_bundle(entity_id, bundle_id, slot):
         DbReferences.add_db_id_reference("bundles",
                                          bundle_id,
                                         "master_bundle.{}".format(slot),
@@ -163,7 +169,8 @@ class DbBundle(object):
     def update_master(self):
         pass
 
-    def set_as_current(self, bundle_id, add_to_stream="main_stream"):
+    @staticmethod
+    def set_as_current(bundle_id, add_to_stream="main_stream"):
         DbReferences.add_db_id_reference(DbProjectBranch().get_type,
                                          DbId.curr_entry_id(),
                                         "master_bundle.{}".format(add_to_stream),
@@ -195,11 +202,16 @@ class DbBundle(object):
 
 
 if __name__ == '__main__':
+    from database.entities.db_structures import DbAssetCategories
+    from database.db_types import TaskTypes
+
     Envars.show_name = "Test"
-    Envars.branch_name = "assets"
-    Envars.category = "characters"
+    Envars.branch_name = "sequences"
+    Envars.category = "RPV"
     Envars.entry_name = "red_hulk"
     Envars.task_name = "rigging"
 
-    xx = DbAsset().get_assignment()
+    definition ={"crap":"mofo"}
+
+    xx = DbAsset().remove()
     print (xx)
