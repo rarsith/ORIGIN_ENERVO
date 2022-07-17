@@ -1,6 +1,6 @@
 from bson import ObjectId
 from envars.envars import Envars
-from database.db_attributes import DbId
+from database.db_attributes import DbEntitiesId
 from common_utils.users import Users
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn
@@ -68,7 +68,7 @@ class DbPublish(object):
         version = DBVersionControl().db_main_pub_ver_increase()
         set_display_name = "_".join([Envars.entry_name, "main_publish"])
 
-        common_id = DbId.get_main_pub_id(version)
+        common_id = DbEntitiesId.get_main_pub_id(version)
         collection_name = "publishes"
 
         save_content = dict(
@@ -109,7 +109,7 @@ class DbPublish(object):
                              version,
                              pub_slot]
 
-        common_id = DbId.get_pub_slot_id(pub_slot, version)
+        common_id = DbEntitiesId.get_pub_slot_id(pub_slot, version)
         bundle = 'current_bundle'
 
         save_content = dict(
@@ -166,7 +166,7 @@ class DbPublish(object):
                                              from_collection=pub_slots_publish[1])
 
             DbReferences.add_db_id_reference(collection=DbProjectBranch().get_type,
-                                             parent_doc_id=DbId.curr_entry_id(),
+                                             parent_doc_id=DbEntitiesId.curr_entry_id(),
                                              destination_slot=get_sync_path,
                                              id_to_add=pub_slots_publish[0],
                                              from_collection=pub_slots_publish[1],
@@ -199,7 +199,7 @@ class DbPublish(object):
                                              from_collection=pub_slots_publish[1])
 
             DbReferences.add_db_id_reference(collection=DbProjectBranch().get_type,
-                                             parent_doc_id=DbId.curr_entry_id(),
+                                             parent_doc_id=DbEntitiesId.curr_entry_id(),
                                              destination_slot=get_sync_path,
                                              id_to_add=pub_slots_publish[0],
                                              from_collection=pub_slots_publish[1],
@@ -220,7 +220,7 @@ class DbPublish(object):
         version = DBVersionControl().db_wip_files_version_increase("work_files")
         set_display_name = "_".join([Envars.entry_name,Envars.task_name, "work_file", version])
 
-        common_id = DbId.get_wip_file_id(version)
+        common_id = DbEntitiesId.get_wip_file_id(version)
         collection_name = "work_files"
 
         save_content = dict(
@@ -247,6 +247,28 @@ class DbPublish(object):
 
         print("{0} Saved!".format(set_display_name))
         return published.inserted_id, collection_name
+
+    def publish_sync_state(self):
+        #TODO: cohesion check!!
+        existing_sync_tasks = self.capture_all()
+        version = DBVersionControl().db_sync_tasks_ver_increase()
+        entity_id = DbEntitiesId.get_sync_tasks_id(version)
+        entity_attributes = dict(
+            _id= entity_id,
+            show_name= Envars.show_name,
+            entry_name= Envars.entry_name,
+            category= Envars.category,
+            version=version,
+            sync_tasks= existing_sync_tasks,
+            date=DateTime().return_date,
+            time=DateTime().return_time,
+            owner= Users.get_current_user()
+        )
+        try:
+            self.db.sync_tasks.insert_one(entity_attributes)
+
+        except Exception as e:
+            print("{} Error! Nothing Created!".format(e))
 
 if __name__ == "__main__":
     Envars.show_name = "Test"

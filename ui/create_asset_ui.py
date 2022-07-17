@@ -4,7 +4,7 @@ from envars.envars import Envars
 from database.entities.db_entities import DbAsset
 from database.entities.db_structures import DbAssetCategories
 from database.utils.db_q_entity import QEntity, From
-from database.db_attributes import DbId, DbProjectAttributes
+from database.db_attributes import DbEntitiesId, DbProjectAttributes
 
 class CreateAssetUI(QtWidgets.QDialog):
 
@@ -70,8 +70,7 @@ class CreateAssetUI(QtWidgets.QDialog):
         self.asset_name_le.clear()
 
     def get_shows(self):
-        shows = QEntity(From().projects, DbId.all_in_collection(), DbProjectAttributes.name()).get(all_active=True)
-        print (shows)
+        shows = QEntity(From().projects, DbEntitiesId.all_in_collection(), DbProjectAttributes.name()).get(all_active=True)
         return shows
 
     def get_asset_categories(self):
@@ -80,11 +79,11 @@ class CreateAssetUI(QtWidgets.QDialog):
 
 
 if __name__ == "__main__":
-    Envars.show_name = "Cicles"
+    Envars.show_name = "Green"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "red_hulk"
-    Envars.task_name = "rigging"
+    Envars.entry_name = "green_hulk"
+    Envars.task_name = "modeling"
 
     app = QtWidgets.QApplication(sys.argv)
     try:

@@ -3,6 +3,7 @@ class DbStatuses(object):
     init: str = "INIT"
     in_progress: str = "IN PROGRESS"
     pending_rev: str = "PENDING-REVIEW"
+    tweak: str = "TWEAK"
     approved_internal: str = "APPROVED_INT"
     approved_client: str = "APPROVED_CLIENT"
     approved_temp: str = "APPROVED_TEMP"

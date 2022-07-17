@@ -4,7 +4,7 @@ from database.utils.db_utils import DbRef, DbReferences
 from database.utils.db_q_entity import From, QEntity
 from database.entities.db_structures import DbProjectBranch, DbAssetCategories
 from database.entities.db_constructors import DbConstructors
-from database.db_attributes import DbPath, DbId, DbProjectAttributes, DbEntityAttributes
+from database.db_attributes import DbEntitiesAttrPaths, DbEntitiesId, DbProjectAttributes, DbEntityAttributes
 
 
 class DbProject(object):
@@ -12,7 +12,7 @@ class DbProject(object):
         self.db = mdbconn.server[mdbconn.database_name]
 
     def create(self, name):
-        entity_id = DbId.create_id("root", name)
+        entity_id = DbEntitiesId.create_id("root", name)
         created_id, save_data = DbConstructors().project_construct(name=name, entity_id=entity_id)
 
         try:
@@ -25,16 +25,25 @@ class DbProject(object):
     @staticmethod
     def get_entities_names():
         entities_found = list()
-        origin_q = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.category_entries()).get(attrib_names=True)
+
+        origin_q = QEntity(From().projects,
+                           DbEntitiesId.curr_project_id(),
+                           DbProjectAttributes.category_entries()
+                           ).get(attrib_names=True)
+
         for entity in origin_q:
             name = DbRef().oderef(ref_string=entity, get_field="entry_name")
             entities_found.append(name)
+
         return entities_found
 
     @staticmethod
     def get_type():
         try:
-            show_type = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.type()).get(attrib_names=True)
+            show_type = QEntity(From().projects,
+                                DbEntitiesId.curr_project_id(),
+                                DbProjectAttributes.type()
+                                ).get(attrib_names=True)
             return show_type
         except ValueError as val:
             print ("{} Nothing Done!".format(val))
@@ -42,7 +51,10 @@ class DbProject(object):
     @staticmethod
     def is_active():
         try:
-            is_active = QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.is_active()).get(attrib_names=True)
+            is_active = QEntity(From().projects,
+                                DbEntitiesId.curr_project_id(),
+                                DbProjectAttributes.is_active()
+                                ).get(attrib_names=True)
             return is_active
         except ValueError as val:
             print ("{} Nothing Done!".format(val))
@@ -54,16 +66,18 @@ class DbAsset(object):
 
     def create(self, name):
         collection = self.db[From().entities]
-        created_id, save_data = DbConstructors().asset_construct(name=name, entity_id=DbId.create_entity_id(name))
+        created_id, save_data = DbConstructors().asset_construct(name=name,
+                                                                 entity_id=DbEntitiesId.create_entity_id(name))
 
         try:
             collection.insert_one(save_data)
-            insert_entry = DbPath.make_path("structure",
-                                            Envars().branch_name,
-                                            Envars().category)
+
+            insert_entry = DbEntitiesAttrPaths.make_path("structure",
+                                                         Envars().branch_name,
+                                                         Envars().category)
 
             DbReferences.add_db_id_reference("show",
-                                             DbId.curr_project_id(),
+                                             DbEntitiesId.curr_project_id(),
                                              insert_entry,
                                              created_id,
                                              DbProjectBranch().get_type)
@@ -76,7 +90,10 @@ class DbAsset(object):
     @staticmethod
     def get_definition():
         try:
-            result = QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.definition()).get(attrib_names=True)
+            result = QEntity(From().entities,
+                             DbEntitiesId.curr_entry_id(),
+                             DbEntityAttributes.definition()
+                             ).get(attrib_names=True)
             return result
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
@@ -84,7 +101,10 @@ class DbAsset(object):
     @staticmethod
     def get_entry_type():
         try:
-            result = QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.type()).get(attrib_names=True)
+            result = QEntity(From().entities,
+                             DbEntitiesId.curr_entry_id(),
+                             DbEntityAttributes.type()
+                             ).get(attrib_names=True)
             return result
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
@@ -92,34 +112,44 @@ class DbAsset(object):
     @staticmethod
     def get_assignment():
         try:
-            result = QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.assignments()).get(attrib_names=True)
+            result = QEntity(From().entities,
+                             DbEntitiesId.curr_entry_id(),
+                             DbEntityAttributes.assignments()
+                             ).get(attrib_names=True)
             return result
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
     @staticmethod
     def set_active(is_active=True):
-        QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.is_active()).update(is_active)
-        print("{0} active Status set to {1}!".format(DbId.curr_entry_id(), is_active))
+        QEntity(From().entities,
+                DbEntitiesId.curr_entry_id(),
+                DbEntityAttributes.is_active()
+                ).update(is_active)
+
+        print("{0} active Status set to {1}!".format(DbEntitiesId.curr_entry_id(), is_active))
 
     @staticmethod
     def set_definition(data):
-        QEntity(From().entities, DbId.curr_entry_id(), DbEntityAttributes.definition).update(data)
+        QEntity(From().entities,
+                DbEntitiesId.curr_entry_id(),
+                DbEntityAttributes.definition
+                ).update(data)
         print("{} Definition Updated!".format(Envars.entry_name))
 
     def remove(self):
         #TODO: refactor code to use fully the Envars
         try:
-            QEntity(From().projects, DbId.curr_project_id(), DbProjectAttributes.entry).remove()
-            entry_path = "structure" + "." + Envars().branch_name + "." + Envars().category + "." + Envars().entry_name
-            self.db.show.update({"show_name": Envars().show_name}, {"$unset": {entry_path: 1}})
+            QEntity(From().projects,
+                    DbEntitiesId.curr_project_id(),
+                    DbProjectAttributes.entry()
+                    ).remove()
 
-            # remove entry from its collection
-            cursor = self.db[DbProjectBranch().get_type]
-            cursor.remove({"_id": DbId.curr_entry_id()})
-            print('entry {} deleted from {} collection and removed from {} show structure'.format(Envars().entry_name,
-                                                                                                  Envars().category,
-                                                                                                  Envars().branch_name))
+            QEntity(From().entities,
+                    DbEntitiesId.curr_entry_id(),
+                    DbEntityAttributes.type()
+                    ).remove()
+
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
@@ -136,9 +166,10 @@ class DbBundle(object):
 
     def create_stream(self, name):
         try:
-            asset_id = DbId.curr_entry_id()
+            asset_id = DbEntitiesId.curr_entry_id()
             cursor = self.db[DbProjectBranch().get_type]
-            db_path = DbPath.make_path(DbPath.to_master_bundle(), (name + "_" + "stream"))
+            db_path = DbEntitiesAttrPaths.make_path(DbEntitiesAttrPaths.to_master_bundle(),
+                                                    (name + "_" + "stream"))
 
             cursor.update_one({"_id": asset_id}, {"$set": {db_path:[]}})
             print("{} Bundle Stream  created!".format(name))
@@ -151,7 +182,7 @@ class DbBundle(object):
     def add_to_bundle(entity_id, bundle_id, slot):
         DbReferences.add_db_id_reference("bundles",
                                          bundle_id,
-                                        "master_bundle.{}".format(slot),
+                                         "master_bundle.{}".format(slot),
                                          entity_id,
                                          DbProjectBranch().get_type,
                                          replace=True)
@@ -171,11 +202,12 @@ class DbBundle(object):
 
     @staticmethod
     def set_as_current(bundle_id, add_to_stream="main_stream"):
+
         DbReferences.add_db_id_reference(DbProjectBranch().get_type,
-                                         DbId.curr_entry_id(),
-                                        "master_bundle.{}".format(add_to_stream),
+                                         DbEntitiesId.curr_entry_id(),
+                                         "master_bundle.{}".format(add_to_stream),
                                          bundle_id,
-                                        "bundles",
+                                         "bundles",
                                          replace=True)
         return bundle_id
 
@@ -192,11 +224,11 @@ class DbBundle(object):
     def mv_to_stream(self, from_stream, to_stream):
         #TODO: finish the method
         try:
-            task_path = DbPath.to_pub_slots()
+            task_path = DbEntitiesAttrPaths.to_pub_slots()
             print(task_path)
             cursor = self.db[DbProjectBranch().get_type]
-            cursor.update_one({"_id": DbId.curr_entry_id()}, {"$unset": {task_path: 1}})
-            cursor.update_one({"_id": DbId.curr_entry_id()}, {"$set": {task_path: {}}})
+            cursor.update_one({"_id": DbEntitiesId.curr_entry_id()}, {"$unset": {task_path: 1}})
+            cursor.update_one({"_id": DbEntitiesId.curr_entry_id()}, {"$set": {task_path: {}}})
         except:
             pass
 
@@ -205,13 +237,14 @@ if __name__ == '__main__':
     from database.entities.db_structures import DbAssetCategories
     from database.db_types import TaskTypes
 
-    Envars.show_name = "Test"
-    Envars.branch_name = "sequences"
-    Envars.category = "RPV"
-    Envars.entry_name = "red_hulk"
+    Envars.show_name = "Cicles"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "circle"
     Envars.task_name = "rigging"
 
     definition ={"crap":"mofo"}
+
 
     xx = DbAsset().remove()
     print (xx)

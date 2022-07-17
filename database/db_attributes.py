@@ -1,7 +1,7 @@
 from envars.envars import Envars
 
 
-class DbId(object):
+class DbEntitiesId(object):
     """
     Takes a list and joins the elements into a string
     Ex: list = ["element1", "element2"] >>>> result > "element1.element2"
@@ -22,7 +22,8 @@ class DbId(object):
 
     @classmethod
     def create_entity_id(cls, name):
-        return cls.create_id(DbPath.to_category, name)
+        entry_id = cls.create_id(DbEntitiesAttrPaths.to_category(), name)
+        return entry_id
 
     @classmethod
     def create_main_pub_id(cls, version):
@@ -136,7 +137,7 @@ class DbId(object):
                              version)
 
 
-class DbPath(object):
+class DbEntitiesAttrPaths(object):
 
     @classmethod
     def make_path(cls, *data, **kwargs):
@@ -260,6 +261,20 @@ class DbPath(object):
                              )
 
     @classmethod
+    def to_sync_task_slot(cls, relative=True):
+        if relative:
+            return cls.make_path("sync_tasks", Envars.task_name)
+
+        return cls.make_path(Envars.show_name,
+                             Envars.show_name,
+                             Envars.branch_name,
+                             Envars.category,
+                             Envars.entry_name,
+                             "sync_tasks",
+                             Envars.task_name,
+                             )
+
+    @classmethod
     def to_pub_slots(cls, relative=True):
         if relative:
             return cls.make_path("tasks", Envars.task_name, 'pub_slots')
@@ -271,20 +286,6 @@ class DbPath(object):
                                "tasks",
                              Envars.task_name,
                                "pub_slots"
-                             )
-
-    @classmethod
-    def to_sync_task_slot(cls, relative=True):
-        if relative:
-            return cls.make_path("sync_tasks", Envars.task_name)
-
-        return cls.make_path(Envars.show_name,
-                             Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                               "sync_tasks",
-                             Envars.task_name,
                              )
 
     @classmethod
@@ -344,50 +345,67 @@ class DbProjectAttributes(object):
 
     @classmethod
     def custom(cls, attr):
-        """Access path to get the Type of an Entity"""
+        """returns the @attr parameter as inputted"""
         return attr
 
     @classmethod
     def structure(cls):
-        """Access path for branches of the project"""
+        """Access path the full structure of the current project """
         return "structure"
 
     @classmethod
     def name(cls):
-        """Access path for branches of the project"""
-        return "show_name"
+        """Access path project name property"""
+        return "entity_name"
 
     @classmethod
     def branches(cls):
-        """Access path for branches of the project"""
+        """Access path to all branches of the current project"""
         return "structure"
 
     @classmethod
     def categories(cls):
-        """Access path for categories of the branch"""
-        access_path = DbPath.make_path("structure", Envars.branch_name)
+        """Access path to all categories of the current branch"""
+        access_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name)
         return access_path
+
+    @classmethod
+    def curr_branch(cls):
+        """Access path to current branch of the current project"""
+        curr_branch_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name)
+        return curr_branch_path
+
+    @classmethod
+    def curr_category(cls):
+        """Access path to current category of the current project"""
+        curr_category_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name, Envars.category)
+        return curr_category_path
 
     @classmethod
     def category_entries(cls):
         """Access path for categories of the branch"""
-        access_path = DbPath.make_path("structure", Envars.branch_name, Envars.category)
+        access_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name, Envars.category)
         return access_path
 
     @classmethod
+    def show_defaults(cls):
+        """Access path for show_defaults attribute of the current project"""
+        return "show_defaults"
+
+    @classmethod
     def entry(cls):
-        """Access path for categories of the branch"""
-        access_path = DbPath.make_path("structure", Envars.branch_name, Envars.category, Envars.entry_name)
+        """Access path for entries referenced inside the category"""
+        access_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name, Envars.category)
         return access_path
 
     @classmethod
     def is_active(cls):
-        """Access path to get if an Entity is active"""
+        """Access path to is_active property of current project"""
         return "active"
 
     @classmethod
     def type(cls):
-        """Access path to get the Type of an Entity"""
+        """Access path to get project Type"""
         return "type"
 
 
@@ -472,6 +490,28 @@ class DbTaskAttributes(object):
         return cls.make_path("tasks", Envars.task_name, "pub_slots")
 
 
+class DbSyncTaskAttributes(object):
+
+    @classmethod
+    def custom(cls, attr):
+        """Access path to get the Type of an Entity"""
+        return attr
+
+    @classmethod
+    def make_path(cls, *data, **kwargs):
+        if data:
+            id_elements = list()
+            for elem in data:
+                id_elements.append(elem)
+            dotted_path = str(".".join(id_elements))
+            return dotted_path
+        return kwargs
+
+    @classmethod
+    def sync_pub_slots(cls):
+        return cls.make_path("sync_tasks", Envars.task_name)
+
+
 class DbMainPubAttributes(object):
 
     @classmethod
@@ -495,6 +535,42 @@ class DbMainPubAttributes(object):
 
 
 class DbPubSlotsAttributes(object):
+    def __init__(self, publish_slot):
+        self.pub_slot_name = publish_slot
+
+    # def _pub_slot(self):
+    #     return self.pub_slot_name
+
+    def custom(self, attr):
+        """Access path to get the Type of an Entity"""
+        return attr
+
+    def make_path(self, *data, **kwargs):
+        if data:
+            id_elements = list()
+            for elem in data:
+                id_elements.append(elem)
+            dotted_path = str(".".join(id_elements))
+            return dotted_path
+        return kwargs
+
+    def is_active(self):
+        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "active")
+
+    def is_reviewable(self):
+        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "reviewable")
+
+    def used_by(self):
+        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "used_by")
+
+    def method(self):
+        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "method")
+
+    def type(self):
+        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "type")
+
+
+class DbBundleAttributes(object):
     def __init__(self, pub_slot):
         self.pub_slot_name = pub_slot
 
@@ -537,19 +613,16 @@ class DbPubSlotsAttributes(object):
         return cls.make_path(cls._pub_slot, Envars.task_name, "type")
 
 
+
 if __name__ == '__main__':
-    Envars.show_name="Test"
+    Envars.show_name="Cicles"
     Envars.branch_name="assets"
     Envars.category="characters"
-    Envars.entry_name="hulk"
-    Envars.task_name="modeling"
-
-    import pprint
-    from database.utils.db_find_key import db_find
-    from database.db_types import EntityTypes
+    Envars.entry_name="circle"
+    Envars.task_name="rigging"
 
     # pp_path = pp.db_task_pub(relative=False, dict_packed=True)
     # print (pp_path)
-    asset_id = DbPath.to_category()
+    asset_id = DbPubSlotsAttributes(publish_slot="cmuscle_rig").type()
 
     print (asset_id)
