@@ -31,32 +31,32 @@ bundle = DbBundle()
 
 # SWITHCHES
 test_project = False
-test_assets = False
+test_assets = True
 test_tasks = False
 test_sync_tasks = False
 test_pub_slot = False
-test_publish = True
+test_publish = False
 test_bundle = False
 
 
 # PROJECT METHODS
 if test_project:
-    project.create("Green")
+    # project.create("Best")
     # DbProjectBranch().add_branch(name="references", branch_type=Branch.reference())
     # DbAssetCategories().add_category(name="grass`", tasks_type=Tasks.props())
     project_type = project.get_type()
     branch_type = DbProjectBranch().get_type
-    project_struct = DbProjectBranch().get_structure()
-    # print(project_type)
-    # print (branch_type, "<<")
-    # print (project_struct)
+    project_struct = project.get_structure()
+    print(project_type)
+    print(branch_type, "<<")
+    print(project_struct)
 
     proj_branches=DbProjectBranch().get_branches()
     branch_categories = DbAssetCategories().get_categories()
     # assets_names = project.get_entities_names()
     # print (proj_branches)
     # print (branch_categories)
-    print(assets_names)
+    # print(assets_names)
 
 # ASSET METHODS
 if test_assets:

@@ -1,10 +1,10 @@
 import sys
 from PySide2 import QtWidgets
 from envars.envars import Envars
-from database.entities.db_entities import DbAsset
+from database.entities.db_entities import DbAsset, DbProject
 from database.entities.db_structures import DbAssetCategories
 from database.utils.db_q_entity import QEntity, From
-from database.db_attributes import DbEntitiesId, DbProjectAttributes
+from database.entities.db_attributes import DbEntitiesId, DbProjectAttributes
 
 class CreateAssetUI(QtWidgets.QDialog):
 
@@ -53,14 +53,6 @@ class CreateAssetUI(QtWidgets.QDialog):
         text = self.show_name_cb.currentText()
         return text
 
-    def comboBox_seq(self):
-        seq_text = self.category_cb.currentText()
-        return seq_text
-
-    def refresh_combo(self):
-        self.category_cb.clear()
-        self.category_cb.addItems(self.get_asset_categories())
-
     def db_commit_close(self):
         self.db_commit()
         self.close()
@@ -69,21 +61,17 @@ class CreateAssetUI(QtWidgets.QDialog):
         DbAsset().create(name=self.asset_name_le.text())
         self.asset_name_le.clear()
 
-    def get_shows(self):
-        shows = QEntity(From().projects, DbEntitiesId.all_in_collection(), DbProjectAttributes.name()).get(all_active=True)
-        return shows
-
     def get_asset_categories(self):
         assets_cat = DbAssetCategories().get_categories()
         return assets_cat
 
 
 if __name__ == "__main__":
-    Envars.show_name = "Green"
+    Envars.show_name = "Cicles"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "green_hulk"
-    Envars.task_name = "modeling"
+    Envars.entry_name = "circle"
+    Envars.task_name = "rigging"
 
     app = QtWidgets.QApplication(sys.argv)
     try:

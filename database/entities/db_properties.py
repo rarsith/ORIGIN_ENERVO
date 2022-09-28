@@ -1,11 +1,11 @@
 from envars.envars import Envars
 from database import db_templates
 from database.db_defaults import DbDefaults
-from database.db_attributes import (DbEntitiesId,
-                                    DbTaskAttributes,
-                                    DbEntityAttributes,
-                                    DbSyncTaskAttributes,
-                                    DbPubSlotsAttributes)
+from database.entities.db_attributes import (DbEntitiesId,
+                                             DbTaskAttributes,
+                                             DbEntityAttributes,
+                                             DbSyncTaskAttributes,
+                                             DbPubSlotsAttributes)
 from database.utils.db_q_entity import From, QEntity
 
 
@@ -327,7 +327,6 @@ class DbPubSlot(object):
 
 
 if __name__ == "__main__":
-    from database.db_statuses import DbStatuses
     import pprint
 
     Envars.show_name = "Cicles"

@@ -1,10 +1,9 @@
 from envars.envars import Envars
 from database import db_connection as mdbconn
-from database.utils.db_utils import DbRef, DbReferences
-from database.utils.db_q_entity import From, QEntity
-from database.entities.db_structures import DbProjectBranch, DbAssetCategories
+from database.utils.db_q_entity import From, QEntity, DbRef, DbReferences
+from database.entities.db_structures import DbProjectBranch
 from database.entities.db_constructors import DbConstructors
-from database.db_attributes import DbEntitiesAttrPaths, DbEntitiesId, DbProjectAttributes, DbEntityAttributes
+from database.entities.db_attributes import DbEntitiesAttrPaths, DbEntitiesId, DbProjectAttributes, DbEntityAttributes
 
 
 class DbProject(object):
@@ -22,6 +21,29 @@ class DbProject(object):
         except ValueError as e:
             print("{} Error! Nothing created!".format(e))
 
+    def get_all(self, is_active=True):
+        """Returns all assets names in the current category"""
+        try:
+            result = QEntity(From().projects,
+                             DbEntitiesId.all_in_collection(),
+                             DbProjectAttributes.name()
+                             ).get(all=True)
+            return result
+        except ValueError as val:
+            raise ("{} Error! Nothing Done!".format(val))
+
+    @staticmethod
+    def get_structure():
+        try:
+            structure = QEntity(From().projects,
+                                DbEntitiesId.curr_project_id(),
+                                DbProjectAttributes.structure()
+                                ).get(attrib_values=True)
+            return structure
+
+        except ValueError as val:
+            raise ("{} Error! Nothing Done!".format(val))
+
     @staticmethod
     def get_entities_names():
         entities_found = list()
@@ -32,7 +54,7 @@ class DbProject(object):
                            ).get(attrib_names=True)
 
         for entity in origin_q:
-            name = DbRef().oderef(ref_string=entity, get_field="entry_name")
+            name = DbRef().db_deref(ref_string=entity, get_field="entry_name")
             entities_found.append(name)
 
         return entities_found
@@ -86,6 +108,17 @@ class DbAsset(object):
 
         except Exception as e:
             print("{} Error! Nothing Created!".format(e))
+
+    def get_all(self, is_active=True):
+        """Returns all assets names in the current category"""
+        try:
+            result = QEntity(From().projects,
+                             DbEntitiesId.curr_project_id(),
+                             DbProjectAttributes.category_entries()
+                             ).get(attrib_names=True, all_active=is_active)
+            return result
+        except ValueError as val:
+            raise ("{} Error! Nothing Done!".format(val))
 
     @staticmethod
     def get_definition():
@@ -234,10 +267,7 @@ class DbBundle(object):
 
 
 if __name__ == '__main__':
-    from database.entities.db_structures import DbAssetCategories
-    from database.db_types import TaskTypes
-
-    Envars.show_name = "Cicles"
+    Envars.show_name = "Green"
     Envars.branch_name = "assets"
     Envars.category = "characters"
     Envars.entry_name = "circle"
@@ -246,5 +276,5 @@ if __name__ == '__main__':
     definition ={"crap":"mofo"}
 
 
-    xx = DbAsset().remove()
+    xx = DbProject().get_all()
     print (xx)

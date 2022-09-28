@@ -1,8 +1,9 @@
 import sys
 from PySide2 import QtWidgets
+from envars.envars import Envars
+from database.entities.db_structures import DbAssetCategories
+from database.db_types import TaskTypes
 
-from origin_data_base import xcg_db_actions as xac
-from origin_config import xcg_validation as xval
 
 class CreateSeqUI(QtWidgets.QDialog):
 
@@ -10,19 +11,19 @@ class CreateSeqUI(QtWidgets.QDialog):
         super(CreateSeqUI, self).__init__(parent)
 
         self.setWindowTitle("Create Seq")
-        self.setMinimumSize(550, 650)
-        self.setMaximumSize(550, 650)
-
-        self.setMinimumHeight(900)
-        self.setMaximumHeight(900)
+        # self.setMinimumSize(550, 650)
+        # self.setMaximumSize(550, 650)
+        #
+        # self.setMinimumHeight(900)
+        # self.setMaximumHeight(900)
 
         self.create_widgets()
         self.create_layout()
         self.create_connections()
 
     def create_widgets(self):
-        self.show_name_cb = QtWidgets.QComboBox()
-        self.show_name_cb.addItems(self.get_shows())
+        self.show_name_lb = QtWidgets.QLabel()
+        self.show_name_lb.setText(Envars().show_name)
         self.seq_name_le = QtWidgets.QLineEdit()
         self.create_btn = QtWidgets.QPushButton("Create")
         self.create_and_close_btn = QtWidgets.QPushButton("Create and Close")
@@ -30,7 +31,7 @@ class CreateSeqUI(QtWidgets.QDialog):
 
     def create_layout(self):
         form_layout = QtWidgets.QFormLayout()
-        form_layout.addRow("Show_name: ", self.show_name_cb)
+        form_layout.addRow("Show_name: ", self.show_name_lb)
         form_layout.addRow("Seq Name:", self.seq_name_le)
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addStretch()
@@ -43,7 +44,7 @@ class CreateSeqUI(QtWidgets.QDialog):
 
 
     def create_connections(self):
-        self.show_name_cb.activated.connect(self.comboBox_shows)
+
         self.create_btn.clicked.connect(self.db_commit)
         self.create_and_close_btn.clicked.connect(self.db_commit_close)
         self.cancel_btn.clicked.connect(self.close)
@@ -57,16 +58,23 @@ class CreateSeqUI(QtWidgets.QDialog):
         self.close()
 
     def db_commit(self):
-        xac.create_sequence(self.show_name_cb.currentText(), self.seq_name_le.text())
+        DbAssetCategories.add_category(name=self.seq_name_le.text(), tasks_type=TaskTypes.shots())
         self.seq_name_le.clear()
 
-    def get_shows(self):
-        shows = xac.get_all_active_shows()
-        return shows
+
 
 
 
 if __name__ == "__main__":
+    # from envars.envars import Envars
+
+    Envars.show_name = "Cicles"
+    Envars.branch_name = "sequences"
+    Envars.category = "DDR"
+    Envars.entry_name = "circle"
+    Envars.task_name = "rigging"
+
+
     app = QtWidgets.QApplication(sys.argv)
     try:
         create_shot.close()

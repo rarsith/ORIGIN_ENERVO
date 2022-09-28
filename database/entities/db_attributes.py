@@ -356,7 +356,7 @@ class DbProjectAttributes(object):
     @classmethod
     def name(cls):
         """Access path project name property"""
-        return "entity_name"
+        return "show_name"
 
     @classmethod
     def branches(cls):
@@ -406,7 +406,7 @@ class DbProjectAttributes(object):
     @classmethod
     def type(cls):
         """Access path to get project Type"""
-        return "type"
+        return "show_type"
 
 
 class DbEntityAttributes(object):

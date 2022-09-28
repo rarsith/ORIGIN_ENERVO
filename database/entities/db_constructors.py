@@ -1,5 +1,5 @@
 from envars.envars import Envars
-from database.db_attributes import DbEntitiesId
+from database.entities.db_attributes import DbEntitiesId
 from database.entities.db_structures import DbProjectBranch
 from database import db_templates
 from common_utils.users import Users

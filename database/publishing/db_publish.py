@@ -1,11 +1,11 @@
 from bson import ObjectId
 from envars.envars import Envars
-from database.db_attributes import DbEntitiesId
+from database.entities.db_attributes import DbEntitiesId
 from common_utils.users import Users
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn
 from common_utils.output_paths import OutputPaths
-from database.utils.db_utils import DbReferences
+from database.utils.db_q_entity import DbReferences
 from database.utils.db_version_control import DBVersionControl
 from database.entities.db_properties import DbSyncTasks, DbPubSlot
 from database.entities.db_structures import DbProjectBranch

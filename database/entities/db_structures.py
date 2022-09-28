@@ -1,7 +1,7 @@
 from database import db_templates
 from database.db_types import BranchTypes, TaskTypes
 from database.utils.db_q_entity import From, QEntity
-from database.db_attributes import DbEntitiesId, DbProjectAttributes
+from database.entities.db_attributes import DbEntitiesId, DbProjectAttributes
 
 
 class DbProjectBranch(object):
@@ -26,21 +26,9 @@ class DbProjectBranch(object):
                            ).get(attrib_names=True)
         return branches
 
-    @staticmethod
-    def get_structure():
-        try:
-            structure = QEntity(From().projects,
-                                DbEntitiesId.curr_project_id(),
-                                DbProjectAttributes.structure()
-                                ).get(attrib_values=True)
-            return structure
-
-        except ValueError as val:
-            raise("{} Error! Nothing Done!".format(val))
-
     @property
     def get_type(self):
-        branch_type = From().entities
+        branch_type = From().branch_type()
         return branch_type
 
 

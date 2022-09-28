@@ -1,4 +1,4 @@
-from database.db_attributes import DbEntitiesId, DbEntitiesAttrPaths
+from database.entities.db_attributes import DbEntitiesId, DbEntitiesAttrPaths
 from envars.envars import Envars
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn

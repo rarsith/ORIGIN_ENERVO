@@ -1,13 +1,13 @@
 from PySide2 import QtWidgets, QtCore, QtGui
-from origin_database_custom_widgets.xcg_project_tree_viewer_UI import ProjectTreeViewerUI
-from origin_data_base import xcg_db_helpers as xhlp
-from origin_data_base import xcg_db_actions as xac
-from origin_ui import create_show_ui
-from origin_ui import create_seq_ui
-from origin_ui import create_asset_ui
-from origin_ui import create_shot_ui
-from origin_ui import create_asset_category_ui
-from origin_ui import create_show_category_ui
+from ui.custom_widgets.project_tree_viewer_UI import ProjectTreeViewerUI
+from database.entities.db_entities import DbAsset, DbProject
+from common_utils import get_deep_value as gdeepval
+# from origin_ui import create_show_ui
+# from origin_ui import create_seq_ui
+from ui import create_asset_ui
+from ui import create_shot_ui
+# from origin_ui import create_asset_category_ui
+# from origin_ui import create_show_category_ui
 
 
 
@@ -43,13 +43,13 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.remove_entry_action.triggered.connect(self.remove_entry_menu)
 
     def get_shows(self):
-        get_versions = xac.get_all_active_shows()
+        get_versions = DbProject().get_all()
         return sorted(get_versions)
 
     def refresh_shows(self):
         store = []
         current_selected_show = self.comboBox_shows()
-        get_versions = xac.get_all_active_shows()
+        get_versions = DbProject().get_all()
         for show in get_versions:
             store.append(show)
 
@@ -72,7 +72,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         try:
             self.project_tree_viewer_wdg.clear()
             get_entity = self.get_show_structure()
-            get_categories = xhlp.get_entity_root_structure(get_entity)
+            get_categories = gdeepval.get_entity_root_structure(get_entity)
             for category in sorted(get_categories):
                 item = self.show_tree_create_item(category)
                 self.project_tree_viewer_wdg.addTopLevelItem(item)
@@ -106,10 +106,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
     def get_selected_type(self):
         entry_selected = self.project_tree_viewer_wdg.hasFocus()
         if entry_selected:
-            get_selected_objects_type = xac.get_entry_type(self.show_select_cb.currentText(),
-                                                           self.get_sel_show_branch(),
-                                                           self.get_sel_category(),
-                                                           self.get_selected_entry_name())
+            get_selected_objects_type = DbAsset().get_entry_type()
             return get_selected_objects_type
 
     def get_sel_show_branch_category(self):
@@ -223,22 +220,24 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
     def get_show_structure(self):
         try:
-            entity = xac.get_show_base_structure(self.show_select_cb.currentText())
+            entity = DbProject().get_structure()
             return entity
         except:
             pass
 
-    def show_tree_create_item(self, name):
-        item = QtWidgets.QTreeWidgetItem([name])
-        self.add_children(item)
-        return item
-
     def add_children(self, item):
-        get_children = xhlp.deep_values(item.text(0), self.get_show_structure())
+        get_children = gdeepval.deep_values(item.text(0), self.get_show_structure())
         for children in get_children:
             for child in sorted(children):
-                child_item = self.show_tree_create_item(child)
-                item.addChild(child_item)
+                if child != "type":
+                    child_item = self.show_tree_create_item(child)
+                    item.addChild(child_item)
+
+    def show_tree_create_item(self, name):
+        item = QtWidgets.QTreeWidgetItem([name])
+        if item.text(0) != "type":
+            self.add_children(item)
+        return item
 
     def context_menu(self):
         self.project_tree_viewer_wdg.customContextMenuRequested.connect(self.show_tree_con_menu)
@@ -297,21 +296,19 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
     def remove_entry_menu(self):
         custom_dialog = QtWidgets.QMessageBox()
-        custom_dialog.setText("Operation is undoable!")
+        custom_dialog.setText("Operation is not undoable!")
         custom_dialog.setInformativeText("Do you want to continue?")
         custom_dialog.setStandardButtons(custom_dialog.Yes | custom_dialog.Cancel)
         custom_dialog.setDefaultButton(custom_dialog.Save)
         btn_pressed = custom_dialog.exec_()
 
         if btn_pressed == custom_dialog.Yes:
-            print ("This shit works")
             xac.remove_entry(self.show_select_cb.currentText(),
                              self.get_sel_show_branch(),
                              self.get_sel_category(),
                              self.get_selected_entry_name())
             self.refresh_tree_widget()
         else:
-            print ("Just closed the damn window")
             custom_dialog.close()
 
     def create_show_menu(self):
@@ -357,22 +354,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
     def create_asset_menu(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = create_asset_ui.CreateAssetUI()
-
-        shows_index = self.ui.show_name_cb.findText(self.show_select_cb.currentText(), QtCore.Qt.MatchFixedString)
-        if shows_index >= 0:
-            self.ui.show_name_cb.setCurrentIndex(shows_index)
-
-        self.ui.category_cb.addItems(self.ui.get_asset_categories())
-        assets_cat_index = self.ui.category_cb.findText(self.get_selected_entry_name(), QtCore.Qt.MatchFixedString)
-        if assets_cat_index >= 0:
-            self.ui.category_cb.setCurrentIndex(assets_cat_index)
-
-        self.ui.create_btn.clicked.connect(self.refresh_tree_widget)
-        self.ui.create_and_close_btn.clicked.connect(self.refresh_tree_widget)
-
-        self.ui.show_name_cb.setDisabled(True)
-        self.ui.category_cb.setDisabled(True)
-
         self.ui.show()
 
     def create_asset_category_menu(self):
@@ -387,10 +368,23 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
 if __name__ == '__main__':
     import sys
+    from envars.envars import Envars
     app = QtWidgets.QApplication(sys.argv)
     font = app.instance().setFont(QtGui.QFont())
 
-    test_dialog = ProjectTreeViewerCore('Test')
+
+
+    Envars.show_name = "Cicles"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "circle"
+    Envars.task_name = "rigging"
+
+    get_versions = DbProject().get_all()
+    # print(get_versions)
+
+
+    test_dialog = ProjectTreeViewerCore("Cicles")
     # test_dialog.current_show()
     # test_dialog.comboBox_shows()
     # test_dialog.set_show_to()

@@ -1,17 +1,28 @@
 from envars.envars import Envars
 from database import db_connection as mdbconn
-from database.db_attributes import (DbEntitiesId,
-                                    DbProjectAttributes,
-                                    DbEntityAttributes,
-                                    DbTaskAttributes,
-                                    DbPubSlotsAttributes,
-                                    DbMainPubAttributes, DbBundleAttributes)
+from database.entities.db_attributes import (DbEntitiesId,
+                                             DbProjectAttributes,
+                                             DbEntityAttributes,
+                                             DbTaskAttributes,
+                                             DbPubSlotsAttributes,
+                                             DbMainPubAttributes, DbBundleAttributes)
 
 
 class From(object):
 
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
+
+    def branch_type(self):
+        branch_name = Envars.branch_name
+        try:
+            cursor = self.db.show.find({"_id": DbEntitiesId.curr_project_id()},
+                                       {'_id': 0, DbProjectAttributes.structure(): 1})
+            for each in list(cursor):
+                return each['structure'][branch_name]["type"]
+
+        except ValueError as val:
+            raise("{} Error! Nothing Done!".format(val))
 
     @property
     def projects(self):
@@ -27,15 +38,7 @@ class From(object):
 
     @property
     def entities(self):
-        branch_name = Envars.branch_name
-        try:
-            cursor = self.db.show.find({"_id": DbEntitiesId.curr_project_id()},
-                                       {'_id': 0, DbProjectAttributes.structure(): 1})
-            for each in list(cursor):
-                return each['structure'][branch_name]["type"]
-
-        except ValueError as val:
-            raise("{} Error! Nothing Done!".format(val))
+        return self.branch_type()
 
     @property
     def publishes(self):
@@ -157,7 +160,6 @@ class QEntity(object):
         #TODO: to clean and delete
         self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: 1}})
         self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: {}}})
-        # self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute}})
 
     def remove_value(self, data):
         #TODO: to clean and delete
@@ -178,11 +180,45 @@ class QEntity(object):
         self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: []}})
 
 
+class DbRef(object):
+    def __init__(self, collection="", entity_id=""):
+        self.collection = collection
+        self.entity_id = entity_id
+        self.db = mdbconn.server[mdbconn.database_name]
+
+    @property
+    def db_ref(self):
+        gen_id = ",".join([self.collection, self.entity_id])
+        return str(gen_id)
+
+    def db_deref(self, ref_string, get_field=None):
+        extr_collection, extr_entity_id = ref_string.split(",")
+        if not get_field:
+            return extr_collection, extr_entity_id
+        elif get_field:
+            cursor = self.db[extr_collection]
+            db_field = cursor.find_one({"_id":extr_entity_id})
+            return db_field[get_field]
+
+
+class DbReferences(object):
+    @classmethod
+    def add_db_id_reference(cls, collection, parent_doc_id, destination_slot, id_to_add, from_collection, replace=False):
+        db = mdbconn.server[mdbconn.database_name]
+        if not replace:
+            db[collection].update_one({"_id": parent_doc_id},
+                                      {"$push": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
+        else:
+            db[collection].update_one({"_id": parent_doc_id},
+                                      {"$set": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
+
+
+
 #TODO: refactor Origin to From --> create a decoarator to return data from the database
 if __name__ == '__main__':
-    import pprint
-    from database.db_attributes import DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
-    from database.db_attributes import DbMainPubAttributes
+
+    from database.entities.db_attributes import DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
+    from database.entities.db_attributes import DbMainPubAttributes
 
     Envars.show_name = "Green"
     Envars.branch_name = "assets"
@@ -190,13 +226,7 @@ if __name__ == '__main__':
     Envars.entry_name = "green_hulk"
     Envars.task_name = "modeling"
 
-    # source = From().projects
-    # print (str(source))
-    # entity = DbEntitiesId.curr_project_id()
-    # print (entity)
-    # attr = DbProjectAttributes.structure()
-    # print (attr)
-
-    # origin = Origin(From().projects, DbId.all(), DbProjectAttributes.name()).get(all_active=True)
     origin = QEntity(From().projects, DbEntitiesId().curr_project_id(), DbProjectAttributes.curr_branch()).get(all_active=True)
     # print ("FROM <<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
+
+
