@@ -1,9 +1,9 @@
 from database.entities.db_entities import DbProject
 from database.entities.db_entities import DbAsset
 from database.entities.db_entities import DbBundle
-from database.entities.db_properties import DbPubSlot
+from database.entities.db_properties import DbPubSlotProperties
 from database.entities.db_structures import DbProjectBranch, DbAssetCategories
-from database.entities.db_properties import DbTasks, DbSyncTasks
+from database.entities.db_properties import DbTasksProperties, DbSyncTasksProperties
 from database.publishing.db_publish import DbPublish
 from envars.envars import Envars
 
@@ -21,9 +21,9 @@ Envars.task_name = "surfacing"
 # OBJECTS
 project = DbProject()
 assets = DbAsset()
-tasks = DbTasks()
-sync_tasks = DbSyncTasks()
-pub_slot = DbPubSlot()
+tasks = DbTasksProperties()
+sync_tasks = DbSyncTasksProperties()
+pub_slot = DbPubSlotProperties()
 publish = DbPublish()
 bundle = DbBundle()
 
@@ -31,11 +31,11 @@ bundle = DbBundle()
 
 # SWITHCHES
 test_project = False
-test_assets = True
+test_assets = False
 test_tasks = False
 test_sync_tasks = False
 test_pub_slot = False
-test_publish = False
+test_publish = True
 test_bundle = False
 
 
@@ -73,27 +73,25 @@ if test_assets:
 
 # TASKS METHODS
 if test_tasks:
-    # tasks.create("painting")
+    # tasks.create("pxxxx")
     tasks_asset = tasks.get_tasks()
     full_tasks_asset = tasks.get_tasks_full()
-    tasks_imp_from = tasks.get_imports_from()
-    task_status=tasks.get_status()
-    task_active=tasks.get_is_active()
-    tasks.set_is_active(is_active=True)
-    print (task_active)
-    print (task_status)
-    print (tasks_imp_from)
+    tasks_imp_from = tasks.imports_from
+    task_status = tasks.status
+    task_active = tasks.is_active
+    tasks.is_active = False
+    print(task_active)
+    print(task_status)
+    print(tasks_imp_from)
     print(tasks_asset)
     print(full_tasks_asset)
 
 if test_publish:
-
     publish.db_publish()
-    # publish.db_work_file_save(file_name="cache.abc")
-    pass
+    publish.db_work_file_save(file_name="cache.abc")
+
 
 # BUNDLES METHODS
-
 if test_bundle:
     # bundle.create_stream("BUBU")
     bundle.create()

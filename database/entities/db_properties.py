@@ -9,16 +9,16 @@ from database.entities.db_attributes import (DbEntitiesId,
 from database.utils.db_q_entity import From, QEntity
 
 
-class DbTasks(object):
+class DbTasksProperties(object):
     def create(self, name):
-        QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbEntityAttributes.tasks()
+        QEntity(db_collection=From().entities,
+                entry_id=DbEntitiesId.curr_entry_id(),
+                attribute=DbEntityAttributes.tasks()
                 ).add_property(name=name, add_data=db_templates.task_defaults())
 
-        QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbEntityAttributes.sync_tasks()
+        QEntity(db_collection=From().entities,
+                entry_id=DbEntitiesId.curr_entry_id(),
+                attribute=DbEntityAttributes.sync_tasks()
                 ).add_property(name=name, add_data={})
 
         print("{} Origin Asset Task created!".format(name))
@@ -26,9 +26,9 @@ class DbTasks(object):
 
     def get_tasks(self) -> list:
         try:
-            tasks_list = QEntity(From().entities,
-                                 DbEntitiesId.curr_entry_id(),
-                                 DbEntityAttributes.tasks()
+            tasks_list = QEntity(db_collection=From().entities,
+                                 entry_id=DbEntitiesId.curr_entry_id(),
+                                 attribute=DbEntityAttributes.tasks()
                                  ).get(attrib_names=True)
 
             return tasks_list
@@ -38,9 +38,9 @@ class DbTasks(object):
 
     def get_tasks_full(self) -> dict:
         try:
-            tasks_list = QEntity(From().entities,
-                                 DbEntitiesId.curr_entry_id(),
-                                 DbEntityAttributes.tasks()
+            tasks_list = QEntity(db_collection=From().entities,
+                                 entry_id=DbEntitiesId.curr_entry_id(),
+                                 attribute=DbEntityAttributes.tasks()
                                  ).get()
 
             return tasks_list
@@ -50,9 +50,9 @@ class DbTasks(object):
     @property
     def is_active(self) -> bool:
         try:
-            is_active_data = QEntity(From().entities,
-                                     DbEntitiesId.curr_entry_id(),
-                                     DbTaskAttributes.is_active()
+            is_active_data = QEntity(db_collection=From().entities,
+                                     entry_id=DbEntitiesId.curr_entry_id(),
+                                     attribute=DbTaskAttributes.is_active()
                                      ).get(attrib_values=True)
             return is_active_data
 
@@ -62,9 +62,9 @@ class DbTasks(object):
     @is_active.setter
     def is_active(self, is_active) -> None:
         try:
-            QEntity(From().entities,
-                    DbEntitiesId.curr_entry_id(),
-                    DbTaskAttributes.is_active()
+            QEntity(db_collection=From().entities,
+                    entry_id=DbEntitiesId.curr_entry_id(),
+                    attribute=DbTaskAttributes.is_active()
                     ).update(data=is_active)
 
         except ValueError as e:
@@ -73,9 +73,9 @@ class DbTasks(object):
     @property
     def status(self) -> str:
         try:
-            status_data = QEntity(From().entities,
-                                  DbEntitiesId.curr_entry_id(),
-                                  DbTaskAttributes.status()
+            status_data = QEntity(db_collection=From().entities,
+                                  entry_id=DbEntitiesId.curr_entry_id(),
+                                  attribute=DbTaskAttributes.status()
                                   ).get(attrib_values=True)
             return status_data
 
@@ -84,32 +84,32 @@ class DbTasks(object):
 
     @status.setter
     def status(self, task_status: str) -> None:
-        QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbTaskAttributes.status()
+        QEntity(db_collection=From().entities,
+                entry_id=DbEntitiesId.curr_entry_id(),
+                attribute=DbTaskAttributes.status()
                 ).update(data=task_status)
 
     @property
     def task_user(self) -> str:
-        user = QEntity(From().entities,
-                       DbEntitiesId.curr_entry_id(),
-                       DbTaskAttributes.artist()
+        user = QEntity(db_collection=From().entities,
+                       entry_id=DbEntitiesId.curr_entry_id(),
+                       attribute=DbTaskAttributes.artist()
                        ).get(attrib_values=True)
         return user
 
     @task_user.setter
     def task_user(self, artist_name: str) -> None:
-        QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbTaskAttributes.artist()
+        QEntity(db_collection=From().entities,
+                entry_id=DbEntitiesId.curr_entry_id(),
+                attribute=DbTaskAttributes.artist()
                 ).update(data=artist_name)
 
     @property
     def imports_from(self) -> list:
         try:
-            imports_from_data = QEntity(From().entities,
-                                        DbEntitiesId.curr_entry_id(),
-                                        DbTaskAttributes.imports_from()
+            imports_from_data = QEntity(db_collection=From().entities,
+                                        entry_id=DbEntitiesId.curr_entry_id(),
+                                        attribute=DbTaskAttributes.imports_from()
                                         ).get(attrib_values=True)
             return imports_from_data
         except ValueError as e:
@@ -118,23 +118,23 @@ class DbTasks(object):
     @imports_from.setter
     def imports_from(self, imports_from: list) -> None:
         for each in imports_from:
-            QEntity(From().entities,
-                    DbEntitiesId.curr_entry_id(),
-                    DbTaskAttributes.imports_from()
+            QEntity(db_collection=From().entities,
+                    entry_id=DbEntitiesId.curr_entry_id(),
+                    attribute=DbTaskAttributes.imports_from()
                     ).add(data=each)
             print("{} task added as import_source".format(each))
 
     def rem_import_slots(self) -> None:
         try:
-            QEntity(From().entities,
-                    DbEntitiesId.curr_entry_id(),
-                    DbTaskAttributes.imports_from()
+            QEntity(db_collection=From().entities,
+                    entry_id=DbEntitiesId.curr_entry_id(),
+                    attribute=DbTaskAttributes.imports_from()
                     ).clear()
         except ValueError as e:
             print("{} Error! Nothing Done!".format(e))
 
 
-class DbSyncTasks(object):
+class DbSyncTasksProperties(object):
     @staticmethod
     def create_from_template():
         get_tasks_config = DbDefaults().get_show_defaults(DbDefaults().root_tasks)
@@ -151,9 +151,9 @@ class DbSyncTasks(object):
 
     def capture_all(self) -> dict:
         try:
-            tasks_list = QEntity(From().entities,
-                                 DbEntitiesId.curr_entry_id(),
-                                 DbEntityAttributes.sync_tasks()
+            tasks_list = QEntity(db_collection=From().entities,
+                                 entry_id=DbEntitiesId.curr_entry_id(),
+                                 attribute=DbEntityAttributes.sync_tasks()
                                  ).get(attrib_values=True)
             return tasks_list
 
@@ -165,26 +165,26 @@ class DbSyncTasks(object):
         return existing_sync_tasks.update(data)
 
     def add_sync_task(self, name: str) -> None:
-        QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbEntityAttributes.sync_tasks()
+        QEntity(db_collection=From().entities,
+                entry_id=DbEntitiesId.curr_entry_id(),
+                attribute=DbEntityAttributes.sync_tasks()
                 ).add_property(name=name, add_data={})
 
         print("{} Sync Tasks saved!".format(name))
 
     def add_sync_task_slot(self, name: str) -> None:
-        QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbSyncTaskAttributes.sync_pub_slots()
+        QEntity(db_collection=From().entities,
+                entry_id=DbEntitiesId.curr_entry_id(),
+                attribute=DbSyncTaskAttributes.sync_pub_slots()
                 ).add_property(name=name, add_data={})
 
         print("{} Sync Slot saved!".format(name))
 
     def get_sync_task_slots(self) -> dict:
         try:
-            tasks_list = QEntity(From().entities,
-                                 DbEntitiesId.curr_entry_id(),
-                                 DbSyncTaskAttributes.sync_pub_slots()
+            tasks_list = QEntity(db_collection=From().entities,
+                                 entry_id=DbEntitiesId.curr_entry_id(),
+                                 attribute=DbSyncTaskAttributes.sync_pub_slots()
                                  ).get(attrib_values=True)
 
             return tasks_list
@@ -193,14 +193,14 @@ class DbSyncTasks(object):
             print(vale)
 
 
-class DbPubSlot(object):
+class DbPubSlotProperties(object):
     def create(self, name: str) -> str:
         QEntity(From().entities,
                 DbEntitiesId.curr_entry_id(),
                 DbTaskAttributes.pub_slots()
                 ).add_property(name=name, add_data=db_templates.tasks_pub_slot_schema())
 
-        DbSyncTasks().add_sync_task_slot(name)
+        DbSyncTasksProperties().add_sync_task_slot(name)
         print("{} Task Pub Slot created!".format(name))
         return name
 
@@ -350,7 +350,7 @@ if __name__ == "__main__":
         "points"
     ]
 
-    s = DbPubSlot()
+    s = DbPubSlotProperties()
     # s.is_active = False
     t = s.remove_all()
     pprint.pprint(t)

@@ -8,7 +8,7 @@ from database.db_defaults import DbDefaults
 from common_utils.date_time import DateTime
 from database.utils.db_version_control import DBVersionControl
 from common_utils.output_paths import OutputPaths
-from database.entities.db_properties import DbSyncTasks, DbTasks
+from database.entities.db_properties import DbSyncTasksProperties, DbTasksProperties
 
 
 class DbProjectCode:
@@ -61,7 +61,7 @@ class DbConstructors(object):
             status=" ",
             assignment={},
             tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks)[0],
-            sync_tasks=DbSyncTasks().create_from_template(),
+            sync_tasks=DbSyncTasksProperties().create_from_template(),
             master_bundle=dict(main_stream=[]),
             active=True,
             definition=DbDefaults().get_show_defaults(DbDefaults().root_definitions),
@@ -103,7 +103,7 @@ class DbConstructors(object):
     @staticmethod
     def bundle_construct():
         status = DbStatuses.pending_rev
-        entity_tasks = DbTasks().get_tasks()
+        entity_tasks = DbTasksProperties().get_tasks()
         version = DBVersionControl().db_master_bundle_ver_increase()
         common_id = DbEntitiesId.get_master_bundle_id(version)
         set_display_name = "_".join([Envars.entry_name, "bundle", version])
@@ -150,7 +150,7 @@ class DbConstructors(object):
         )
 
         return common_id, save_content
-        pass
+
 
     @staticmethod
     def slot_publish_construct(pub_slot):
@@ -220,4 +220,3 @@ class DbConstructors(object):
             owner=Users.get_current_user()
         )
         return entity_id, entity_attributes
-        pass

@@ -5,7 +5,8 @@ from database.entities.db_attributes import (DbEntitiesId,
                                              DbEntityAttributes,
                                              DbTaskAttributes,
                                              DbPubSlotsAttributes,
-                                             DbMainPubAttributes, DbBundleAttributes)
+                                             DbMainPubAttributes,
+                                             DbBundleAttributes)
 
 
 class From(object):
@@ -134,6 +135,7 @@ class QEntity(object):
 
         elif all_active:
             result = [x[self.attribute] for x in self.db[self.collection].find({"active":True}, {"_id": 0, self.attribute: 1})]
+            print (result)
             return result
 
         else:
@@ -220,13 +222,22 @@ if __name__ == '__main__':
     from database.entities.db_attributes import DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
     from database.entities.db_attributes import DbMainPubAttributes
 
-    Envars.show_name = "Green"
+    Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "green_hulk"
+    Envars.entry_name = "blue_hulk"
     Envars.task_name = "modeling"
 
-    origin = QEntity(From().projects, DbEntitiesId().curr_project_id(), DbProjectAttributes.curr_branch()).get(all_active=True)
-    # print ("FROM <<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
+    print (From().projects, DbEntitiesId().curr_project_id(), DbProjectAttributes.curr_branch())
+    origin = QEntity(db_collection=From().projects, entry_id=DbEntitiesId().curr_project_id(), attribute=DbProjectAttributes.curr_branch()).get()
+    print (origin)
+    # print ("FROM ?<<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
 
+    # db = mdbconn.server[mdbconn.database_name]
+    # vv = db["show"].find({"active": True, "_id":"root.Test"}, {"_id": 0, "structure.assets": 1})
+    # for i in vv:
+    #
+    #     print (i)
 
+    # result = [x["structure.assets"] for x in db["show"].find({"active": True}, {"_id": 0, "structure.assets": 1})]
+    # print(result)

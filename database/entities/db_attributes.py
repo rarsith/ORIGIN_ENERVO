@@ -60,7 +60,7 @@ class DbEntitiesId(object):
                              Envars.branch_name,
                              Envars.category,
                              Envars.entry_name,
-                             "bundle",
+                             "sync_tasks",
                              version)
 
     @classmethod
