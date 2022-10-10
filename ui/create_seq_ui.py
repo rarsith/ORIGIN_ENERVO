@@ -68,8 +68,8 @@ class CreateSeqUI(QtWidgets.QDialog):
 if __name__ == "__main__":
     # from envars.envars import Envars
 
-    Envars.show_name = "Cicles"
-    Envars.branch_name = "sequences"
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
     Envars.category = "DDR"
     Envars.entry_name = "circle"
     Envars.task_name = "rigging"

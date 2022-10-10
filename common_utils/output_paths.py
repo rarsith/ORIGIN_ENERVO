@@ -86,7 +86,7 @@ class OutputPaths(object):
                          Envars.entry_name,
                          Envars.task_name,
                          "users",
-                         Users.get_current_user(),
+                         Users.curr_user(),
                          self.version,
                          self.output_file_name]
 

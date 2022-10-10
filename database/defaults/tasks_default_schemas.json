@@ -57,9 +57,9 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "concept": {}
-        },
+        "imports_from": [
+          "concept.img"
+        ],
         "pub_slots": {
           "ref_geo": {
             "type": "geo",
@@ -111,10 +111,10 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "concept": {},
-          "sculpting": {}
-        },
+        "imports_from": [
+          "concept.img",
+          "sculpting.ref_geo"
+        ],
         "pub_slots": {
           "rend_geo": {
             "type": "geo",

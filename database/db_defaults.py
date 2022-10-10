@@ -1,5 +1,5 @@
 from envars.envars import Envars
-from database.entities.db_attributes import DbEntitiesId
+from database.entities.db_attributes import DbIds
 from database import db_connection as mdbconn
 
 
@@ -20,7 +20,7 @@ class DbDefaults(object):
         return "pub_slot"
 
     def get_show_defaults(self, default_type):
-        root_id = DbEntitiesId.create_id("root", Envars.show_name)
+        root_id = DbIds.create_id("root", Envars.show_name)
         query_path = "show_defaults" + "." + (Envars().category + "_" + default_type)
         category_tasks = self.db.show.find({"_id": root_id}, {'_id': 0, query_path: 1})
 

@@ -1,4 +1,4 @@
-from database.entities.db_attributes import DbEntitiesId, DbEntitiesAttrPaths
+from database.entities.db_attributes import DbIds, DbEntitiesAttrPaths
 from envars.envars import Envars
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn
@@ -28,8 +28,8 @@ class DbUsers(object):
                 "job_title": self.job_title(),
                 "user_name": self.user_internal(),
                 "internal_email": self.user_company_email(),
-                "date": DateTime().return_date,
-                "time": DateTime().return_time
+                "date": DateTime().curr_date,
+                "time": DateTime().curr_time
             }
         )
         print(" user for {} created!".format(self.first_name + " " + self.last_name))
@@ -45,7 +45,7 @@ class DbUsers(object):
         try:
             task_path = DbEntitiesAttrPaths.make_path("tasks", Envars.task_name, "artist")
             cursor = self.db[DbProjectBranch().get_type]
-            tasks_list = cursor.find({"_id": DbEntitiesId.curr_entry_id()}, {'_id': 0, task_path: 1})
+            tasks_list = cursor.find({"_id": DbIds.curr_entry_id()}, {'_id': 0, task_path: 1})
             for tasks in tasks_list:
                 return tasks['tasks'][Envars.task_name]['artist']
 

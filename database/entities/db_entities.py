@@ -3,7 +3,7 @@ from database import db_connection as mdbconn
 from database.utils.db_q_entity import From, QEntity, DbRef, DbReferences
 from database.entities.db_structures import DbProjectBranch
 from database.entities.db_constructors import DbConstructors
-from database.entities.db_attributes import DbEntitiesAttrPaths, DbEntitiesId, DbProjectAttributes, DbEntityAttributes
+from database.entities.db_attributes import DbEntitiesAttrPaths, DbIds, DbProjectAttrPaths, DbEntityAttrPaths
 
 
 class DbProject(object):
@@ -11,7 +11,7 @@ class DbProject(object):
         self.db = mdbconn.server[mdbconn.database_name]
 
     def create(self, name):
-        entity_id = DbEntitiesId.create_id("root", name)
+        entity_id = DbIds.create_id("root", name)
         created_id, save_data = DbConstructors().project_construct(name=name, entity_id=entity_id)
 
         try:
@@ -21,12 +21,12 @@ class DbProject(object):
         except ValueError as e:
             print("{} Error! Nothing created!".format(e))
 
-    def get_all(self, is_active=True):
+    def get_all(self):
         """Returns all assets names in the current category"""
         try:
             result = QEntity(From().projects,
-                             DbEntitiesId.all_in_collection(),
-                             DbProjectAttributes.name()
+                             DbIds.all_in_collection(),
+                             DbProjectAttrPaths.name()
                              ).get(all=True)
             return result
         except ValueError as val:
@@ -36,8 +36,8 @@ class DbProject(object):
     def get_structure():
         try:
             structure = QEntity(From().projects,
-                                DbEntitiesId.curr_project_id(),
-                                DbProjectAttributes.structure()
+                                DbIds.curr_project_id(),
+                                DbProjectAttrPaths.structure()
                                 ).get(attrib_values=True)
             return structure
 
@@ -49,8 +49,8 @@ class DbProject(object):
         entities_found = list()
 
         origin_q = QEntity(From().projects,
-                           DbEntitiesId.curr_project_id(),
-                           DbProjectAttributes.category_entries()
+                           DbIds.curr_project_id(),
+                           DbProjectAttrPaths.category_entries()
                            ).get(attrib_names=True)
 
         for entity in origin_q:
@@ -63,8 +63,8 @@ class DbProject(object):
     def get_type():
         try:
             show_type = QEntity(From().projects,
-                                DbEntitiesId.curr_project_id(),
-                                DbProjectAttributes.type()
+                                DbIds.curr_project_id(),
+                                DbProjectAttrPaths.type()
                                 ).get(attrib_names=True)
             return show_type
         except ValueError as val:
@@ -74,8 +74,8 @@ class DbProject(object):
     def is_active():
         try:
             is_active = QEntity(From().projects,
-                                DbEntitiesId.curr_project_id(),
-                                DbProjectAttributes.is_active()
+                                DbIds.curr_project_id(),
+                                DbProjectAttrPaths.is_active()
                                 ).get(attrib_names=True)
             return is_active
         except ValueError as val:
@@ -89,7 +89,7 @@ class DbAsset(object):
     def create(self, name):
         collection = self.db[From().entities]
         created_id, save_data = DbConstructors().asset_construct(name=name,
-                                                                 entity_id=DbEntitiesId.create_entity_id(name))
+                                                                 entity_id=DbIds.create_entity_id(name))
 
         try:
             collection.insert_one(save_data)
@@ -99,7 +99,7 @@ class DbAsset(object):
                                                          Envars().category)
 
             DbReferences.add_db_id_reference("show",
-                                             DbEntitiesId.curr_project_id(),
+                                             DbIds.curr_project_id(),
                                              insert_entry,
                                              created_id,
                                              DbProjectBranch().get_type)
@@ -113,8 +113,8 @@ class DbAsset(object):
         """Returns all assets names in the current category"""
         try:
             result = QEntity(From().projects,
-                             DbEntitiesId.curr_project_id(),
-                             DbProjectAttributes.category_entries()
+                             DbIds.curr_project_id(),
+                             DbProjectAttrPaths.category_entries()
                              ).get(attrib_names=True, all_active=is_active)
             return result
         except ValueError as val:
@@ -124,8 +124,8 @@ class DbAsset(object):
     def get_definition():
         try:
             result = QEntity(From().entities,
-                             DbEntitiesId.curr_entry_id(),
-                             DbEntityAttributes.definition()
+                             DbIds.curr_entry_id(),
+                             DbEntityAttrPaths.definition()
                              ).get(attrib_names=True)
             return result
         except ValueError as val:
@@ -135,8 +135,8 @@ class DbAsset(object):
     def get_entry_type():
         try:
             result = QEntity(From().entities,
-                             DbEntitiesId.curr_entry_id(),
-                             DbEntityAttributes.type()
+                             DbIds.curr_entry_id(),
+                             DbEntityAttrPaths.type()
                              ).get(attrib_names=True)
             return result
         except ValueError as val:
@@ -146,8 +146,8 @@ class DbAsset(object):
     def get_assignment():
         try:
             result = QEntity(From().entities,
-                             DbEntitiesId.curr_entry_id(),
-                             DbEntityAttributes.assignments()
+                             DbIds.curr_entry_id(),
+                             DbEntityAttrPaths.assignments()
                              ).get(attrib_names=True)
             return result
         except ValueError as val:
@@ -156,17 +156,17 @@ class DbAsset(object):
     @staticmethod
     def set_active(is_active=True):
         QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbEntityAttributes.is_active()
+                DbIds.curr_entry_id(),
+                DbEntityAttrPaths.is_active()
                 ).update(is_active)
 
-        print("{0} active Status set to {1}!".format(DbEntitiesId.curr_entry_id(), is_active))
+        print("{0} active Status set to {1}!".format(DbIds.curr_entry_id(), is_active))
 
     @staticmethod
     def set_definition(data):
         QEntity(From().entities,
-                DbEntitiesId.curr_entry_id(),
-                DbEntityAttributes.definition
+                DbIds.curr_entry_id(),
+                DbEntityAttrPaths.definition
                 ).update(data)
         print("{} Definition Updated!".format(Envars.entry_name))
 
@@ -174,13 +174,13 @@ class DbAsset(object):
         #TODO: refactor code to use fully the Envars
         try:
             QEntity(From().projects,
-                    DbEntitiesId.curr_project_id(),
-                    DbProjectAttributes.entry()
+                    DbIds.curr_project_id(),
+                    DbProjectAttrPaths.entry()
                     ).remove()
 
             QEntity(From().entities,
-                    DbEntitiesId.curr_entry_id(),
-                    DbEntityAttributes.type()
+                    DbIds.curr_entry_id(),
+                    DbEntityAttrPaths.type()
                     ).remove()
 
         except ValueError as val:
@@ -199,7 +199,7 @@ class DbBundle(object):
 
     def create_stream(self, name):
         try:
-            asset_id = DbEntitiesId.curr_entry_id()
+            asset_id = DbIds.curr_entry_id()
             cursor = self.db[DbProjectBranch().get_type]
             db_path = DbEntitiesAttrPaths.make_path(DbEntitiesAttrPaths.to_master_bundle(),
                                                     (name + "_" + "stream"))
@@ -237,7 +237,7 @@ class DbBundle(object):
     def set_as_current(bundle_id, add_to_stream="main_stream"):
 
         DbReferences.add_db_id_reference(DbProjectBranch().get_type,
-                                         DbEntitiesId.curr_entry_id(),
+                                         DbIds.curr_entry_id(),
                                          "master_bundle.{}".format(add_to_stream),
                                          bundle_id,
                                          "bundles",
@@ -260,8 +260,8 @@ class DbBundle(object):
             task_path = DbEntitiesAttrPaths.to_pub_slots()
             print(task_path)
             cursor = self.db[DbProjectBranch().get_type]
-            cursor.update_one({"_id": DbEntitiesId.curr_entry_id()}, {"$unset": {task_path: 1}})
-            cursor.update_one({"_id": DbEntitiesId.curr_entry_id()}, {"$set": {task_path: {}}})
+            cursor.update_one({"_id": DbIds.curr_entry_id()}, {"$unset": {task_path: 1}})
+            cursor.update_one({"_id": DbIds.curr_entry_id()}, {"$set": {task_path: {}}})
         except:
             pass
 

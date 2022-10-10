@@ -1,12 +1,12 @@
 from envars.envars import Envars
 from database import db_connection as mdbconn
-from database.entities.db_attributes import (DbEntitiesId,
-                                             DbProjectAttributes,
-                                             DbEntityAttributes,
-                                             DbTaskAttributes,
-                                             DbPubSlotsAttributes,
-                                             DbMainPubAttributes,
-                                             DbBundleAttributes)
+from database.entities.db_attributes import (DbIds,
+                                             DbProjectAttrPaths,
+                                             DbEntityAttrPaths,
+                                             DbTaskAttrPaths,
+                                             DbPubSlotsAttrPaths,
+                                             DbMainPubAttrPaths,
+                                             DbBundleAttrPaths)
 
 
 class From(object):
@@ -17,8 +17,8 @@ class From(object):
     def branch_type(self):
         branch_name = Envars.branch_name
         try:
-            cursor = self.db.show.find({"_id": DbEntitiesId.curr_project_id()},
-                                       {'_id': 0, DbProjectAttributes.structure(): 1})
+            cursor = self.db.show.find({"_id": DbIds.curr_project_id()},
+                                       {'_id': 0, DbProjectAttrPaths.structure(): 1})
             for each in list(cursor):
                 return each['structure'][branch_name]["type"]
 
@@ -60,12 +60,12 @@ class From(object):
 
 class QEntity(object):
 
-    def __init__(self, db_collection: From(), entry_id: DbEntitiesId(), attribute: (DbProjectAttributes,
-                                                                                    DbEntityAttributes,
-                                                                                    DbTaskAttributes,
-                                                                                    DbPubSlotsAttributes,
-                                                                                    DbMainPubAttributes,
-                                                                                    DbBundleAttributes)):
+    def __init__(self, db_collection: From(), entry_id: DbIds(), attribute: (DbProjectAttrPaths,
+                                                                             DbEntityAttrPaths,
+                                                                             DbTaskAttrPaths,
+                                                                             DbPubSlotsAttrPaths,
+                                                                             DbMainPubAttrPaths,
+                                                                             DbBundleAttrPaths)):
         self.db = mdbconn.server[mdbconn.database_name]
         self.collection = db_collection
         self.attribute = attribute
@@ -219,8 +219,8 @@ class DbReferences(object):
 #TODO: refactor Origin to From --> create a decoarator to return data from the database
 if __name__ == '__main__':
 
-    from database.entities.db_attributes import DbEntityAttributes, DbTaskAttributes, DbPubSlotsAttributes
-    from database.entities.db_attributes import DbMainPubAttributes
+    from database.entities.db_attributes import DbEntityAttrPaths, DbTaskAttrPaths, DbPubSlotsAttrPaths
+    from database.entities.db_attributes import DbMainPubAttrPaths
 
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
@@ -228,8 +228,8 @@ if __name__ == '__main__':
     Envars.entry_name = "blue_hulk"
     Envars.task_name = "modeling"
 
-    print (From().projects, DbEntitiesId().curr_project_id(), DbProjectAttributes.curr_branch())
-    origin = QEntity(db_collection=From().projects, entry_id=DbEntitiesId().curr_project_id(), attribute=DbProjectAttributes.curr_branch()).get()
+    print (From().projects, DbIds().curr_project_id(), DbProjectAttrPaths.curr_branch())
+    origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbProjectAttrPaths.curr_branch()).get()
     print (origin)
     # print ("FROM ?<<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
 

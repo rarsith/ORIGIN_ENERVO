@@ -31,11 +31,11 @@ bundle = DbBundle()
 
 # SWITHCHES
 test_project = False
-test_assets = False
+test_assets = True
 test_tasks = False
 test_sync_tasks = False
 test_pub_slot = False
-test_publish = True
+test_publish = False
 test_bundle = False
 
 
@@ -60,7 +60,7 @@ if test_project:
 
 # ASSET METHODS
 if test_assets:
-    assets_list = ["red_hulk", "blue_hulk", "yellow_hulk"]
+    assets_list = ["new_monster"]
     for asset in assets_list:
         assets.create(name=asset)
     asset_type = assets.get_entry_type()

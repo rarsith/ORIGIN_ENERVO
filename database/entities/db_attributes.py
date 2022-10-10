@@ -1,7 +1,7 @@
 from envars.envars import Envars
 
 
-class DbEntitiesId(object):
+class DbIds:
     """
     Takes a list and joins the elements into a string
     Ex: list = ["element1", "element2"] >>>> result > "element1.element2"
@@ -137,7 +137,7 @@ class DbEntitiesId(object):
                              version)
 
 
-class DbEntitiesAttrPaths(object):
+class DbEntitiesAttrPaths:
 
     @classmethod
     def make_path(cls, *data, **kwargs):
@@ -341,7 +341,7 @@ class DbEntitiesAttrPaths(object):
                              )
 
 
-class DbProjectAttributes(object):
+class DbProjectAttrPaths:
 
     @classmethod
     def custom(cls, attr):
@@ -409,7 +409,7 @@ class DbProjectAttributes(object):
         return "show_type"
 
 
-class DbEntityAttributes(object):
+class DbEntityAttrPaths:
 
     @classmethod
     def custom(cls, attr):
@@ -452,7 +452,7 @@ class DbEntityAttributes(object):
         return "master_bundle"
 
 
-class DbTaskAttributes(object):
+class DbTaskAttrPaths:
 
     @classmethod
     def custom(cls, attr):
@@ -490,7 +490,7 @@ class DbTaskAttributes(object):
         return cls.make_path("tasks", Envars.task_name, "pub_slots")
 
 
-class DbSyncTaskAttributes(object):
+class DbSyncTaskAttrPaths:
 
     @classmethod
     def custom(cls, attr):
@@ -512,7 +512,7 @@ class DbSyncTaskAttributes(object):
         return cls.make_path("sync_tasks", Envars.task_name)
 
 
-class DbMainPubAttributes(object):
+class DbMainPubAttrPaths:
 
     @classmethod
     def custom(cls, attr):
@@ -534,7 +534,7 @@ class DbMainPubAttributes(object):
         return "version"
 
 
-class DbPubSlotsAttributes(object):
+class DbPubSlotsAttrPaths:
     def __init__(self, publish_slot):
         self.pub_slot_name = publish_slot
 
@@ -570,7 +570,7 @@ class DbPubSlotsAttributes(object):
         return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "type")
 
 
-class DbBundleAttributes(object):
+class DbBundleAttrPaths:
     def __init__(self, pub_slot):
         self.pub_slot_name = pub_slot
 
@@ -623,6 +623,6 @@ if __name__ == '__main__':
 
     # pp_path = pp.db_task_pub(relative=False, dict_packed=True)
     # print (pp_path)
-    asset_id = DbPubSlotsAttributes(publish_slot="cmuscle_rig").type()
+    asset_id = DbPubSlotsAttrPaths(publish_slot="cmuscle_rig").type()
 
     print (asset_id)

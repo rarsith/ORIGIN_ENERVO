@@ -68,3 +68,33 @@ class From(object):
     @work_files.setter
     def work_files(self, attr):
         self.attr = attr
+
+
+
+class Entity():
+    name: str
+    date: str
+
+    def __init__(self, name, date):
+        self.name = name
+        self.date = date
+
+    def __repr__(self):
+        print(f"Hi, this is {self.name}, created {str(self.date)}")
+
+    class Tasks():
+        is_active:bool
+        artist: str
+
+        def __init__(self, is_active, artist):
+            self.is_active = is_active
+            self.artist = artist
+
+        def create(self, name):
+            print ("created task {}".format(name))
+
+if __name__=="__main__":
+    xx = Entity(name="hulky", date=2014)
+    print (xx)
+    # print (xx.date)
+    # print (xx.create(name="sculpting"))

@@ -5,10 +5,10 @@ class DateTime(object):
         self.time_now = datetime.now()
 
     @property
-    def return_time(self):
+    def curr_time(self):
         return self.time_now.strftime("%H:%M")
 
     @property
-    def return_date(self):
+    def curr_date(self):
         return self.time_now.strftime("%Y-%m-%d")
 
