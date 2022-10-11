@@ -1,11 +1,8 @@
-from database.entities.db_attributes import DbIds, DbEntitiesAttrPaths
-from envars.envars import Envars
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn
-from database.entities.db_structures import DbProjectBranch
 
 
-class DbUsers(object):
+class DbUsers:
     def __init__(self, first_name, last_name, personal_email, job_title, access_level):
         self.db = mdbconn.server.xchange
         self.main_domain = "origin.com"
@@ -40,14 +37,3 @@ class DbUsers(object):
 
     def user_internal(self):
         pass
-
-    def get_user(self):
-        try:
-            task_path = DbEntitiesAttrPaths.make_path("tasks", Envars.task_name, "artist")
-            cursor = self.db[DbProjectBranch().get_type]
-            tasks_list = cursor.find({"_id": DbIds.curr_entry_id()}, {'_id': 0, task_path: 1})
-            for tasks in tasks_list:
-                return tasks['tasks'][Envars.task_name]['artist']
-
-        except:
-            pass

@@ -1,7 +1,8 @@
 from database import db_templates
 from database.db_types import BranchTypes, TaskTypes
 from database.utils.db_q_entity import From, QEntity
-from database.entities.db_attributes import DbIds, DbProjectAttrPaths
+from database.entities.db_attributes import DbProjectAttrPaths
+from database.db_ids import DbIds
 
 
 class DbProjectBranch(object):
@@ -9,9 +10,9 @@ class DbProjectBranch(object):
     @staticmethod
     def add_branch(name: str, branch_type: BranchTypes) -> str:
 
-        QEntity(From().projects,
-                DbIds.curr_project_id(),
-                DbProjectAttrPaths.structure()
+        QEntity(db_collection=From().projects,
+                entry_id=DbIds.curr_project_id(),
+                attribute=DbProjectAttrPaths.structure()
                 ).add_property(name=name,
                                add_data=dict({"type": branch_type}))
 
@@ -20,9 +21,9 @@ class DbProjectBranch(object):
 
     @staticmethod
     def get_branches():
-        branches = QEntity(From().projects,
-                           DbIds.curr_project_id(),
-                           DbProjectAttrPaths.branches()
+        branches = QEntity(db_collection=From().projects,
+                           entry_id=DbIds.curr_project_id(),
+                           attribute=DbProjectAttrPaths.branches()
                            ).get(attrib_names=True)
         return branches
 
@@ -39,20 +40,20 @@ class DbAssetCategories(object):
         category_tasks_type = name + "_tasks"
         category_definition = name + "_definition"
 
-        QEntity(From().projects,
-                DbIds.curr_project_id(),
-                DbProjectAttrPaths.curr_branch()
+        QEntity(db_collection=From().projects,
+                entry_id=DbIds.curr_project_id(),
+                attribute=DbProjectAttrPaths.curr_branch()
                 ).add_property(name=name)
 
-        QEntity(From().projects,
-                DbIds.curr_project_id(),
-                DbProjectAttrPaths.show_defaults()
+        QEntity(db_collection=From().projects,
+                entry_id=DbIds.curr_project_id(),
+                attribute=DbProjectAttrPaths.show_defaults()
                 ).add_property(name=category_tasks_type,
                                add_data=db_templates.tasks_schema(tasks_type))
 
-        QEntity(From().projects,
-                DbIds.curr_project_id(),
-                DbProjectAttrPaths.show_defaults()
+        QEntity(db_collection=From().projects,
+                entry_id=DbIds.curr_project_id(),
+                attribute=DbProjectAttrPaths.show_defaults()
                 ).add_property(name=category_definition,
                                add_data=db_templates.entry_definition(tasks_type))
 
@@ -61,9 +62,9 @@ class DbAssetCategories(object):
 
     @staticmethod
     def get_categories():
-        categories = QEntity(From().projects,
-                             DbIds.curr_project_id(),
-                             DbProjectAttrPaths.categories()
+        categories = QEntity(db_collection=From().projects,
+                             entry_id=DbIds.curr_project_id(),
+                             attribute=DbProjectAttrPaths.categories()
                              ).get(attrib_names=True)
         categories.remove("type")
         return categories

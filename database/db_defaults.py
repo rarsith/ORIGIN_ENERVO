@@ -1,5 +1,5 @@
 from envars.envars import Envars
-from database.entities.db_attributes import DbIds
+from database.db_ids import DbIds
 from database import db_connection as mdbconn
 
 

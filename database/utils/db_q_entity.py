@@ -1,15 +1,15 @@
 from envars.envars import Envars
 from database import db_connection as mdbconn
-from database.entities.db_attributes import (DbIds,
-                                             DbProjectAttrPaths,
+from database.entities.db_attributes import (DbProjectAttrPaths,
                                              DbEntityAttrPaths,
                                              DbTaskAttrPaths,
                                              DbPubSlotsAttrPaths,
                                              DbMainPubAttrPaths,
                                              DbBundleAttrPaths)
+from database.db_ids import DbIds
 
 
-class From(object):
+class From:
 
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
@@ -58,7 +58,7 @@ class From(object):
         return "work_files"
 
 
-class QEntity(object):
+class QEntity:
 
     def __init__(self, db_collection: From(), entry_id: DbIds(), attribute: (DbProjectAttrPaths,
                                                                              DbEntityAttrPaths,
@@ -182,7 +182,7 @@ class QEntity(object):
         self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: []}})
 
 
-class DbRef(object):
+class DbRef:
     def __init__(self, collection="", entity_id=""):
         self.collection = collection
         self.entity_id = entity_id
@@ -203,7 +203,7 @@ class DbRef(object):
             return db_field[get_field]
 
 
-class DbReferences(object):
+class DbReferences:
     @classmethod
     def add_db_id_reference(cls, collection, parent_doc_id, destination_slot, id_to_add, from_collection, replace=False):
         db = mdbconn.server[mdbconn.database_name]

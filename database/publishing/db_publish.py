@@ -1,13 +1,13 @@
 from bson import ObjectId
 from envars.envars import Envars
-from database.entities.db_attributes import DbIds
+from database.db_ids import DbIds
 from common_utils.users import Users
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn
 from common_utils.output_paths import OutputPaths
 from database.utils.db_q_entity import DbReferences
 from database.utils.db_version_control import DBVersionControl
-from database.entities.db_properties import DbSyncTasksProperties, DbPubSlotProperties
+from database.entities.db_entities import DbSyncTasks, DbPubSlot
 from database.entities.db_structures import DbProjectBranch
 
 
@@ -149,7 +149,7 @@ class DbPublish(object):
         return published_slot.inserted_id, collection_name
 
     def db_publish(self):
-        task_pub_slots = DbPubSlotProperties().get_pub_slots()
+        task_pub_slots = DbPubSlot().get_pub_slots()
         current_task = Envars().task_name
 
         main_publish = self.db_main_publish()
@@ -176,8 +176,8 @@ class DbPublish(object):
 
     def db_publish_sel(self, sel_pub_slots=[]):
         current_task = Envars().task_name
-        task_pub_slots = DbPubSlotProperties().get_pub_slots()
-        get_sync_tasks = DbSyncTasksProperties().capture_all()
+        task_pub_slots = DbPubSlot().get_pub_slots()
+        get_sync_tasks = DbSyncTasks().capture_all()
         sync_to_curr_task = get_sync_tasks[current_task]
 
         if len(sel_pub_slots)==0:

@@ -1,9 +1,7 @@
-from database.entities.db_entities import DbProject
+from database.entities.db_entities import DbProject, DbTasks, DbSyncTasks, DbPubSlot
 from database.entities.db_entities import DbAsset
 from database.entities.db_entities import DbBundle
-from database.entities.db_properties import DbPubSlotProperties
 from database.entities.db_structures import DbProjectBranch, DbAssetCategories
-from database.entities.db_properties import DbTasksProperties, DbSyncTasksProperties
 from database.publishing.db_publish import DbPublish
 from envars.envars import Envars
 
@@ -21,9 +19,9 @@ Envars.task_name = "surfacing"
 # OBJECTS
 project = DbProject()
 assets = DbAsset()
-tasks = DbTasksProperties()
-sync_tasks = DbSyncTasksProperties()
-pub_slot = DbPubSlotProperties()
+tasks = DbTasks()
+sync_tasks = DbSyncTasks()
+pub_slot = DbPubSlot()
 publish = DbPublish()
 bundle = DbBundle()
 

@@ -1,5 +1,5 @@
 from envars.envars import Envars
-from database.entities.db_attributes import DbIds
+from database.db_ids import DbIds
 from database.entities.db_structures import DbProjectBranch
 from database import db_templates
 from common_utils.users import Users
@@ -8,7 +8,34 @@ from database.db_defaults import DbDefaults
 from common_utils.date_time import DateTime
 from database.utils.db_version_control import DBVersionControl
 from common_utils.output_paths import OutputPaths
-from database.entities.db_properties import DbSyncTasksProperties, DbTasksProperties
+from database.entities.db_entities import DbTasks, DbSyncTasks
+
+
+class DbEntityBaseAttributes:
+    _id: str
+    show_name: str
+    branch_name: str
+    category: str
+    entry_name: str
+    entity_type: str
+    status: str
+    active: bool
+    date: str
+    time: str
+    owner: str
+
+    def __init__(self, _id, show_name, branch_name, category, entry_name, entity_type, status, active, date, time, owner):
+        self.id = _id
+        self.show_name = show_name
+        self.branch_name = branch_name
+        self.category = category
+        self.entry_name = entry_name
+        self.entity_type = entity_type
+        self.status = status
+        self.active = active
+        self.date = date
+        self.time = time
+        self.owner = owner
 
 
 class DbProjectCode:
@@ -25,7 +52,7 @@ class DbProjectCode:
 
 class DbConstructors(object):
 
-    def project_defaults(self):
+    def _project_defaults(self):
         proj_defaults = dict(asset_definition=db_templates.entry_definition("build"),
                              shots_definition=db_templates.entry_definition("shot"),
                              characters_tasks=db_templates.tasks_schema("character"),
@@ -44,7 +71,7 @@ class DbConstructors(object):
             show_code=DbProjectCode(data=name).code(),
             entry_name=name,
             structure=db_templates.show_structure(),
-            show_defaults=self.project_defaults(),
+            show_defaults=self._project_defaults(),
             active=True,
             date=DateTime().curr_date,
             time=DateTime().curr_time,
@@ -65,7 +92,7 @@ class DbConstructors(object):
             status=" ",
             assignment={},
             tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks)[0],
-            sync_tasks=DbSyncTasksProperties().create_from_template(),
+            sync_tasks=DbSyncTasks().create_from_template(),
             master_bundle=dict(main_stream=[]),
             active=True,
             definition=DbDefaults().get_show_defaults(DbDefaults().root_definitions),
@@ -107,7 +134,7 @@ class DbConstructors(object):
     @staticmethod
     def bundle_construct():
         status = DbStatuses.pending_rev
-        entity_tasks = DbTasksProperties().get_tasks()
+        entity_tasks = DbTasks().get_tasks()
         version = DBVersionControl().db_master_bundle_ver_increase()
         common_id = DbIds.get_master_bundle_id(version)
         set_display_name = "_".join([Envars.entry_name, "bundle", version])

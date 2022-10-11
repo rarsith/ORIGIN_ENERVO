@@ -4,7 +4,9 @@ from envars.envars import Envars
 from database.entities.db_entities import DbAsset, DbProject
 from database.entities.db_structures import DbAssetCategories
 from database.utils.db_q_entity import QEntity, From
-from database.entities.db_attributes import DbIds, DbProjectAttrPaths
+from database.entities.db_attributes import DbProjectAttrPaths
+from database.db_ids import DbIds
+
 
 class CreateAssetUI(QtWidgets.QDialog):
 

@@ -2,163 +2,7 @@ from envars.envars import Envars
 from database.utils import db_path_assembler
 
 
-class DbIds:
-    """
-    Takes a list and joins the elements into a string
-    Ex: list = ["element1", "element2"] >>>> result > "element1.element2"
-    To be used for generating ids for entities at creation time
-    """
-
-    @classmethod
-    def create_id(cls, *data):
-        id_elements = list()
-        for elem in data:
-            id_elements.append(elem)
-
-        return str(".".join(id_elements))
-
-    @classmethod
-    def create_project_id(cls, name):
-        return cls.create_id("root", name)
-
-    @classmethod
-    def create_entity_id(cls, name):
-        entry_id = cls.create_id(DbEntitiesAttrPaths.to_category(), name)
-        return entry_id
-
-    @classmethod
-    def create_main_pub_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             Envars.task_name,
-                             "main_pub",
-                             version)
-
-    @classmethod
-    def create_pub_slot_id(cls, pub_slot, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             Envars.task_name,
-                             pub_slot,
-                             version)
-
-    @classmethod
-    def create_master_bundle_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             "bundle",
-                             version)
-
-    @classmethod
-    def create_sync_tasks_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             "sync_tasks",
-                             version)
-
-    @classmethod
-    def create_wip_file_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             Envars.task_name,
-                             "wip",
-                             version)
-
-    @classmethod
-    def curr_project_id(cls):
-        return cls.create_id("root", Envars.show_name)
-
-    @classmethod
-    def all_in_collection(cls):
-        return {}
-
-    @classmethod
-    def curr_entry_id(cls):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name)
-
-    @classmethod
-    def get_wip_file_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             Envars.task_name,
-                             "wip",
-                             version)
-
-    @classmethod
-    def get_main_pub_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             Envars.task_name,
-                             "main_pub",
-                             version)
-
-    @classmethod
-    def get_pub_slot_id(cls, pub_slot, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             Envars.task_name,
-                             pub_slot,
-                             version)
-
-    @classmethod
-    def get_master_bundle_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             "bundle",
-                             version)
-
-    @classmethod
-    def get_sync_tasks_id(cls, version):
-        return cls.create_id(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             "sync_tasks",
-                             version)
-
-
 class DbEntitiesAttrPaths:
-
-    @classmethod
-    def make_path(cls, *data, **kwargs):
-        if data:
-            id_elements = list()
-            for elem in data:
-                id_elements.append(elem)
-            dotted_path = str(".".join(id_elements))
-            return dotted_path
-        return kwargs
-
-    @property
-    def get_path(self, *data, **kwargs):
-        if data:
-            id_elements = list()
-            for elem in data:
-                id_elements.append(elem)
-            dotted_path = str(".".join(id_elements))
-            return dotted_path
-        return kwargs
 
     @classmethod
     def to_base(cls, dict_packed=False):
@@ -186,8 +30,7 @@ class DbEntitiesAttrPaths:
                                            Envars.branch_name,
                                            Envars.category,
                                            Envars.entry_name,
-                                           Envars.task_name
-                             )
+                                           Envars.task_name)
 
     @classmethod
     def to_branch(cls, dict_packed=False):
@@ -304,36 +147,33 @@ class DbEntitiesAttrPaths:
     def to_entry_definition(cls, relative=True):
         if relative:
             return "definition"
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                               "definition"
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "definition")
 
     @classmethod
     def to_master_bundle(cls, relative=True):
         if relative:
             return "master_bundle"
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             "master_bundle"
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "master_bundle")
 
     @classmethod
-    def to_entry_assignment(cls, relative=True):
+    def to_assignment(cls, relative=True):
         if relative:
             return "assignment"
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             "assignment"
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "assignment")
 
 
 class DbProjectAttrPaths:
@@ -361,25 +201,25 @@ class DbProjectAttrPaths:
     @classmethod
     def categories(cls):
         """Access path to all categories of the current branch"""
-        access_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name)
+        access_path = db_path_assembler.make_path("structure", Envars.branch_name)
         return access_path
 
     @classmethod
     def curr_branch(cls):
         """Access path to current branch of the current project"""
-        curr_branch_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name)
+        curr_branch_path = db_path_assembler.make_path("structure", Envars.branch_name)
         return curr_branch_path
 
     @classmethod
     def curr_category(cls):
         """Access path to current category of the current project"""
-        curr_category_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name, Envars.category)
+        curr_category_path = db_path_assembler.make_path("structure", Envars.branch_name, Envars.category)
         return curr_category_path
 
     @classmethod
     def category_entries(cls):
         """Access path for categories of the branch"""
-        access_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name, Envars.category)
+        access_path = db_path_assembler.make_path("structure", Envars.branch_name, Envars.category)
         return access_path
 
     @classmethod
@@ -390,7 +230,7 @@ class DbProjectAttrPaths:
     @classmethod
     def entry(cls):
         """Access path for entries referenced inside the category"""
-        access_path = DbEntitiesAttrPaths.make_path("structure", Envars.branch_name, Envars.category)
+        access_path = db_path_assembler.make_path("structure", Envars.branch_name, Envars.category)
         return access_path
 
     @classmethod
@@ -455,34 +295,24 @@ class DbTaskAttrPaths:
         return attr
 
     @classmethod
-    def make_path(cls, *data, **kwargs):
-        if data:
-            id_elements = list()
-            for elem in data:
-                id_elements.append(elem)
-            dotted_path = str(".".join(id_elements))
-            return dotted_path
-        return kwargs
-
-    @classmethod
     def is_active(cls):
-        return cls.make_path("tasks", Envars.task_name,"active")
+        return db_path_assembler.make_path("tasks", Envars.task_name,"active")
 
     @classmethod
     def status(cls):
-        return cls.make_path("tasks", Envars.task_name,"status")
+        return db_path_assembler.make_path("tasks", Envars.task_name,"status")
 
     @classmethod
     def artist(cls):
-        return cls.make_path("tasks", Envars.task_name,"artist")
+        return db_path_assembler.make_path("tasks", Envars.task_name,"artist")
 
     @classmethod
     def imports_from(cls):
-        return cls.make_path("tasks", Envars.task_name, "imports_from")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "imports_from")
 
     @classmethod
     def pub_slots(cls):
-        return cls.make_path("tasks", Envars.task_name, "pub_slots")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots")
 
 
 class DbSyncTaskAttrPaths:
@@ -493,18 +323,8 @@ class DbSyncTaskAttrPaths:
         return attr
 
     @classmethod
-    def make_path(cls, *data, **kwargs):
-        if data:
-            id_elements = list()
-            for elem in data:
-                id_elements.append(elem)
-            dotted_path = str(".".join(id_elements))
-            return dotted_path
-        return kwargs
-
-    @classmethod
     def sync_pub_slots(cls):
-        return cls.make_path("sync_tasks", Envars.task_name)
+        return db_path_assembler.make_path("sync_tasks", Envars.task_name)
 
 
 class DbMainPubAttrPaths:
@@ -523,36 +343,24 @@ class DbPubSlotsAttrPaths:
     def __init__(self, publish_slot):
         self.pub_slot_name = publish_slot
 
-    # def _pub_slot(self):
-    #     return self.pub_slot_name
-
     def custom(self, attr):
         """Access path to get the Type of an Entity"""
         return attr
 
-    def make_path(self, *data, **kwargs):
-        if data:
-            id_elements = list()
-            for elem in data:
-                id_elements.append(elem)
-            dotted_path = str(".".join(id_elements))
-            return dotted_path
-        return kwargs
-
     def is_active(self):
-        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "active")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "active")
 
     def is_reviewable(self):
-        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "reviewable")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "reviewable")
 
     def used_by(self):
-        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "used_by")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "used_by")
 
     def method(self):
-        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "method")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "method")
 
     def type(self):
-        return self.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "type")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "type")
 
 
 class DbBundleAttrPaths:
@@ -568,34 +376,24 @@ class DbBundleAttrPaths:
         return attr
 
     @classmethod
-    def make_path(cls, *data, **kwargs):
-        if data:
-            id_elements = list()
-            for elem in data:
-                id_elements.append(elem)
-            dotted_path = str(".".join(id_elements))
-            return dotted_path
-        return kwargs
-
-    @classmethod
     def is_active(cls):
-        return cls.make_path(cls._pub_slot, Envars.task_name,"active")
+        return db_path_assembler.make_path(cls._pub_slot, Envars.task_name,"active")
 
     @classmethod
     def is_reviewable(cls):
-        return cls.make_path(cls._pub_slot, Envars.task_name, "reviewable")
+        return db_path_assembler.make_path(cls._pub_slot, Envars.task_name, "reviewable")
 
     @classmethod
     def used_by(cls):
-        return cls.make_path(cls._pub_slot, Envars.task_name, "used_by")
+        return db_path_assembler.make_path(cls._pub_slot, Envars.task_name, "used_by")
 
     @classmethod
     def method(cls):
-        return cls.make_path(cls._pub_slot, Envars.task_name, "method")
+        return db_path_assembler.make_path(cls._pub_slot, Envars.task_name, "method")
 
     @classmethod
     def type(cls):
-        return cls.make_path(cls._pub_slot, Envars.task_name, "type")
+        return db_path_assembler.make_path(cls._pub_slot, Envars.task_name, "type")
 
 
 
