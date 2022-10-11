@@ -25,7 +25,6 @@ class DbProjectCode:
 
 class DbConstructors(object):
 
-
     def project_defaults(self):
         proj_defaults = dict(asset_definition=db_templates.entry_definition("build"),
                              shots_definition=db_templates.entry_definition("shot"),

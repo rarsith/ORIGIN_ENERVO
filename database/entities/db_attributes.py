@@ -1,4 +1,5 @@
 from envars.envars import Envars
+from database.utils import db_path_assembler
 
 
 class DbIds:
@@ -162,148 +163,142 @@ class DbEntitiesAttrPaths:
     @classmethod
     def to_base(cls, dict_packed=False):
         if dict_packed:
-            return cls.make_path(show_name=Envars.show_name,
-                                 branch_name=Envars.branch_name,
-                                 category=Envars.category,
-                                 entry_name=Envars.entry_name)
+            return db_path_assembler.make_path(show_name=Envars.show_name,
+                                               branch_name=Envars.branch_name,
+                                               category=Envars.category,
+                                               entry_name=Envars.entry_name)
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name)
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name)
 
     @classmethod
     def to_root_full(cls, dict_packed=False):
         if dict_packed:
-            return cls.make_path(show_name=Envars.show_name,
-                                 branch_name=Envars.branch_name,
-                                 category=Envars.category,
-                                 entry_name=Envars.entry_name,
-                                 task_name=Envars.task_name)
+            return db_path_assembler.make_path(show_name=Envars.show_name,
+                                               branch_name=Envars.branch_name,
+                                               category=Envars.category,
+                                               entry_name=Envars.entry_name,
+                                               task_name=Envars.task_name)
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             Envars.task_name
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           Envars.task_name
                              )
 
     @classmethod
     def to_branch(cls, dict_packed=False):
         if dict_packed:
-            return cls.make_path(show_name=Envars.show_name,
-                                 branch_name=Envars.branch_name)
+            return db_path_assembler.make_path(show_name=Envars.show_name,
+                                               branch_name=Envars.branch_name)
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name)
 
     @classmethod
     def to_category(cls, dict_packed=False):
         if dict_packed:
-            return cls.make_path(show_name=Envars.show_name,
-                                 branch_name=Envars.branch_name,
-                                 category=Envars.category)
+            return db_path_assembler.make_path(show_name=Envars.show_name,
+                                               branch_name=Envars.branch_name,
+                                               category=Envars.category)
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category)
 
     @classmethod
     def to_entry(cls, dict_packed=False):
         if dict_packed:
-            return cls.make_path(show_name = Envars.show_name,
-                                 branch_name = Envars.branch_name,
-                                 category = Envars.category,
-                                 entry_name = Envars.entry_name)
+            return db_path_assembler.make_path(show_name = Envars.show_name,
+                                               branch_name = Envars.branch_name,
+                                               category = Envars.category,
+                                               entry_name = Envars.entry_name)
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name)
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name)
 
     @classmethod
     def to_task(cls, relative=True):
         if relative:
-            return cls.make_path("tasks", Envars.task_name)
+            return db_path_assembler.make_path("tasks", Envars.task_name)
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                               "tasks",
-                             Envars.task_name)
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "tasks",
+                                           Envars.task_name)
 
     @classmethod
     def to_sync_tasks(cls, relative=True):
         if relative:
             return "sync_tasks"
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                               "sync_tasks")
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "sync_tasks")
 
     @classmethod
     def to_task_imports_from(cls, relative=True):
         if relative:
-            return cls.make_path("tasks", Envars.task_name, "imports_from")
+            return db_path_assembler.make_path("tasks", Envars.task_name, "imports_from")
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                               "tasks",
-                             Envars.task_name,
-                               "imports_from"
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "tasks",
+                                           Envars.task_name,
+                                           "imports_from")
 
     @classmethod
     def to_sync_task_slot(cls, relative=True):
         if relative:
-            return cls.make_path("sync_tasks", Envars.task_name)
+            return db_path_assembler.make_path("sync_tasks", Envars.task_name)
 
-        return cls.make_path(Envars.show_name,
-                             Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                             "sync_tasks",
-                             Envars.task_name,
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "sync_tasks",
+                                           Envars.task_name)
 
     @classmethod
     def to_pub_slots(cls, relative=True):
         if relative:
-            return cls.make_path("tasks", Envars.task_name, 'pub_slots')
+            return db_path_assembler.make_path("tasks", Envars.task_name, 'pub_slots')
 
-        return cls.make_path(Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                               "tasks",
-                             Envars.task_name,
-                               "pub_slots"
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "tasks",
+                                           Envars.task_name,
+                                           "pub_slots")
 
     @classmethod
     def to_pub_slot_used_by(cls, pub_slot, relative=True):
         if relative:
-            return cls.make_path("tasks", Envars.task_name, 'pub_slots', pub_slot, "used_by")
+            return db_path_assembler.make_path("tasks", Envars.task_name, 'pub_slots', pub_slot, "used_by")
 
-        return cls.make_path(Envars.show_name,
-                             Envars.show_name,
-                             Envars.branch_name,
-                             Envars.category,
-                             Envars.entry_name,
-                               "tasks",
-                             Envars.task_name,
-                               "pub_slots",
-                             pub_slot,
-                               "used_by"
-                             )
+        return db_path_assembler.make_path(Envars.show_name,
+                                           Envars.show_name,
+                                           Envars.branch_name,
+                                           Envars.category,
+                                           Envars.entry_name,
+                                           "tasks",
+                                           Envars.task_name,
+                                           "pub_slots",
+                                           pub_slot,
+                                           "used_by")
 
     @classmethod
     def to_entry_definition(cls, relative=True):
@@ -518,16 +513,6 @@ class DbMainPubAttrPaths:
     def custom(cls, attr):
         """Access path to get the Type of an Entity"""
         return attr
-
-    @classmethod
-    def make_path(cls, *data, **kwargs):
-        if data:
-            id_elements = list()
-            for elem in data:
-                id_elements.append(elem)
-            dotted_path = str(".".join(id_elements))
-            return dotted_path
-        return kwargs
 
     @classmethod
     def version(cls):
