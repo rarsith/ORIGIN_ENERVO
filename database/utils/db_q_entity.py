@@ -87,11 +87,14 @@ class QEntity:
             @path_list: takes a list or a single string
             @returns: the value that is corresponding to the last list element in the path_list
         """
+        print(">>>>", data)
 
         if isinstance(path_list, str):
             result = data.get(path_list)
             return result
         elif isinstance(path_list, list) and len(path_list) == 1:
+            print(path_list)
+
             result = data.get(path_list[0])
             return result
         else:
@@ -142,7 +145,6 @@ class QEntity:
 
         elif all_active:
             result = [x[self.attribute] for x in self.db[self.collection].find({"active":True}, {"_id": 0, self.attribute: 1})]
-            print (result)
             return result
 
         else:
