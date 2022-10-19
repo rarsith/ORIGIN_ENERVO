@@ -54,6 +54,7 @@ class SlotComponentsViewerUI(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
+    import pprint
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = SlotComponentsViewerUI()
     test_dialog.show()

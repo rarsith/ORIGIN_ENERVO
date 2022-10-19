@@ -1,8 +1,12 @@
 import sys
 from PySide2 import QtWidgets
 
-from origin_data_base import xcg_db_actions as xac
-from origin_config import xcg_validation as xval
+
+
+from database.entities.db_entities import DbProject
+from database.entities.db_structures import DbAssetCategories
+from database.db_types import TaskTypes
+
 
 class CreateAssetCategoryUI(QtWidgets.QDialog):
 
@@ -68,20 +72,24 @@ class CreateAssetCategoryUI(QtWidgets.QDialog):
         self.close()
 
     def db_commit(self):
-        xac.create_assets_category(self.show_name_cb.currentText(), self.seq_name_le.text(), self.type_cb.currentText())
+        DbAssetCategories.add_category(name=self.seq_name_le.text(), tasks_type=self.type_cb.currentText())
         self.seq_name_le.clear()
 
     def get_shows(self):
-        store_shows = []
-        shows = xac.db_query("show", "show_name", show_type="vfx")
-        print ('This are the shows:', shows)
-        for show in shows:
-            store_shows.append(show)
-        return store_shows
+        shows = DbProject().get_all()
+        return shows
 
 
 
 if __name__ == "__main__":
+    from envars.envars import Envars
+
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "circle"
+    Envars.task_name = "rigging"
+
     app = QtWidgets.QApplication(sys.argv)
     try:
         create_shot.close()

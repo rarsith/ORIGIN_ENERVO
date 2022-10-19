@@ -2,7 +2,7 @@ from envars.envars import Envars
 from database.utils import db_path_assembler
 
 
-class DbEntitiesAttrPaths:
+class DbAttrPaths:
 
     @classmethod
     def to_base(cls, dict_packed=False):
@@ -176,6 +176,49 @@ class DbEntitiesAttrPaths:
                                            "assignment")
 
 
+class DbEntityAttrPaths:
+
+    @classmethod
+    def custom(cls, attr):
+        """Access path to get the Type of an Entity"""
+        return attr
+
+    @classmethod
+    def is_active(cls):
+        """Access path to get if an Entity is active"""
+        return "active"
+
+    @classmethod
+    def type(cls):
+        """Access path to get the Type of an Entity"""
+        return "type"
+
+    @classmethod
+    def tasks(cls):
+        """Access path for tasks of the entry"""
+        return "tasks"
+
+    @classmethod
+    def sync_tasks(cls):
+        """Access path for tasks of the entry"""
+        return "sync_tasks"
+
+    @classmethod
+    def assignments(cls):
+        """Access path for tasks of the entry"""
+        return "assignment"
+
+    @classmethod
+    def definition(cls):
+        """Access path for tasks of the entry"""
+        return "definition"
+
+    @classmethod
+    def master_bundle(cls):
+        """Access path for tasks of the entry"""
+        return "master_bundle"
+
+
 class DbProjectAttrPaths:
 
     @classmethod
@@ -191,7 +234,7 @@ class DbProjectAttrPaths:
     @classmethod
     def name(cls):
         """Access path project name property"""
-        return "show_name"
+        return "entry_name"
 
     @classmethod
     def branches(cls):
@@ -242,49 +285,6 @@ class DbProjectAttrPaths:
     def type(cls):
         """Access path to get project Type"""
         return "show_type"
-
-
-class DbEntityAttrPaths:
-
-    @classmethod
-    def custom(cls, attr):
-        """Access path to get the Type of an Entity"""
-        return attr
-
-    @classmethod
-    def is_active(cls):
-        """Access path to get if an Entity is active"""
-        return "active"
-
-    @classmethod
-    def type(cls):
-        """Access path to get the Type of an Entity"""
-        return "type"
-
-    @classmethod
-    def tasks(cls):
-        """Access path for tasks of the entry"""
-        return "tasks"
-
-    @classmethod
-    def sync_tasks(cls):
-        """Access path for tasks of the entry"""
-        return "sync_tasks"
-
-    @classmethod
-    def assignments(cls):
-        """Access path for tasks of the entry"""
-        return "assignment"
-
-    @classmethod
-    def definition(cls):
-        """Access path for tasks of the entry"""
-        return "definition"
-
-    @classmethod
-    def master_bundle(cls):
-        """Access path for tasks of the entry"""
-        return "master_bundle"
 
 
 class DbTaskAttrPaths:
@@ -394,7 +394,6 @@ class DbBundleAttrPaths:
     @classmethod
     def type(cls):
         return db_path_assembler.make_path(cls._pub_slot, Envars.task_name, "type")
-
 
 
 if __name__ == '__main__':

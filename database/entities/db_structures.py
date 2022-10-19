@@ -8,7 +8,7 @@ from database.db_ids import DbIds
 class DbProjectBranch(object):
 
     @staticmethod
-    def add_branch(name: str, branch_type: BranchTypes) -> str:
+    def add_branch(name: str, branch_type: str) -> str:
 
         QEntity(db_collection=From().projects,
                 entry_id=DbIds.curr_project_id(),
@@ -24,7 +24,7 @@ class DbProjectBranch(object):
         branches = QEntity(db_collection=From().projects,
                            entry_id=DbIds.curr_project_id(),
                            attribute=DbProjectAttrPaths.branches()
-                           ).get(attrib_names=True)
+                           ).get_attr_names()
         return branches
 
     @property
@@ -36,7 +36,7 @@ class DbProjectBranch(object):
 class DbAssetCategories(object):
 
     @staticmethod
-    def add_category(name: str, tasks_type: TaskTypes) -> str:
+    def add_category(name: str, tasks_type: str) -> str:
         category_tasks_type = name + "_tasks"
         category_definition = name + "_definition"
 
@@ -65,7 +65,7 @@ class DbAssetCategories(object):
         categories = QEntity(db_collection=From().projects,
                              entry_id=DbIds.curr_project_id(),
                              attribute=DbProjectAttrPaths.categories()
-                             ).get(attrib_names=True)
+                             ).get_attr_names()
         categories.remove("type")
         return categories
 
@@ -74,11 +74,16 @@ class DbAssetCategories(object):
 if __name__ == '__main__':
     from envars.envars import Envars
 
-    Envars.show_name = "Cicles"
+    Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
     Envars.entry_name = "hulk"
     Envars.task_name = "surfacing"
 
-    cc = DbProjectBranch().add_branch("super_b", BranchTypes.build())
+    curr_branches = DbProjectBranch().get_branches()
+    print (curr_branches)
+
+    current_branch_cat = DbAssetCategories().get_categories()
+    print(current_branch_cat)
+
 

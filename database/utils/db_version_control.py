@@ -1,5 +1,5 @@
 from common_utils import version_increment as vup
-from database.entities.db_attributes import DbEntitiesAttrPaths
+from database.entities.db_attributes import DbAttrPaths
 from database.utils.db_q_collection import DbQCollection
 from database.utils.db_q_entity import From
 
@@ -10,7 +10,7 @@ class DBVersionControl(object):
     def db_main_pub_ver_increase():
         get_versions = DbQCollection().db_find(db_collection=From().publishes,
                                                item_to_search="version",
-                                               **DbEntitiesAttrPaths.to_base(dict_packed=True)
+                                               **DbAttrPaths.to_base(dict_packed=True)
                                                )
         new_version = vup.version_increment(get_versions)
         return new_version
@@ -19,7 +19,7 @@ class DBVersionControl(object):
     def db_pubslot_ver_increase(collection_name, slot_name):
         get_versions = DbQCollection().db_find(db_collection=collection_name,
                                                item_to_search="version",
-                                               **DbEntitiesAttrPaths.to_base(dict_packed=True),
+                                               **DbAttrPaths.to_base(dict_packed=True),
                                                slot_name=slot_name
                                                )
 
@@ -30,7 +30,7 @@ class DBVersionControl(object):
     def db_master_bundle_ver_increase():
         get_versions = DbQCollection().db_find(db_collection=From().bundles,
                                                item_to_search="version",
-                                               **DbEntitiesAttrPaths.to_entry(dict_packed=True)
+                                               **DbAttrPaths.to_entry(dict_packed=True)
                                                )
 
         new_version = vup.version_increment(get_versions)
@@ -40,7 +40,7 @@ class DBVersionControl(object):
     def db_sync_tasks_ver_increase():
         get_versions = DbQCollection().db_find(db_collection=From().sync_tasks,
                                                item_to_search="version",
-                                               **DbEntitiesAttrPaths.to_entry(dict_packed=True)
+                                               **DbAttrPaths.to_entry(dict_packed=True)
                                                )
 
         new_version = vup.version_increment(get_versions)
@@ -50,7 +50,7 @@ class DBVersionControl(object):
     def db_wip_files_version_increase(collection_name):
         get_versions = DbQCollection().db_find(db_collection=collection_name,
                                                item_to_search="version",
-                                               **DbEntitiesAttrPaths.to_root_full(dict_packed=True)
+                                               **DbAttrPaths.to_root_full(dict_packed=True)
                                                )
         new_version = vup.version_increment(get_versions)
         return new_version

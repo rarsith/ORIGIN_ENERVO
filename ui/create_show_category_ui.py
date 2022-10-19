@@ -1,7 +1,8 @@
 import sys
 from PySide2 import QtWidgets
 from PySide2 import QtGui
-from origin_data_base import xcg_db_actions as xac
+from database.entities.db_entities import DbProject
+from database.entities.db_structures import DbProjectBranch
 
 
 class CreateShowCategoryUI(QtWidgets.QDialog):
@@ -26,6 +27,10 @@ class CreateShowCategoryUI(QtWidgets.QDialog):
 
         self.category_name_le = QtWidgets.QLineEdit()
 
+        default_branch_types = ['build', 'shots', 'lib_asset', 'ref_asset' ]
+        self.branch_type_cb = QtWidgets.QComboBox()
+        self.branch_type_cb.addItems(default_branch_types)
+
         self.create_btn = QtWidgets.QPushButton("Create")
         self.create_and_close_btn = QtWidgets.QPushButton("Create and Close")
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
@@ -33,7 +38,8 @@ class CreateShowCategoryUI(QtWidgets.QDialog):
     def create_layout(self):
         form_layout = QtWidgets.QFormLayout()
         form_layout.addRow("Show_name: ", self.show_name_cb)
-        form_layout.addRow("Show Category Name:", self.category_name_le)
+        form_layout.addRow("Show Branch Name:", self.category_name_le)
+        form_layout.addRow("Show Branch Type:", self.branch_type_cb)
 
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addStretch()
@@ -60,15 +66,23 @@ class CreateShowCategoryUI(QtWidgets.QDialog):
         self.close()
 
     def db_commit(self):
-        xac.create_show_branch(self.show_name_cb.currentText(), self.category_name_le.text())
+        DbProjectBranch.add_branch(name=self.category_name_le.text(), branch_type=self.branch_type_cb.currentText())
         self.category_name_le.clear()
 
     def get_shows(self):
-        shows = xac.get_all_active_shows()
+        shows = DbProject().get_all()
         return shows
 
 
 if __name__ == "__main__":
+    from envars.envars import Envars
+
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "circle"
+    Envars.task_name = "rigging"
+
     app = QtWidgets.QApplication(sys.argv)
 
     app.setStyle(QtWidgets.QStyleFactory.create("fusion"))

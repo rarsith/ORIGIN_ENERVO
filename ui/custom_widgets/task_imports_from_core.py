@@ -1,27 +1,16 @@
 import sys
 from PySide2 import QtWidgets, QtCore
-from origin_data_base import xcg_db_connection as xcon
-from origin_data_base import xcg_db_actions as xac
-from origin_database_custom_widgets.xcg_task_imports_from_UI import TasksImportFromUI
+from envars.envars import Envars
+
+from ui.custom_widgets.task_imports_from_UI import TasksImportFromUI
+from database.entities.db_entities import DbProject, DbTasks, DbPubSlot
 
 
 class TasksImportFromCore(TasksImportFromUI):
-    def __init__(self, show_name='',
-                         branch_name='',
-                         category_name='',
-                         entry_name='',
-                         task_name='',
-                         parent=None):
+    def __init__(self, parent=None):
         super(TasksImportFromCore, self).__init__(parent)
 
-        self.show_name = show_name
-        self.branch_name = branch_name
-        self.category_name = category_name
-        self.entry_name = entry_name
-        self.task_name = task_name
-
         self.create_connections()
-
         self.populate_main_widget()
 
     def create_connections(self):
@@ -38,38 +27,26 @@ class TasksImportFromCore(TasksImportFromUI):
 
 # ImportsFromWidget -- START
     def populate_task_import_schema(self):
-        # self.get_path()
         get_schema = self.get_saved_import_schema()
         get_active_tasks = []
         self.imports_from_wdg.clear()
         for task in get_schema:
-            is_active = xac.get_task_is_active(self.show_name,
-                                               self.branch_name,
-                                               self.category_name,
-                                               self.entry_name,
-                                               task)
-            if is_active[0] == True:
+            is_active = DbTasks().is_active
+            if is_active == True:
                 get_active_tasks.append(task)
         self.add_items_to_list(get_active_tasks)
 
     def add_items_to_list(self, items):
-
         for active_task in items:
 
-            imp_from_pub_slots_Schema = self.get_pub_imports(active_task)
+            imp_from_pub_slots_Schema = self.get_pub_imports()
             item = QtWidgets.QTreeWidgetItem([active_task])
-
-            # self.review_btn = QtWidgets.QPushButton('-->')
             self.imports_from_wdg.addTopLevelItem(item)
-            # self.imports_from_wdg.setItemWidget(item, 1, self.review_btn)
-            # self.review_btn.clicked.connect(self.show_curr_item)
-
-            slot_used_by = self.get_pub_used_by(imp_from_pub_slots_Schema, self.task_name)
+            slot_used_by = self.get_pub_used_by(imp_from_pub_slots_Schema)
 
             try:
                 for k, v in imp_from_pub_slots_Schema.items():
                     self.x = QtWidgets.QTreeWidgetItem([k])
-                    # self.go_to_btn = QtWidgets.QPushButton('go to')
                     item.addChild(self.x)
 
                     if self.x.text(0) in slot_used_by:
@@ -77,22 +54,9 @@ class TasksImportFromCore(TasksImportFromUI):
                     else:
                         self.x.setCheckState(0, QtCore.Qt.Unchecked)
 
-                    # self.imports_from_wdg.setItemWidget(self.x, 1, self.go_to_btn)
-                    # self.go_to_btn.clicked.connect(self.show_curr_item)
-                # self.expandAll()
             except:
                 pass
 
-    # def show_curr_item(self):
-    #     item = self.imports_from_wdg.currentItem()
-    #     item_index = self.imports_from_wdg.currentIndex()
-    #
-    #     if item_index.isValid():
-    #         try:
-    #             parent = item.parent()
-    #             print('Open Menu for {0} >>> Parent >>>> {1}'.format(item.text(0), parent.text(0)))
-    #         except:
-    #             pass
 
     def handle_item_changed(self, item, column):
         item_parent = item.parent()
@@ -105,27 +69,18 @@ class TasksImportFromCore(TasksImportFromUI):
             pass
 
     def get_saved_import_schema(self):
-        existing_imports_from = xac.get_task_imports_from(self.show_name,
-                                                          self.branch_name,
-                                                          self.category_name,
-                                                          self.entry_name,
-                                                          self.task_name)
+        existing_imports_from = DbTasks().imports_from
         if existing_imports_from == None:
             return []
         else:
             return existing_imports_from
 
-    def get_pub_imports(self, import_tasks):
-        pub_imports = xac.get_pub_slots(self.show_name,
-                                        self.branch_name,
-                                        self.category_name,
-                                        self.entry_name,
-                                        import_tasks)
-
+    def get_pub_imports(self):
+        pub_imports = DbPubSlot().get_pub_slots()
         return pub_imports
 
-    def get_pub_used_by(self, extract, task):
-        rel_task = xac.get_pub_used_by_task(extract, task)
+    def get_pub_used_by(self, extract):
+        rel_task = DbPubSlot().get_used_by_task(extract)
         return rel_task
 
     def get_wdg_top_level_items_list(self):
@@ -188,34 +143,23 @@ class TasksImportFromCore(TasksImportFromUI):
 
                 if child.checkState(0) == QtCore.Qt.Unchecked:
                     checked_sweeps.append(child.text(0))
-
             unchecked[signal.text(0)] = checked_sweeps
-
         return unchecked
 
     def write_wdg_checked_items(self):
         checked_items = self.get_wdg_checked_items()
+        print (checked_items)
         unchecked_items = self.get_wdg_unchecked_items()
+        print(unchecked_items)
         for k, v in checked_items.items():
             for each in v:
-                xac.update_task_pub_used_by(self.show_name,
-                                            self.branch_name,
-                                            self.category_name,
-                                            self.entry_name,
-                                            k,
-                                            each,
-                                            self.task_name
-                                            )
+                print (k)
+                print (each)
+                DbPubSlot().set_used_by(k, each)
+
         for k, v in unchecked_items.items():
             for each in v:
-                xac.update_task_pub_used_by(self.show_name,
-                                            self.branch_name,
-                                            self.category_name,
-                                            self.entry_name,
-                                            k,
-                                            each,
-                                            self.task_name,
-                                            remove_action=True)
+                DbPubSlot().set_used_by(k, each, remove_action=True)
 
     def clean_wdg(self, sel_item):
         checked = dict()
@@ -229,14 +173,7 @@ class TasksImportFromCore(TasksImportFromUI):
 
         for k, v in checked.items():
             for each in v:
-                xac.update_task_pub_used_by(self.show_name,
-                                            self.branch_name,
-                                            self.category_name,
-                                            self.entry_name,
-                                            k,
-                                            each,
-                                            self.task_name,
-                                            remove_action=True)
+                DbPubSlot.set_used_by(k, each, remove_action=True)
 
     def remove_import_task_slot(self):
         listItems = self.imports_from_wdg.currentItem()
@@ -246,21 +183,9 @@ class TasksImportFromCore(TasksImportFromUI):
         self.imports_from_wdg.takeTopLevelItem(remove_it)
 
     def save_to_database(self):
-
         self.write_wdg_checked_items()
-
-        xac.remove_all_task_import_slots(self.show_name,
-                                         self.branch_name,
-                                         self.category_name,
-                                         self.entry_name,
-                                         self.task_name)
-
-        xac.update_task_imports_from(self.show_name,
-                                     self.branch_name,
-                                     self.category_name,
-                                     self.entry_name,
-                                     self.task_name,
-                                     imports_from=self.get_wdg_top_level_items_list())
+        DbTasks.rem_import_slots()
+        DbTasks.imports_from = self.get_wdg_top_level_items_list()
 
 # ImportsFromWidget -- END
 
@@ -277,14 +202,14 @@ class TasksImportFromCore(TasksImportFromUI):
                 QtWidgets.QListWidgetItem(i, self.existing_tasks_lwd)
 
     def get_all_tasks(self):
-        tasks = xac.get_tasks(self.show_name, self.branch_name, self.category_name, self.entry_name)
+        tasks = DbTasks().get_tasks()
         if tasks != None:
             return tasks
         else:
             return ["-- no tasks --"]
 
     def remove_self_task(self):
-        get_task = self.task_name
+        get_task = Envars().task_name
         entries = self.existing_tasks_lwd.findItems(get_task, QtCore.Qt.MatchFixedString)
         for entry in entries:
             indexes = self.existing_tasks_lwd.indexFromItem(entry)
@@ -320,17 +245,17 @@ class TasksImportFromCore(TasksImportFromUI):
 
 if __name__ == "__main__":
 
-    db = xcon.server.exchange
-    test_position = db.show_name
-    test = test_position.find({}, {"_id": 1, "show_name": 1})
+    from envars.envars import Envars
+
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "red_hulk"
+    Envars.task_name = "rigging"
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TasksImportFromCore()
-    test_dialog.show_name = 'Test'
-    test_dialog.branch_name = 'assets'
-    test_dialog.category_name = 'characters'
-    test_dialog.entry_name = 'greenHulk'
-    test_dialog.task_name = 'texturing'
+
     test_dialog.populate_main_widget()
     test_dialog.show()
     sys.exit(app.exec_())

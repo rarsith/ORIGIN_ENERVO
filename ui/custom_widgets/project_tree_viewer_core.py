@@ -1,13 +1,15 @@
 from PySide2 import QtWidgets, QtCore, QtGui
 from ui.custom_widgets.project_tree_viewer_UI import ProjectTreeViewerUI
 from database.entities.db_entities import DbAsset, DbProject
+from database.entities.db_structures import DbAssetCategories, DbProjectBranch
 from common_utils import get_deep_value as gdeepval
-# from origin_ui import create_show_ui
-# from origin_ui import create_seq_ui
-from ui import create_asset_ui
-from ui import create_shot_ui
-# from origin_ui import create_asset_category_ui
-# from origin_ui import create_show_category_ui
+from ui import (create_show_ui,
+                create_seq_ui,
+                create_asset_ui,
+                create_shot_ui,
+                create_asset_category_ui,
+                create_show_category_ui)
+
 
 
 
@@ -25,7 +27,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.context_menu()
 
     def create_connections(self):
-        self.show_select_cb.currentIndexChanged.connect(self.comboBox_shows)
+        self.show_select_cb.currentIndexChanged.connect(self.curr_sel_show)
         self.show_select_cb.currentIndexChanged.connect(self.refresh_tree_widget)
 
         self.project_tree_viewer_wdg.itemClicked.connect(self.get_selected_entry_name)
@@ -43,22 +45,23 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.remove_entry_action.triggered.connect(self.remove_entry_menu)
 
     def get_shows(self):
-        get_versions = DbProject().get_all()
-        return sorted(get_versions)
+        get_all_shows = DbProject().get_all()
+        return sorted(get_all_shows)
 
     def refresh_shows(self):
         store = []
-        current_selected_show = self.comboBox_shows()
+        current_selected_show = self.curr_sel_show()
         get_versions = DbProject().get_all()
+
         for show in get_versions:
             store.append(show)
-
         self.show_select_cb.clear()
         self.show_select_cb.addItems(store)
         self.show_select_cb.setCurrentText(current_selected_show)
+
         return sorted(store)
 
-    def comboBox_shows(self):
+    def curr_sel_show(self):
         text = self.show_select_cb.currentText()
         return text
 
@@ -71,17 +74,40 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
     def refresh_tree_widget(self):
         try:
             self.project_tree_viewer_wdg.clear()
-            get_entity = self.get_show_structure()
-            get_categories = gdeepval.get_entity_root_structure(get_entity)
-            for category in sorted(get_categories):
-                item = self.show_tree_create_item(category)
+            get_branches = DbProjectBranch.get_branches()
+            for branch in sorted(get_branches):
+                item = self.show_tree_create_item(branch)
                 self.project_tree_viewer_wdg.addTopLevelItem(item)
             self.project_tree_viewer_wdg.expandAll()
         except:
-            pass
+            print ("Something wrong in refresh_tree_widget")
+
+    def show_tree_create_item(self, name):
+        item = QtWidgets.QTreeWidgetItem([name])
+        self.add_children(item)
+        return item
+
+    def add_children(self, item):
+        get_children = gdeepval.deep_values(item.text(0), self.get_show_structure())
+        for children in get_children:
+            for child in sorted(children):
+                if child != "type":
+                    child_item = self.show_tree_create_item(child)
+                    item.addChild(child_item)
+
+    def get_show_structure(self):
+        try:
+            entity = DbProject.get_structure()
+            return entity
+        except:
+            print ("shit Happened!! in GET_SHOW_STRUCTURE_FUNC")
 
     def get_selected_show(self):
         return self.show_select_cb.currentText()
+
+    def get_selected(self):
+        selected = self.project_tree_viewer_wdg.selectedItems()
+        return selected
 
     def get_selected_entry_name(self):
         names = []
@@ -157,18 +183,14 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         get_selected_objects = self.project_tree_viewer_wdg.currentItem()
         get_selected_show = self.show_select_cb.currentText()
 
-
         if get_selected_objects is None:
             return[]
 
         else:
-
             parent = self.get_parent()
             grandparent = self.get_grandparent()
-
             if not parent:
                 branch.append(get_selected_objects.text(0))
-
 
             elif not grandparent:
                 branch.append(parent)
@@ -178,7 +200,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                 branch.append(grandparent)
                 category.append(parent)
                 entry.append(get_selected_objects.text(0))
-
         return (''.join(get_selected_show)),(''.join(branch)), (''.join(category)), (''.join(entry))
 
     def get_sel_category(self):
@@ -200,14 +221,11 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                 return outstring
             outstring = item.parent.text(0) + '.' + outstring
             return get_parent(item.parent, outstring)
-
         output = get_parent(item, item.text(0))
-
         return output
 
     def get_sel_entry_path(self):
         get_selected_entry_objects = self.project_tree_viewer_wdg.selectedItems()
-
         if len(get_selected_entry_objects) == 0:
             return []
         elif len(get_selected_entry_objects) >= 1:
@@ -217,27 +235,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                     return parent.text(0)
                 except:
                     pass
-
-    def get_show_structure(self):
-        try:
-            entity = DbProject().get_structure()
-            return entity
-        except:
-            pass
-
-    def add_children(self, item):
-        get_children = gdeepval.deep_values(item.text(0), self.get_show_structure())
-        for children in get_children:
-            for child in sorted(children):
-                if child != "type":
-                    child_item = self.show_tree_create_item(child)
-                    item.addChild(child_item)
-
-    def show_tree_create_item(self, name):
-        item = QtWidgets.QTreeWidgetItem([name])
-        if item.text(0) != "type":
-            self.add_children(item)
-        return item
 
     def context_menu(self):
         self.project_tree_viewer_wdg.customContextMenuRequested.connect(self.show_tree_con_menu)
@@ -332,22 +329,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
     def create_shot_menu(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = create_shot_ui.CreateShotUI()
-        self.ui.parent_seq_cb.setCurrentText(self.get_selected_entry_name())
-
-        shows_index = self.ui.show_name_cb.findText(self.show_select_cb.currentText(), QtCore.Qt.MatchFixedString)
-        if shows_index >= 0:
-            self.ui.show_name_cb.setCurrentIndex(shows_index)
-        self.ui.parent_seq_cb.addItems(self.ui.get_shows_seq())
-
-        sequences_index = self.ui.parent_seq_cb.findText(self.get_selected_entry_name(), QtCore.Qt.MatchFixedString)
-        if sequences_index >= 0:
-            self.ui.parent_seq_cb.setCurrentIndex(sequences_index)
-
-        self.ui.create_btn.clicked.connect(self.refresh_tree_widget)
-        self.ui.create_and_close_btn.clicked.connect(self.refresh_tree_widget)
-
-        self.ui.show_name_cb.setDisabled(True)
-        self.ui.parent_seq_cb.setDisabled(True)
 
         self.ui.show()
 
@@ -372,19 +353,13 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     font = app.instance().setFont(QtGui.QFont())
 
-
-
-    Envars.show_name = "Cicles"
-    Envars.branch_name = "assets"
-    Envars.category = "characters"
+    Envars.show_name = "Test"
+    Envars.branch_name = "sequences"
+    Envars.category = "GooGoo"
     Envars.entry_name = "circle"
     Envars.task_name = "rigging"
 
-    get_versions = DbProject().get_all()
-    # print(get_versions)
-
-
-    test_dialog = ProjectTreeViewerCore("Cicles")
+    test_dialog = ProjectTreeViewerCore(Envars().show_name)
     # test_dialog.current_show()
     # test_dialog.comboBox_shows()
     # test_dialog.set_show_to()

@@ -1,13 +1,7 @@
-import sys
-
 from PySide2 import QtWidgets, QtGui
-from origin_data_base import xcg_db_connection as xcon
-from origin_config import xcg_validation as xval
-from origin_data_base import xcg_db_actions as xac
-from origin_database_custom_widgets.xcg_main_publishes_view_UI import MainPublishesViewUI
-
-from icons import *
-
+from database.db_statuses import DbStatuses
+from database.entities.db_entities import DbPublish
+from ui.custom_widgets.main_publishes_view_UI import MainPublishesViewUI
 
 img_path = "../../icons/play_icon_vsmall.png"
 
@@ -19,19 +13,8 @@ class SetReviewableComponent(QtWidgets.QPushButton):
 
 
 class MainPublishesViewCore(MainPublishesViewUI):
-    def __init__(self,show_name = '',
-                 branch_name = '',
-                 category_name = '',
-                 entry_name = '',
-                 task_name = '',
-                 parent=None):
+    def __init__(self, parent=None):
         super(MainPublishesViewCore, self).__init__(parent)
-
-        self.show_name = show_name
-        self.branch_name = branch_name
-        self.category_name = category_name
-        self.entry_name = entry_name
-        self.task_name = task_name
 
         self.populate_main_widget()
         self.create_connections()
@@ -51,22 +34,14 @@ class MainPublishesViewCore(MainPublishesViewUI):
 
 # PublishSlotsWidget -- START
     def get_value_of(self, slot):
-        publishes = xac.get_db_publishes_ids("publishes",
-                                             self.show_name,
-                                             self.branch_name,
-                                             self.category_name,
-                                             self.entry_name,
-                                             self.task_name)
+        publishes = DbPublish().get_db_publishes_ids("publishes")
+        print (publishes)
         return publishes
 
     def populate_main_widget(self):
         self.publish_view_tw.setRowCount(0)
-        get_publish_id = xac.get_db_publishes_ids("publishes",
-                                             self.show_name,
-                                             self.branch_name,
-                                             self.category_name,
-                                             self.entry_name,
-                                             self.task_name)
+        get_publish_id = DbPublish().get_db_publishes_ids("publishes")
+
         if not get_publish_id == None:
             rows_cnt = len(get_publish_id)
             self.publish_view_tw.setRowCount(rows_cnt)
@@ -82,17 +57,17 @@ class MainPublishesViewCore(MainPublishesViewUI):
         self.publish_view_tw.setItem(row, 2, item)
 
         self.status_cb = QtWidgets.QComboBox()
-        self.status_cb.addItems(xval.VALID_TASK_STATUSES)
+        self.status_cb.addItems(DbStatuses().list_all())
         self.status_cb.setStyleSheet('font-size: 8px;' 'font-family: "Rubik";')
 
-        self.get_id = xac.get_db_values("publishes", name, "_id")
-        self.get_publish_name = xac.get_db_values("publishes", name, "display_name")
-        self.get_publish_version = xac.get_db_values("publishes", name, "version")
-        self.get_publish_task = xac.get_db_values("publishes", name, "task_name")
-        self.get_publish_user = xac.get_db_values("publishes", name, "artist")
-        self.get_publish_status = xac.get_db_values("publishes", name, "status")
-        self.get_publish_date = xac.get_db_values("publishes", name, "date")
-        self.get_publish_time = xac.get_db_values("publishes", name, "time")
+        self.get_id = DbPublish().get_db_values("publishes", name, "_id")
+        self.get_publish_name = DbPublish().get_db_values("publishes", name, "display_name")
+        self.get_publish_version = DbPublish().get_db_values("publishes", name, "version")
+        self.get_publish_task = DbPublish().get_db_values("publishes", name, "task_name")
+        self.get_publish_user = DbPublish().get_db_values("publishes", name, "artist")
+        self.get_publish_status = DbPublish().get_db_values("publishes", name, "status")
+        self.get_publish_date = DbPublish().get_db_values("publishes", name, "date")
+        self.get_publish_time = DbPublish().get_db_values("publishes", name, "time")
 
         try:
             self.status_cb.setCurrentText(self.get_publish_status)
@@ -119,18 +94,18 @@ class MainPublishesViewCore(MainPublishesViewUI):
 
 
 if __name__ == "__main__":
+    import sys
+    from envars.envars import Envars
 
-    db = xcon.server.exchange
-    test_position = db.show_name
-    test = test_position.find({}, {"_id": 1, "show_name": 1})
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "red_hulk"
+    Envars.task_name = "modeling"
 
     app = QtWidgets.QApplication(sys.argv)
-    show_name = 'Test'
-    # branch_name = 'assets'
-    # category_name = 'characters'
-    # entry_name = 'hulkGreen'
-    # task_name = 'surfacing'
-    test_dialog = MainPublishesViewCore(show_name)
-    test_dialog.populate_main_widget()
+
+    test_dialog = MainPublishesViewCore()
+    # test_dialog.populate_main_widget()
     test_dialog.show()
     sys.exit(app.exec_())

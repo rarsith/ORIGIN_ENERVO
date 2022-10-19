@@ -36,6 +36,8 @@ class ProjectTreeViewerUI(QtWidgets.QWidget):
 
 if __name__ == '__main__':
     import sys
+    import pprint
+
     app = QtWidgets.QApplication(sys.argv)
     font = app.instance().setFont(QtGui.QFont())
     test_dialog = ProjectTreeViewerUI()

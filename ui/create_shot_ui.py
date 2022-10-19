@@ -2,6 +2,7 @@ import sys
 from PySide2 import QtWidgets, QtCore
 
 from database.entities.db_entities import DbAsset, DbProject
+from envars.envars import Envars
 
 class CreateShotUI(QtWidgets.QDialog):
 
@@ -9,11 +10,11 @@ class CreateShotUI(QtWidgets.QDialog):
         super(CreateShotUI, self).__init__(parent)
 
         self.setWindowTitle("Create Shot")
-        self.setMinimumSize(550, 650)
-        self.setMaximumSize(550, 650)
+        # self.setMinimumSize(550, 650)
+        # self.setMaximumSize(550, 650)
 
-        self.setMinimumHeight(900)
-        self.setMaximumHeight(900)
+        # self.setMinimumHeight(900)
+        # self.setMaximumHeight(900)
 
 
         self.create_widgets()
@@ -200,12 +201,7 @@ class CreateShotUI(QtWidgets.QDialog):
         self.close()
 
     def db_commit(self):
-        xac.create_shot(self.show_name_cb.currentText(),
-                        self.parent_seq_cb.currentText(),
-                        self.shot_name_le.text(),
-                        self.shot_status_cb.currentText(),
-                        definition = self.compute_definition())
-
+        DbAsset().create(self.shot_name_le.text())
         self.shot_name_le.clear()
 
     def get_shows(self):
@@ -218,10 +214,10 @@ if __name__ == "__main__":
 
     from envars.envars import Envars
 
-    Envars.show_name = "Cicles"
-    Envars.branch_name = "assets"
-    Envars.category = "characters"
-    Envars.entry_name = "circle"
+    Envars.show_name = "Test"
+    Envars.branch_name = "sequences"
+    Envars.category = "GooGoo"
+    Envars.entry_name = "GooGoo"
     Envars.task_name = "rigging"
 
     create_shot = CreateShotUI()

@@ -1,7 +1,7 @@
 import sys
 from PySide2 import QtWidgets, QtGui
-from origin_data_base import xcg_db_actions as xac
-from origin_database_custom_widgets.xcg_slot_component_viewer_UI import SlotComponentsViewerUI
+from database.entities.db_entities import DbProject, DbPublish
+from ui.custom_widgets.slot_component_viewer_UI import SlotComponentsViewerUI
 
 
 img_path = "/Users/arsithra/Documents/Learning_Python/PycharmProjects/Xchange/xcg_icons/play_icon_vsmall.png"
@@ -36,7 +36,7 @@ class SlotComponentsViewerCore(SlotComponentsViewerUI):
     def populate_main_widget(self):
         self.slot_component_viewer_tw.setRowCount(0)
 
-        get_components = xac.get_db_values(self.slot_collection, self.slot_pub_id, "components")
+        get_components = DbPublish().get_db_values(self.slot_collection, self.slot_pub_id, "components")
         if not get_components == None:
             rows_cnt = len(get_components)
             self.slot_component_viewer_tw.setRowCount(rows_cnt)
@@ -69,8 +69,8 @@ if __name__ == "__main__":
 
 
     app = QtWidgets.QApplication(sys.argv)
-    pub_id = '60b7ed9ebae5ff09eb8c8b40'
-    sl_collection = 'publish_slots_groom'
+    pub_id = 'Test.assets.characters.red_hulk.surfacing.look_dev.v0001'
+    sl_collection = 'publish_slots_surfacing'
     test_dialog = SlotComponentsViewerCore(slot_pub_id=pub_id, slot_collection=sl_collection)
 
     test_dialog.show()

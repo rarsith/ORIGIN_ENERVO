@@ -1,9 +1,9 @@
-from database.entities.db_entities import DbProject, DbTasks, DbSyncTasks, DbPubSlot
+from database.entities.db_entities import DbProject, DbTasks, DbSyncTasks, DbPubSlot, DbPublish
 from database.entities.db_entities import DbAsset
 from database.entities.db_entities import DbBundle
 from database.entities.db_structures import DbProjectBranch, DbAssetCategories
-from database.publishing.db_publish import DbPublish
 from envars.envars import Envars
+import pprint
 
 existing_modeling_pub_slots = ['rend_geo', 'proxy_geo', 'utility', 'lidar', 'proj_geo', 'vport_mat', 'tex_object', 'curvature_map', 'ao_map', 'selection_map']
 
@@ -11,7 +11,7 @@ Envars.show_name = "Test"
 Envars.branch_name = "assets"
 Envars.category = "characters"
 Envars.entry_name = "red_hulk"
-Envars.task_name = "surfacing"
+Envars.task_name = "modeling"
 
 #print(Envars().show_name, Envars().branch_name, Envars().category, Envars().entry_name, Envars().task_name)
 
@@ -29,25 +29,25 @@ bundle = DbBundle()
 
 # SWITHCHES
 test_project = False
-test_assets = True
+test_assets = False
 test_tasks = False
 test_sync_tasks = False
 test_pub_slot = False
-test_publish = False
+test_publish = True
 test_bundle = False
 
 
 # PROJECT METHODS
 if test_project:
-    # project.create("Best")
+    # project.create("FooFoo")
     # DbProjectBranch().add_branch(name="references", branch_type=Branch.reference())
     # DbAssetCategories().add_category(name="grass`", tasks_type=Tasks.props())
     project_type = project.get_type()
     branch_type = DbProjectBranch().get_type
     project_struct = project.get_structure()
-    print(project_type)
-    print(branch_type, "<<")
-    print(project_struct)
+    # print(project_type)
+    # print(branch_type, "<<")
+    pprint.pprint(list(project_struct.values()))
 
     proj_branches=DbProjectBranch().get_branches()
     branch_categories = DbAssetCategories().get_categories()

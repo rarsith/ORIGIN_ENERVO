@@ -59,7 +59,6 @@ class From:
 
 
 class QEntity:
-
     def __init__(self, db_collection: From(), entry_id: DbIds(), attribute: (DbProjectAttrPaths,
                                                                              DbEntityAttrPaths,
                                                                              DbTaskAttrPaths,
@@ -114,7 +113,15 @@ class QEntity:
             return list(data)
         return data
 
-    def get(self, attrib_names: bool = False, attrib_values: bool = False, all: bool = False, all_active: bool = False):
+    def db_results(self):
+        results = self.db[self.collection].find({"_id": self.db_id}, {"_id": 0, self.attribute: 1})
+        return results
+
+    def get(self,
+            attrib_names: bool = False,
+            attrib_values: bool = False,
+            all: bool = False,
+            all_active: bool = False):
         """
             will find all the key values from a collection and returns them as a dictionary
         """
@@ -141,6 +148,20 @@ class QEntity:
         else:
             for result in results:
                 return result
+
+    def get_attr_names(self):
+        return self._get_keys(self.db_results())
+
+    def get_attr_values(self):
+        return self._get_values(self.db_results())
+
+    def get_all(self):
+        result = [x[self.attribute] for x in self.db[self.collection].find({}, {"_id": 0, self.attribute: 1})]
+        return result
+
+    def get_all_active(self):
+        result = [x[self.attribute] for x in self.db[self.collection].find({"active": True}, {"_id": 0, self.attribute: 1})]
+        return result
 
     def update(self, data):
         self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: data}})
@@ -172,7 +193,7 @@ class QEntity:
         self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: 1}})
 
     def remove_entity(self):
-        """Removes from a given Collection a full document. This action is not recoverable"""
+        """Removes a Database Entry from a given Collection. This action is not recoverable"""
         self.db[self.collection].delete_one({"_id": self.db_id})
 
     def clear(self):
@@ -204,6 +225,9 @@ class DbRef:
 
 
 class DbReferences:
+    def __init__(self):
+        self.db = mdbconn.server[mdbconn.database_name]
+
     @classmethod
     def add_db_id_reference(cls, collection, parent_doc_id, destination_slot, id_to_add, from_collection, replace=False):
         db = mdbconn.server[mdbconn.database_name]
@@ -214,6 +238,16 @@ class DbReferences:
             db[collection].update_one({"_id": parent_doc_id},
                                       {"$set": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
 
+    def get_db_referenced_attr(self, src_collection, src_id, src_attr, attr_to_find):
+        list_attr = list()
+        if not src_id or src_id == None:
+            return
+        else:
+            id_list = self.db[src_collection].find_one({"_id": src_id})
+            for each_id in id_list[src_attr]:
+                attr_data = DbRef().db_deref(each_id, attr_to_find)
+                list_attr.append(attr_data)
+            return list_attr
 
 
 #TODO: refactor Origin to From --> create a decoarator to return data from the database
@@ -228,8 +262,9 @@ if __name__ == '__main__':
     Envars.entry_name = "blue_hulk"
     Envars.task_name = "modeling"
 
-    print (From().projects, DbIds().curr_project_id(), DbProjectAttrPaths.curr_branch())
+
     origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbProjectAttrPaths.curr_branch()).get()
+
     print (origin)
     # print ("FROM ?<<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
 

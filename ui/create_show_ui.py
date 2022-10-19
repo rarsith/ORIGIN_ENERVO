@@ -1,7 +1,6 @@
 import sys
 from PySide2 import QtWidgets
-from PySide2 import QtGui
-from origin_data_base import xcg_db_actions as xac
+from database.entities.db_entities import DbProject
 
 
 class CreateShowUI(QtWidgets.QDialog):
@@ -69,7 +68,7 @@ class CreateShowUI(QtWidgets.QDialog):
         self.close()
 
     def db_commit(self):
-        xac.create_show(self.show_name_le.text(), self.show_code_le.text(), self.show_type_cb.currentText())
+        DbProject().create(name=self.show_name_le.text())
         self.show_name_le.clear()
         self.show_code_le.clear()
 
@@ -77,14 +76,6 @@ class CreateShowUI(QtWidgets.QDialog):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-
-    app.setStyle(QtWidgets.QStyleFactory.create("fusion"))
-
-    dark_palette = QtGui.QPalette()
-    dark_palette.setColor(QtGui.QPalette.Window, QtGui.QColor(45,45,45))
-    dark_palette.setColor(QtGui.QPalette.WindowText, QtGui.QColor(208, 208, 208))
-
-
 
     create_shot = CreateShowUI()
     create_shot.show()

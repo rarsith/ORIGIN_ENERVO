@@ -1,11 +1,10 @@
 import sys
-from bson import ObjectId
 from PySide2 import QtWidgets, QtGui, QtCore
-from origin_data_base import xcg_db_connection as xcon
-from origin_config import xcg_validation as xval
-from origin_config import xcg_slot_methods as xslop
-from origin_data_base import xcg_db_actions as xac
-from origin_database_custom_widgets.xcg_slots_publishes_view_UI import SlotsPublishesViewUI
+
+from ui.custom_widgets.slots_publishes_view_UI import SlotsPublishesViewUI
+from database.db_statuses import DbStatuses
+from database.entities.db_entities import DbPublish
+from database.utils.db_q_entity import DbRef, DbReferences
 
 from icons import *
 
@@ -20,21 +19,9 @@ class SetReviewableComponent(QtWidgets.QPushButton):
 
 class SlotPublishesViewCore(SlotsPublishesViewUI):
 
-    def __init__(self,
-                 show_name = '',
-                 branch_name = '',
-                 category_name = '',
-                 entry_name = '',
-                 task_name = '',
-                 main_pub_id = '',
-                 parent=None):
+    def __init__(self, main_pub_id = '', parent=None):
         super(SlotPublishesViewCore, self).__init__(parent)
 
-        self.show_name = show_name
-        self.branch_name = branch_name
-        self.category_name = category_name
-        self.entry_name = entry_name
-        self.task_name = task_name
         self.main_pub_id = main_pub_id
 
         self.return_pub_id()
@@ -49,7 +36,7 @@ class SlotPublishesViewCore(SlotsPublishesViewUI):
         return (self.main_pub_id)
 
     def get_published_slots_ids(self):
-        slot_pub_ids = xac.get_db_referenced_attr('publishes', self.main_pub_id, 'publishing_slots', '_id')
+        slot_pub_ids = DbReferences().get_db_referenced_attr('publishes', self.main_pub_id, 'publishing_slots', '_id')
         return slot_pub_ids
 
     def get_selection_id(self):
@@ -70,7 +57,7 @@ class SlotPublishesViewCore(SlotsPublishesViewUI):
     def populate_main_widget(self):
 
         self.slot_publish_view_tw.setRowCount(0)
-        get_publish_id = xac.get_db_referenced_attr('publishes', self.main_pub_id, 'publishing_slots', '_id')
+        get_publish_id = DbReferences().get_db_referenced_attr('publishes', self.main_pub_id, 'publishing_slots', '_id')
         if not get_publish_id == None:
             rows_cnt = len(get_publish_id)
             self.slot_publish_view_tw.setRowCount(rows_cnt)
@@ -86,19 +73,23 @@ class SlotPublishesViewCore(SlotsPublishesViewUI):
         self.slot_publish_view_tw.setItem(row, 1, item)
 
         self.status_cb = QtWidgets.QComboBox()
-        self.status_cb.addItems(xval.VALID_TASK_STATUSES)
-        get_publish_collection = xac.get_db_referenced_attr('publishes', self.main_pub_id, 'publishing_slots',
-                                                            'parent_collection')
-        self.get_publish_collection = xac.get_db_values(get_publish_collection[0], name, "parent_collection")
-        self.get_publish_id = xac.get_db_values(get_publish_collection[0], name, "_id")
-        self.get_publish_name = xac.get_db_values(get_publish_collection[0], name, "display_name")
-        self.get_publish_version = xac.get_db_values(get_publish_collection[0], name, "version")
-        self.get_publish_version_origin = xac.get_db_values(get_publish_collection[0], name, "version_origin")
-        self.get_publish_task = xac.get_db_values(get_publish_collection[0], name, "task_name")
-        self.get_publish_user = xac.get_db_values(get_publish_collection[0], name, "artist")
-        self.get_publish_status = xac.get_db_values(get_publish_collection[0], name, "status")
-        self.get_publish_date = xac.get_db_values(get_publish_collection[0], name, "date")
-        self.get_publish_time = xac.get_db_values(get_publish_collection[0], name, "time")
+        self.status_cb.addItems(DbStatuses().list_all())
+
+        get_publish_collection = DbReferences().get_db_referenced_attr('publishes',
+                                                  self.main_pub_id,
+                                                  'publishing_slots',
+                                                  'parent_collection')
+
+        self.get_publish_collection = DbPublish().get_db_values(get_publish_collection[0], name, "parent_collection")
+        self.get_publish_id = DbPublish().get_db_values(get_publish_collection[0], name, "_id")
+        self.get_publish_name = DbPublish().get_db_values(get_publish_collection[0], name, "display_name")
+        self.get_publish_version = DbPublish().get_db_values(get_publish_collection[0], name, "version")
+        self.get_publish_version_origin = DbPublish().get_db_values(get_publish_collection[0], name, "version_origin")
+        self.get_publish_task = DbPublish().get_db_values(get_publish_collection[0], name, "task_name")
+        self.get_publish_user = DbPublish().get_db_values(get_publish_collection[0], name, "artist")
+        self.get_publish_status = DbPublish().get_db_values(get_publish_collection[0], name, "status")
+        self.get_publish_date = DbPublish().get_db_values(get_publish_collection[0], name, "date")
+        self.get_publish_time = DbPublish().get_db_values(get_publish_collection[0], name, "time")
 
         try:
             self.status_cb.setCurrentText(self.get_publish_status)
@@ -121,18 +112,17 @@ class SlotPublishesViewCore(SlotsPublishesViewUI):
 
 
 if __name__ == "__main__":
+    import sys
+    from envars.envars import Envars
 
-    # db = xcon.server.exchange
-    # test_position = db.show_name
-    # test = test_position.find({}, {"_id": 1, "show_name": 1})
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "red_hulk"
+    Envars.task_name = "modeling"
 
     app = QtWidgets.QApplication(sys.argv)
-    show_name = 'Test'
-    branch_name = 'assets'
-    category_name = 'characters'
-    entry_name = 'greenHulk'
-    task_name = 'modeling'
-    # pub_id = '60b7cabbca7fdd099e5d32c9'
+    pub_id = "Test.assets.characters.red_hulk.modeling.main_pub.v0007"
     test_dialog = SlotPublishesViewCore(main_pub_id=pub_id)
 
 

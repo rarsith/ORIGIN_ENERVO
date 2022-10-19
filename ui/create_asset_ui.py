@@ -1,11 +1,8 @@
 import sys
 from PySide2 import QtWidgets
 from envars.envars import Envars
-from database.entities.db_entities import DbAsset, DbProject
+from database.entities.db_entities import DbAsset
 from database.entities.db_structures import DbAssetCategories
-from database.utils.db_q_entity import QEntity, From
-from database.entities.db_attributes import DbProjectAttrPaths
-from database.db_ids import DbIds
 
 
 class CreateAssetUI(QtWidgets.QDialog):
@@ -69,7 +66,7 @@ class CreateAssetUI(QtWidgets.QDialog):
 
 
 if __name__ == "__main__":
-    Envars.show_name = "Cicles"
+    Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
     Envars.entry_name = "circle"

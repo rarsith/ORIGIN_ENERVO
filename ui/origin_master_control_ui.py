@@ -1,23 +1,24 @@
 import sys
 from PySide2 import QtWidgets, QtCore, QtGui
-from origin_data_base import xcg_db_connection as xcon
-from origin_data_base import xcg_db_helpers as xhlp
-from origin_data_base import xcg_db_actions as xac
-from origin_config import xcg_validation as xval
-from origin_utilities import utils as xutil
-from origin_ui import edit_entry_definition_ui
+from database import db_connection as mdbconn
+# from origin_data_base import xcg_db_connection as xcon
+# from origin_data_base import xcg_db_helpers as xhlp
+# from origin_data_base import xcg_db_actions as xac
+# from origin_config import xcg_validation as xval
+# from origin_utilities import utils as xutil
+# from origin_ui import edit_entry_definition_ui
 
-from origin_database_custom_widgets.xcg_task_imports_from_core import TasksImportFromCore
-from origin_database_custom_widgets.xcg_task_publishing_slots_core import PublishSlotsWidgetCore
-from origin_database_custom_widgets.xcg_main_publishes_view_core import MainPublishesViewCore
-from origin_database_custom_widgets.xcg_slots_publishes_view_core import SlotPublishesViewCore
-from origin_database_custom_widgets.xcg_project_tree_viewer_core import ProjectTreeViewerCore
-from origin_database_custom_widgets.xcg_task_viewer_core import TaskViewerCore
-from origin_database_custom_widgets.xcg_slot_component_viewer_core import SlotComponentsViewerCore
+from ui.custom_widgets.task_imports_from_core import TasksImportFromCore
+from ui.custom_widgets.task_publishing_slots_core import PublishSlotsWidgetCore
+from ui.custom_widgets.main_publishes_view_core import MainPublishesViewCore
+from ui.custom_widgets.slots_publishes_view_core import SlotPublishesViewCore
+from ui.custom_widgets.project_tree_viewer_core import ProjectTreeViewerCore
+from ui.custom_widgets.task_viewer_core import TaskViewerCore
+from ui.custom_widgets.slot_component_viewer_core import SlotComponentsViewerCore
 
 
 
-db = xcon.server.exchange
+db = mdbconn.server[mdbconn.database_name]
 test_position = db.show_name
 test = test_position.find({}, {"_id":1, "show_name":1})
 
@@ -159,7 +160,7 @@ class NotesWidget(QtWidgets.QWidget):
 class OriginControlCenterUI(QtWidgets.QWidget):
 
     WINDOW_TITLE = "Origin Control Center"
-    db = xcon.server.xchange
+    db = mdbconn.server[mdbconn.database_name]
     cursor = db.show_name
 
     def __init__(self):
@@ -429,17 +430,17 @@ class OriginControlCenterUI(QtWidgets.QWidget):
 
     def get_task_is_active(self):
         try:
-            task_is_active = xac.get_task_is_active(self.show_view_twd.comboBox_shows(),
-                                              self.show_view_twd.get_sel_show_branch(),
-                                              self.show_view_twd.get_sel_category(),
-                                              self.show_view_twd.get_selected_entry_name(),
-                                              self.tasks_view_lwd.get_selected_task())
+            task_is_active = xac.get_task_is_active(self.show_view_twd.curr_sel_show(),
+                                                    self.show_view_twd.get_sel_show_branch(),
+                                                    self.show_view_twd.get_sel_category(),
+                                                    self.show_view_twd.get_selected_entry_name(),
+                                                    self.tasks_view_lwd.get_selected_task())
             return task_is_active[0]
         except:
             pass
 
     def populate_task_import_schema(self):
-        self.tasks_imports_from_properties_wdg.show_name = (self.show_view_twd.comboBox_shows())
+        self.tasks_imports_from_properties_wdg.show_name = (self.show_view_twd.curr_sel_show())
         self.tasks_imports_from_properties_wdg.branch_name = (self.show_view_twd.get_sel_show_branch())
         self.tasks_imports_from_properties_wdg.category_name = (self.show_view_twd.get_sel_category())
         self.tasks_imports_from_properties_wdg.entry_name = (self.show_view_twd.get_selected_entry())
@@ -489,7 +490,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.components_wdg.slot_component_viewer_tw.clearSelection()
 
     def get_tasks(self):
-        self.tasks_view_lwd.show_name = (self.show_view_twd.comboBox_shows())
+        self.tasks_view_lwd.show_name = (self.show_view_twd.curr_sel_show())
         self.tasks_view_lwd.branch_name = (self.show_view_twd.get_sel_show_branch())
         self.tasks_view_lwd.category_name = (self.show_view_twd.get_sel_category())
         self.tasks_view_lwd.entry_name = (self.show_view_twd.get_selected_entry())
@@ -499,7 +500,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         entry_selected = self.show_view_twd.project_tree_viewer_wdg.hasFocus()
         task_selected = self.tasks_view_lwd.task_viewer_wdg.hasFocus()
         if entry_selected:
-            get_selected_objects_type = xac.get_entry_type(self.show_view_twd.comboBox_shows(),
+            get_selected_objects_type = xac.get_entry_type(self.show_view_twd.curr_sel_show(),
                                                            self.show_view_twd.get_sel_show_branch(),
                                                            self.show_view_twd.get_sel_category(),
                                                            self.show_view_twd.get_selected_entry_name())
@@ -547,7 +548,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
             self.task_is_active_properties_ckb.setChecked(task_is_active)
 
     def populate_pub_slots(self):
-        self.tasks_pub_slots_properties_wdg.show_name = self.show_view_twd.comboBox_shows()
+        self.tasks_pub_slots_properties_wdg.show_name = self.show_view_twd.curr_sel_show()
         self.tasks_pub_slots_properties_wdg.branch_name = self.show_view_twd.get_sel_show_branch()
         self.tasks_pub_slots_properties_wdg.category_name = self.show_view_twd.get_sel_category()
         self.tasks_pub_slots_properties_wdg.entry_name = self.show_view_twd.get_selected_entry_name()
@@ -676,7 +677,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.window = QtWidgets.QMainWindow()
         self.ui = edit_entry_definition_ui.EditEntryDefinitionsUI()
 
-        shows_index = self.ui.show_name_cb.findText(self.show_view_twd.comboBox_shows(), QtCore.Qt.MatchFixedString)
+        shows_index = self.ui.show_name_cb.findText(self.show_view_twd.curr_sel_show(), QtCore.Qt.MatchFixedString)
         if shows_index >= 0:
             self.ui.show_name_cb.setCurrentIndex(shows_index)
 
