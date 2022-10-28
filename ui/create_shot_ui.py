@@ -23,7 +23,7 @@ class CreateShotUI(QtWidgets.QDialog):
 
     def create_widgets(self):
         self.show_name_cb =  QtWidgets.QLabel()
-        self.show_name_cb.setText(Envars().show_name)
+        self.show_name_cb.setText(DbProject.current())
 
         self.shot_name_le = QtWidgets.QLineEdit()
 

@@ -1,7 +1,7 @@
 import sys
 from PySide2 import QtWidgets
 from envars.envars import Envars
-from database.entities.db_entities import DbAsset
+from database.entities.db_entities import DbAsset, DbProject
 from database.entities.db_structures import DbAssetCategories
 
 
@@ -18,7 +18,7 @@ class CreateAssetUI(QtWidgets.QDialog):
 
     def create_widgets(self):
         self.show_name_le = QtWidgets.QLabel()
-        self.show_name_le.setText(Envars().show_name)
+        self.show_name_le.setText(DbProject.current())
 
         self.category_cb = QtWidgets.QComboBox()
         self.category_cb.addItems(self.get_asset_categories())

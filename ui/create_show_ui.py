@@ -9,12 +9,6 @@ class CreateShowUI(QtWidgets.QDialog):
         super(CreateShowUI, self).__init__(parent)
 
         self.setWindowTitle("Create Show")
-        self.setMinimumSize(550, 650)
-        self.setMaximumSize(550, 650)
-
-        self.setMinimumHeight(900)
-        self.setMaximumHeight(900)
-
         self.create_widgets()
         self.create_layout()
         self.create_connections()

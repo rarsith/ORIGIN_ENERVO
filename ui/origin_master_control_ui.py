@@ -225,8 +225,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.stacked_properties_wdg.addWidget(self.shots_definition_properties_stack)
         self.stacked_properties_wdg.addWidget(self.assets_definition_properties_stack)
 
-
-
         self.middle_tabmenu_tab = QtWidgets.QTabWidget()
         self.middle_tabmenu_tab.addTab(self.publishes_viewer_wdg, "Publishes")
         self.middle_tabmenu_tab.addTab(self.stacked_properties_wdg, "Properties")
@@ -369,37 +367,11 @@ class OriginControlCenterUI(QtWidgets.QWidget):
     #     text = self.show_name_cb.currentText()
     #     return text
 
-    def show_tree_create_item(self, name):
-        item = QtWidgets.QTreeWidgetItem([name])
-        self.add_children(item)
-        return item
-
-    def add_children(self, item):
-        get_children = xhlp.deep_values(item.text(0), self.get_show_structure())
-        for children in get_children:
-            for child in children:
-                child_item = self.show_tree_create_item(child)
-                item.addChild(child_item)
-
     def get_task_type(self):
         task_name = self.tasks_view_lwd.get_selected_task()
         if task_name:
             task_type = "task"
             return task_type
-
-    def set_task_status(self):
-        read_selected_status = self.task_status_properties_cb.currentText()
-        try:
-            xac.update_task_status(self.show_view_twd.get_selected_show(),
-                                              self.show_view_twd.get_sel_show_branch(),
-                                              self.show_view_twd.get_sel_category(),
-                                              self.show_view_twd.get_selected_entry_name(),
-                                              self.tasks_view_lwd.get_selected_task(),
-                                                 read_selected_status)
-            print (read_selected_status)
-        except:
-            pass
-        print ('{} status changed to {}'.format(self.get_selected_task(), read_selected_status))
 
     def set_task_is_active(self):
         is_active = self.task_is_active_properties_ckb.isChecked()

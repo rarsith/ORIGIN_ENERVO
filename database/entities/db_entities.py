@@ -235,6 +235,10 @@ class DbProject:
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
 
+    @staticmethod
+    def current():
+        return Envars().show_name
+
     def create(self, name):
         entity_id = db_path_assembler.make_path("root", name)
         created_id, save_data = _DbConstructors().project_construct(name=name, entity_id=entity_id)
@@ -821,7 +825,7 @@ class DbPubSlot:
             self.create(each)
             print("{} added as pub_slot".format(each))
 
-    def add_dict(self, pub_slot: dict) -> None:
+    def add_dict(self, pub_slot: list) -> None:
         for each in pub_slot:
             get_slot_name = (list(each.keys()))
             get_slot_param = (list(each.values()))
@@ -833,7 +837,7 @@ class DbPubSlot:
 
         print("Publish Slot added succesfully!")
 
-    def get_pub_slots(self) -> list:
+    def get_pub_slots(self) -> dict:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
@@ -1094,5 +1098,6 @@ if __name__ == '__main__':
 
     pubs = DbPublish().get_db_publishes_ids("publishes")
     print (pubs)
+
 
 

@@ -148,13 +148,9 @@ class TasksImportFromCore(TasksImportFromUI):
 
     def write_wdg_checked_items(self):
         checked_items = self.get_wdg_checked_items()
-        print (checked_items)
         unchecked_items = self.get_wdg_unchecked_items()
-        print(unchecked_items)
         for k, v in checked_items.items():
             for each in v:
-                print (k)
-                print (each)
                 DbPubSlot().set_used_by(k, each)
 
         for k, v in unchecked_items.items():

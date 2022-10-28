@@ -87,14 +87,12 @@ class QEntity:
             @path_list: takes a list or a single string
             @returns: the value that is corresponding to the last list element in the path_list
         """
-        print(">>>>", data)
+        # print(">>>>", data)
 
         if isinstance(path_list, str):
             result = data.get(path_list)
             return result
         elif isinstance(path_list, list) and len(path_list) == 1:
-            print(path_list)
-
             result = data.get(path_list[0])
             return result
         else:
@@ -202,7 +200,7 @@ class QEntity:
         #TODO:need to find out how to query data filed type (need to get field type and restore with the original type)
         """Removes the full content of an attribute by first removing the full atrribute and then recreating it empty"""
         self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: 1}})
-        self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: []}})
+        self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: {}}})
 
 
 class DbRef:

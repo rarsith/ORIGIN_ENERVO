@@ -1,5 +1,6 @@
 import sys
 from PySide2 import QtWidgets
+from envars.envars import Envars
 
 
 
@@ -14,12 +15,6 @@ class CreateAssetCategoryUI(QtWidgets.QDialog):
         super(CreateAssetCategoryUI, self).__init__(parent)
 
         self.setWindowTitle("Create Asset Category")
-        self.setMinimumSize(550, 650)
-        self.setMaximumSize(550, 650)
-
-        self.setMinimumHeight(900)
-        self.setMaximumHeight(900)
-
 
         self.create_widgets()
         self.create_layout()
@@ -28,6 +23,7 @@ class CreateAssetCategoryUI(QtWidgets.QDialog):
     def create_widgets(self):
         self.show_name_cb = QtWidgets.QComboBox()
         self.show_name_cb.addItems(self.get_shows())
+        self.show_name_cb.setCurrentText(DbProject.current())
 
         categories_types = ['character', 'prop', 'environment']
         self.type_cb = QtWidgets.QComboBox()
@@ -58,7 +54,6 @@ class CreateAssetCategoryUI(QtWidgets.QDialog):
 
     def create_connections(self):
         self.show_name_cb.activated.connect(self.comboBox_shows)
-
         self.create_btn.clicked.connect(self.db_commit)
         self.create_and_close_btn.clicked.connect(self.db_commit_close)
         self.cancel_btn.clicked.connect(self.close)

@@ -2,6 +2,7 @@ import sys
 from PySide2 import QtWidgets
 from envars.envars import Envars
 from database.entities.db_structures import DbAssetCategories
+from database.entities.db_entities import DbProject
 from database.db_types import TaskTypes
 
 
@@ -23,7 +24,7 @@ class CreateSeqUI(QtWidgets.QDialog):
 
     def create_widgets(self):
         self.show_name_lb = QtWidgets.QLabel()
-        self.show_name_lb.setText(Envars().show_name)
+        self.show_name_lb.setText(DbProject.current())
         self.seq_name_le = QtWidgets.QLineEdit()
         self.create_btn = QtWidgets.QPushButton("Create")
         self.create_and_close_btn = QtWidgets.QPushButton("Create and Close")

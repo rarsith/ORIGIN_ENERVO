@@ -1,21 +1,10 @@
-from PySide2 import QtWidgets, QtCore, QtGui
-from origin_data_base import xcg_db_actions as xac
-from origin_ui import create_task_ui
-from origin_database_custom_widgets.xcg_task_viewer_UI import TaskViewerUI
-
+from PySide2 import QtWidgets, QtGui
+from ui.custom_widgets.task_viewer_UI import TaskViewerUI
+from database.entities.db_entities import DbTasks
 
 class TaskViewerCore(TaskViewerUI):
-    def __init__(self, show_name='',
-                 branch_name='',
-                 category_name='',
-                 entry_name='',
-                 parent=None):
+    def __init__(self, parent=None):
         super(TaskViewerCore, self).__init__(parent)
-
-        self.show_name = show_name
-        self.branch_name = branch_name
-        self.category_name = category_name
-        self.entry_name = entry_name
 
         self.create_tasks_actions()
         self.create_connections()
@@ -32,7 +21,7 @@ class TaskViewerCore(TaskViewerUI):
 
     def get_tasks(self):
         spare_it = []
-        tasks_list = xac.get_tasks(self.show_name, self.branch_name, self.category_name, self.entry_name)
+        tasks_list = DbTasks().get_tasks()
 
         if tasks_list == None:
             return spare_it
@@ -62,14 +51,10 @@ class TaskViewerCore(TaskViewerUI):
 
     def insert_task_row(self, name):
         self.task_viewer_wdg.insertItem(0, name)
-        xac.create_task(self.show_name,
-                        self.branch_name,
-                        self.category_name,
-                        self.entry_name,
-                        self.add_task_le.text())
+        DbTasks().create(name=self.add_task_le.text())
 
     def add_to_task_list(self):
-        if self.add_task_le.text()and self.entry_name:
+        if self.add_task_le.text():
             self.insert_task_row(self.add_task_le.text())
             self.add_task_le.clear()
             self.populate_tasks()
@@ -102,10 +87,19 @@ class TaskViewerCore(TaskViewerUI):
 if __name__ == '__main__':
     import sys
 
+    from envars.envars import Envars
+
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "red_hulk"
+    Envars.task_name = "cfx_set"
+
+
     app = QtWidgets.QApplication(sys.argv)
     font = app.instance().setFont(QtGui.QFont())
 
-    test_dialog = TaskViewerCore('Test', 'assets', 'characters', 'hulkGreen')
+    test_dialog = TaskViewerCore()
     test_dialog.populate_tasks()
 
     test_dialog.show()

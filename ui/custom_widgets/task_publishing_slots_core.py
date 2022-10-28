@@ -1,25 +1,27 @@
 import sys
 from PySide2 import QtWidgets
-from origin_data_base import xcg_db_connection as xcon
-from origin_config import xcg_validation as xval
-from origin_config import xcg_slot_methods as xslop
-from origin_data_base import xcg_db_actions as xac
-from origin_database_custom_widgets.xcg_task_publishing_slots_UI import PublishSlotsWidgetUI
+from ui.custom_widgets.task_publishing_slots_UI import PublishSlotsWidgetUI
+from database.entities.db_entities import DbProject, DbTasks, DbPubSlot
+
+SLOTS_TYPES = ['abc', 'tex', 'vdb', 'bgeo', 'ptc', 'rend', 'exr', 'mat', 'pbr','img','scn', 'geo', 'csh', 'cfg']
+
+SLOTS_METHODS = {'m1':'sf_csh',
+                 'm2':'mf_csh',
+                 'm3':'sf_geo',
+                 'm4':'geo_bake',
+                 'm5':'geo_sim',
+                 'm6':'scn_exp',
+                 'm7':'img_exp',
+                 'm8':'anm_crv',
+                 'm9':'scatter',
+                 'm10':'p_exp',
+                 'm11':'assign_exp',
+                 'm12':'cfg_scn_exp',
+                 'm13':'cfg_exp'}
 
 class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
-    def __init__(self, show_name='',
-                 branch_name='',
-                 category_name='',
-                 entry_name='',
-                 task_name='',
-                 parent=None):
+    def __init__(self, parent=None):
         super(PublishSlotsWidgetCore, self).__init__(parent)
-
-        self.show_name = show_name
-        self.branch_name = branch_name
-        self.category_name = category_name
-        self.entry_name = entry_name
-        self.task_name = task_name
 
         self.create_connections()
         self.populate_main_widget()
@@ -32,11 +34,7 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
 
 # PublishSlotsWidget -- START
     def get_properties(self):
-        pub_slots = xac.get_pub_slots(self.show_name,
-                                      self.branch_name,
-                                      self.category_name,
-                                      self.entry_name,
-                                      self.task_name)
+        pub_slots = DbPubSlot().get_pub_slots()
         return pub_slots
 
     def populate_main_widget(self):
@@ -50,21 +48,14 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
                 cnt += 1
         return properties
 
-    def get_entry_tasks(self):
-        tasks = xac.get_tasks(self.show_name,
-                              self.branch_name,
-                              self.category_name,
-                              self.entry_name)
-        return tasks
-
     def create_pub_slots(self, name, row):
         item = QtWidgets.QTableWidgetItem(name)
         self.publish_slots_wdg.setItem(row, 0, item)
 
         self.set_type_cb = QtWidgets.QComboBox()
-        self.set_type_cb.addItems(xval.SLOTS_TYPES)
+        self.set_type_cb.addItems(SLOTS_TYPES)
         self.set_method_cb = QtWidgets.QComboBox()
-        self.set_method_cb.addItems(list(xslop.SLOTS_METHODS.values()))
+        self.set_method_cb.addItems(list(SLOTS_METHODS.values()))
 
         self.set_source_cb = QtWidgets.QComboBox()
         self.set_source_cb.addItems(self.get_current_pub_slots())
@@ -177,14 +168,10 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
 
     def get_current_pub_slots(self):
         complete_list = list()
-        pub_slots = xac.get_task_pub_slots(self.show_name,
-                                           self.branch_name,
-                                           self.category_name,
-                                           self.entry_name,
-                                           self.task_name)
+        pub_slots = DbPubSlot().get_pub_slots()
         if pub_slots:
             complete_list.append('root')
-            for each in pub_slots:
+            for each in list(pub_slots.keys()):
                 complete_list.append(each)
 
         return complete_list
@@ -201,19 +188,8 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
     def db_commit(self):
         get_wdg_content = self.get_pub_buffer_content()
 
-        xac.remove_all_task_pub_slots(self.show_name,
-                                      self.branch_name,
-                                      self.category_name,
-                                      self.entry_name,
-                                      self.task_name)
-
-
-        xac.update_task_pub_slot_dict(self.show_name,
-                                      self.branch_name,
-                                      self.category_name,
-                                      self.entry_name,
-                                      self.task_name,
-                                      pub_slot=get_wdg_content)
+        DbPubSlot().remove_all()
+        DbPubSlot().add_dict(pub_slot=get_wdg_content)
 
 # PublishSlotsWidget -- END
 
@@ -225,19 +201,20 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
             return
 
 if __name__ == "__main__":
+    from envars.envars import Envars
 
-    db = xcon.server.exchange
-    test_position = db.show_name
-    test = test_position.find({}, {"_id": 1, "show_name": 1})
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "red_hulk"
+    Envars.task_name = "cfx_set"
+
+
 
     app = QtWidgets.QApplication(sys.argv)
 
     test_dialog = PublishSlotsWidgetCore()
-    test_dialog.show_name = 'Mofo'
-    test_dialog.branch_name = 'origin_library'
-    test_dialog.category_name = 'airplanes'
-    test_dialog.entry_name = '707'
-    test_dialog.task_name = 'modeling'
+
     test_dialog.populate_main_widget()
     test_dialog.show()
     sys.exit(app.exec_())
