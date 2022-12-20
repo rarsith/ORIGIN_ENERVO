@@ -5,10 +5,10 @@ from database.entities.db_entities import DbProject
 from database.entities.db_structures import DbProjectBranch
 
 
-class CreateShowCategoryUI(QtWidgets.QDialog):
+class CreateShowBranchUI(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
-        super(CreateShowCategoryUI, self).__init__(parent)
+        super(CreateShowBranchUI, self).__init__(parent)
 
         self.setWindowTitle("Create Show Category")
         self.setMinimumSize(550, 650)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
 
 
-    create_shot = CreateShowCategoryUI()
+    create_shot = CreateShowBranchUI()
     create_shot.show()
 
     sys.exit(app.exec_())

@@ -456,7 +456,7 @@ class DbTasks:
             print("{} Error! Nothing Done!".format(e))
 
     @property
-    def is_active(self) -> bool:
+    def current_is_active(self) -> bool:
         try:
             is_active_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
@@ -467,13 +467,24 @@ class DbTasks:
         except ValueError as e:
             print("{} Error! Nothing Done!".format(e))
 
-    @is_active.setter
-    def is_active(self, is_active) -> None:
+    @current_is_active.setter
+    def current_is_active(self, is_active: bool) -> None:
         try:
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
                     attribute=DbTaskAttrPaths.is_active()
                     ).update(data=is_active)
+
+        except ValueError as e:
+            print("{} Error! Nothing Done!".format(e))
+
+    def is_active(self, task: str) -> bool:
+        try:
+            is_active_data = QEntity(db_collection=From().entities,
+                                     entry_id=DbIds.curr_entry_id(),
+                                     attribute=DbTaskAttrPaths.is_active(task_name=task)
+                                     ).get_attr_values()
+            return is_active_data
 
         except ValueError as e:
             print("{} Error! Nothing Done!".format(e))
@@ -837,16 +848,28 @@ class DbPubSlot:
 
         print("Publish Slot added succesfully!")
 
-    def get_pub_slots(self) -> dict:
-        try:
-            pub_slots_data = QEntity(db_collection=From().entities,
-                                     entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbTaskAttrPaths.pub_slots()
-                                     ).get_attr_values()
-            return pub_slots_data
+    def get_pub_slots(self, task_name=None) -> dict:
+        if task_name:
+            try:
+                pub_slots_data = QEntity(db_collection=From().entities,
+                                         entry_id=DbIds.curr_entry_id(),
+                                         attribute=DbTaskAttrPaths.pub_slots(task_name=task_name)
+                                         ).get_attr_values()
+                return pub_slots_data
 
-        except Exception as e:
-            print("{} Error! Nothing Created!".format(e))
+            except Exception as e:
+                print("{} Error! Nothing Created!".format(e))
+
+        else:
+            try:
+                pub_slots_data = QEntity(db_collection=From().entities,
+                                         entry_id=DbIds.curr_entry_id(),
+                                         attribute=DbTaskAttrPaths.pub_slots()
+                                         ).get_attr_values()
+                return pub_slots_data
+
+            except Exception as e:
+                print("{} Error! Nothing Created!".format(e))
 
     def get_type(self, pub_slot: str) -> str:
         try:
@@ -881,13 +904,25 @@ class DbPubSlot:
         except Exception as e:
             raise ValueError("Error! Nothing Done! -- {}".format(e))
 
-    def get_used_by_task(self, data, task_name=Envars().task_name):
+    def get_used_by_task(self, data, task_name=None):
         get_pub_slots = []
         get_slots = list(data.keys())
+
+        if task_name:
+
+            for x in get_slots:
+                if task_name in data[x]['used_by']:
+                    print (task_name)
+                    get_pub_slots.append(x)
+            print (get_pub_slots)
+            return get_pub_slots
+
+        task_name = Envars().task_name
         for x in get_slots:
             if task_name in data[x]['used_by']:
                 get_pub_slots.append(x)
         return get_pub_slots
+
 
     def get_is_reviewable(self, pub_slot: str) -> bool:
         try:
@@ -911,24 +946,23 @@ class DbPubSlot:
         except Exception as e:
             raise ValueError("Error! Nothing Done! -- {}".format(e))
 
-    def set_used_by(self, pub_slot: str, used_by: str, remove_action: bool=False) -> None:
+    def set_used_by(self, task_name: str, pub_slot: str, used_by: str, remove_action: bool=False) -> None:
         used_by_data = QEntity(db_collection=From().entities,
                                entry_id=DbIds.curr_entry_id(),
-                               attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by()
+                               attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by(task_name=task_name)
                                ).get_attr_values()
-
         if not remove_action:
             if used_by not in used_by_data:
                 QEntity(db_collection=From().entities,
                         entry_id=DbIds.curr_entry_id(),
-                        attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by()
+                        attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by(task_name=task_name)
                         ).add(data=used_by)
 
         else:
             if used_by in used_by_data:
                 QEntity(db_collection=From().entities,
                         entry_id=DbIds.curr_entry_id(),
-                        attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by()
+                        attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by(task_name=task_name)
                         ).remove_value(data=used_by)
 
     def remove_all(self) -> None:
@@ -1082,13 +1116,13 @@ class DbBundle:
 
 if __name__ == '__main__':
     Envars.show_name = "Test"
-    # Envars.branch_name = "assets"
-    # Envars.category = "characters"
-    # Envars.entry_name = "red_hulk"
-    # Envars.task_name = "surfacing"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "yellow_hulk"
+    Envars.task_name = "modeling"
 
-    print (Envars().branch_name)
-    print (Envars().show_name)
+    # print (Envars().branch_name)
+    # print (Envars().show_name)
 
     definition ={"crap":"mofo"}
 
@@ -1096,8 +1130,13 @@ if __name__ == '__main__':
     # xx = DbProject().create(name="GooGoo")
     # print (xx)
 
-    pubs = DbPublish().get_db_publishes_ids("publishes")
-    print (pubs)
+    used_by_data = QEntity(db_collection=From().entities,
+                           entry_id=DbIds.curr_entry_id(),
+                           attribute=DbPubSlotsAttrPaths(publish_slot="rend_geo").used_by()
+                           ).get_attr_values()
+
+    # pubs = DbPubSlot().get_used_by("img")
+    print (used_by_data)
 
 
 

@@ -197,10 +197,10 @@ class QEntity:
         self.db[self.collection].delete_one({"_id": self.db_id})
 
     def clear(self):
-        #TODO:need to find out how to query data filed type (need to get field type and restore with the original type)
+        #TODO:need to find out how to query data field type (need to get field type and restore with the original type)
         """Removes the full content of an attribute by first removing the full atrribute and then recreating it empty"""
         self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: 1}})
-        self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: {}}})
+        # self.db[self.collection].update_one({"_id": self.db_id}, {"$pull": {self.attribute: {}}})
 
 
 class DbRef:

@@ -1,4 +1,5 @@
 from PySide2 import QtWidgets, QtCore, QtGui
+from envars.envars import Envars
 from ui.custom_widgets.project_tree_viewer_UI import ProjectTreeViewerUI
 from database.entities.db_entities import DbAsset, DbProject
 from database.entities.db_structures import DbAssetCategories, DbProjectBranch
@@ -15,13 +16,11 @@ from ui import (create_show_ui,
 
 class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
-    def __init__(self, show_name='', parent=None):
+    def __init__(self, parent=None):
         super(ProjectTreeViewerCore, self).__init__(parent)
 
-        self.show_name = show_name
         self.create_show_actions()
         self.create_connections()
-        self.set_show_to()
         self.populate_shows_cb()
         self.refresh_tree_widget()
         self.context_menu()
@@ -32,7 +31,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
         self.project_tree_viewer_wdg.itemClicked.connect(self.get_selected_entry_name)
         self.project_tree_viewer_wdg.itemClicked.connect(self.get_sel_show_branch_category)
-        self.project_tree_viewer_wdg.itemClicked.connect(self.get_selected_type)
+        self.project_tree_viewer_wdg.itemClicked.connect(self.get_sel_data)
 
         self.about_action.triggered.connect(self.about)
         self.create_show_action.triggered.connect(self.create_show_menu)
@@ -63,6 +62,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
     def curr_sel_show(self):
         text = self.show_select_cb.currentText()
+        Envars.show_name = text
         return text
 
     def populate_shows_cb(self):
@@ -83,9 +83,16 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             print ("Something wrong in refresh_tree_widget")
 
     def show_tree_create_item(self, name):
-        item = QtWidgets.QTreeWidgetItem([name])
+        iso_name = self.get_entry_name_from_id(name)
+        item = QtWidgets.QTreeWidgetItem([iso_name])
         self.add_children(item)
         return item
+
+    def get_entry_name_from_id(self, name: str, delimiter=".") -> str:
+        if delimiter not in name:
+            return name
+        isolate_last = name.split(delimiter)[-1]
+        return isolate_last
 
     def add_children(self, item):
         get_children = gdeepval.deep_values(item.text(0), self.get_show_structure())
@@ -109,15 +116,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         selected = self.project_tree_viewer_wdg.selectedItems()
         return selected
 
-    def get_selected_entry_name(self):
-        names = []
-        get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
-        if len(get_selected_objects) == 0:
-            return []
-        elif len(get_selected_objects) >= 1:
-            for item in get_selected_objects:
-                names.append(item.text(0))
-            return names[0]
 
     def get_selected_entry(self):
         names = []
@@ -176,12 +174,14 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         except:
             pass
 
-    def get_sel_hierachy(self):
+    def get_sel_data(self):
         branch = list()
+        branch_type = str()
         category = list()
         entry = list()
+
         get_selected_objects = self.project_tree_viewer_wdg.currentItem()
-        get_selected_show = self.show_select_cb.currentText()
+        get_selected_show = self.curr_sel_show()
 
         if get_selected_objects is None:
             return[]
@@ -200,20 +200,39 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                 branch.append(grandparent)
                 category.append(parent)
                 entry.append(get_selected_objects.text(0))
-        return (''.join(get_selected_show)),(''.join(branch)), (''.join(category)), (''.join(entry))
 
-    def get_sel_category(self):
-        get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
+        if get_selected_show:
+            Envars.show_name = get_selected_show
 
-        if len(get_selected_objects) == 0:
-            return []
-        elif len(get_selected_objects) >= 1:
-            for item in get_selected_objects:
-                try:
-                    parent = item.parent()
-                    return parent.text(0)
-                except:
-                    pass
+        if branch:
+            Envars.branch_name = branch[0]
+        else:
+            Envars.branch_name = None
+
+        if category:
+            Envars.category_name = category[0]
+        else:
+            Envars.category_name = None
+
+        if entry:
+            Envars.entry_name = entry[0]
+        else:
+            Envars.entry_name = None
+
+        print ("Current Context is: {0}".format([Envars.show_name, Envars.branch_name, Envars.category_name, Envars.entry_name]))
+
+    # def get_sel_category(self):
+    #     get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
+    #
+    #     if len(get_selected_objects) == 0:
+    #         return []
+    #     elif len(get_selected_objects) >= 1:
+    #         for item in get_selected_objects:
+    #             try:
+    #                 parent = item.parent()
+    #                 return parent.text(0)
+    #             except:
+    #                 pass
 
     def get_parent_path(self, item):
         def get_parent(item, outstring):
@@ -224,6 +243,16 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         output = get_parent(item, item.text(0))
         return output
 
+    def get_selected_entry_name(self):
+        names = []
+        get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
+        if len(get_selected_objects) == 0:
+            return []
+        elif len(get_selected_objects) >= 1:
+            for item in get_selected_objects:
+                names.append(item.text(0))
+            return names[0]
+
     def get_sel_entry_path(self):
         get_selected_entry_objects = self.project_tree_viewer_wdg.selectedItems()
         if len(get_selected_entry_objects) == 0:
@@ -232,17 +261,30 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             for item in get_selected_entry_objects:
                 try:
                     parent = item.parent()
+                    print(">>>", parent.text(0))
                     return parent.text(0)
                 except:
-                    pass
+                    print("NO PARENT > ROOT")
+                    return []
+
+    def get_selection_type(self):
+        curr_selected = DbProjectBranch().get_type
+        # print (curr_selected)
+        return curr_selected
+
 
     def context_menu(self):
         self.project_tree_viewer_wdg.customContextMenuRequested.connect(self.show_tree_con_menu)
 
     def show_tree_con_menu(self, point):
+        self.get_sel_data()
         context_menu = QtWidgets.QMenu()
         context_parent = self.get_sel_entry_path()
         selected = self.get_selected_entry_name()
+
+        sel_parent_type = ""
+        sel_type = self.get_selection_type()
+        print("TYPE: ",sel_type)
 
         if selected == []:
             context_menu.addAction(self.create_show_action)
@@ -289,7 +331,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.edit_bundle = QtWidgets.QAction("Edit Bundle...", self)
 
     def about(self):
-        QtWidgets.QMessageBox.about(self, "About Simple Stuff", "Add ABout Text Here")
+        QtWidgets.QMessageBox.about(self, "About Simple Stuff", "Add About Text Here")
 
     def remove_entry_menu(self):
         custom_dialog = QtWidgets.QMessageBox()
@@ -315,15 +357,15 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
     def create_show_branches_menu(self):
         self.window = QtWidgets.QMainWindow()
-        self.ui = create_show_category_ui.CreateShowCategoryUI()
+        self.ui = create_branch_ui.CreateShowBranchUI()
         self.ui.show_name_cb.setDisabled(True)
         self.ui.show()
 
     def create_seq_menu(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = create_seq_ui.CreateSeqUI()
-        self.ui.show_name_cb.setDisabled(True)
-        self.ui.show_name_cb.setCurrentText(self.show_select_cb.currentText())
+        # self.ui.show_name_cb.setDisabled(True)
+        # self.ui.show_name_cb.setCurrentText(self.show_select_cb.currentText())
         self.ui.show()
 
     def create_shot_menu(self):
@@ -349,17 +391,18 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
 if __name__ == '__main__':
     import sys
-    from envars.envars import Envars
+    # from envars.envars import Envars
     app = QtWidgets.QApplication(sys.argv)
     font = app.instance().setFont(QtGui.QFont())
 
-    Envars.show_name = "Test"
-    Envars.branch_name = "sequences"
-    Envars.category = "GooGoo"
-    Envars.entry_name = "circle"
-    Envars.task_name = "rigging"
+    # Envars.show_name = "Test"
+    # Envars.branch_name = "sequences"
+    # Envars.category = "GooGoo"
+    # Envars.entry_name = "circle"
+    # Envars.task_name = "rigging"
 
-    test_dialog = ProjectTreeViewerCore(Envars().show_name)
+    test_dialog = ProjectTreeViewerCore()
+
     # test_dialog.current_show()
     # test_dialog.comboBox_shows()
     # test_dialog.set_show_to()

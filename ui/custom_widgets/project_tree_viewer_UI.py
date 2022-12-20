@@ -18,8 +18,8 @@ class ProjectTreeViewerBuild(QtWidgets.QTreeWidget):
 class ProjectTreeViewerUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(ProjectTreeViewerUI, self).__init__(parent)
-        self.setMinimumWidth(150)
-        self.setMaximumWidth(150)
+        # self.setMinimumWidth(150)
+        # self.setMaximumWidth(150)
 
         self.create_widgets()
         self.create_layout()

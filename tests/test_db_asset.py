@@ -76,8 +76,8 @@ if test_tasks:
     full_tasks_asset = tasks.get_tasks_full()
     tasks_imp_from = tasks.imports_from
     task_status = tasks.status
-    task_active = tasks.is_active
-    tasks.is_active = False
+    task_active = tasks.current_is_active
+    tasks.current_is_active = False
     print(task_active)
     print(task_status)
     print(tasks_imp_from)

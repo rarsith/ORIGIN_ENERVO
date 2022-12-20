@@ -432,9 +432,9 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         main_pub_task_name = ''
 
         try:
-            main_pub_branch_name = self.show_view_twd.get_sel_hierachy()[1]
-            main_pub_category_name = self.show_view_twd.get_sel_hierachy()[2]
-            main_pub_entry_name = self.show_view_twd.get_sel_hierachy()[3]
+            main_pub_branch_name = self.show_view_twd.get_sel_data()[1]
+            main_pub_category_name = self.show_view_twd.get_sel_data()[2]
+            main_pub_entry_name = self.show_view_twd.get_sel_data()[3]
             main_pub_task_name = self.tasks_view_lwd.get_selected_task()
         except:
             pass

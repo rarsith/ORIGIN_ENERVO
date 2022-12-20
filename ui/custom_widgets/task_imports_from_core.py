@@ -31,21 +31,22 @@ class TasksImportFromCore(TasksImportFromUI):
         get_active_tasks = []
         self.imports_from_wdg.clear()
         for task in get_schema:
-            is_active = DbTasks().is_active
-            if is_active == True:
+            is_active = DbTasks().is_active(task=task)
+
+            if is_active:
                 get_active_tasks.append(task)
+
         self.add_items_to_list(get_active_tasks)
 
     def add_items_to_list(self, items):
         for active_task in items:
-
-            imp_from_pub_slots_Schema = self.get_pub_imports()
+            imp_from_pub_slots_schema = DbPubSlot().get_pub_slots(task_name=active_task)
             item = QtWidgets.QTreeWidgetItem([active_task])
             self.imports_from_wdg.addTopLevelItem(item)
-            slot_used_by = self.get_pub_used_by(imp_from_pub_slots_Schema)
+            slot_used_by = self.get_pub_used_by(imp_from_pub_slots_schema)
 
             try:
-                for k, v in imp_from_pub_slots_Schema.items():
+                for k, v in imp_from_pub_slots_schema.items():
                     self.x = QtWidgets.QTreeWidgetItem([k])
                     item.addChild(self.x)
 
@@ -56,7 +57,6 @@ class TasksImportFromCore(TasksImportFromUI):
 
             except:
                 pass
-
 
     def handle_item_changed(self, item, column):
         item_parent = item.parent()
@@ -75,12 +75,12 @@ class TasksImportFromCore(TasksImportFromUI):
         else:
             return existing_imports_from
 
-    def get_pub_imports(self):
-        pub_imports = DbPubSlot().get_pub_slots()
+    def get_pub_imports(self, task_name):
+        pub_imports = DbPubSlot().get_pub_slots(task_name=task_name)
         return pub_imports
 
     def get_pub_used_by(self, extract):
-        rel_task = DbPubSlot().get_used_by_task(extract)
+        rel_task = DbPubSlot().get_used_by_task(data=extract)
         return rel_task
 
     def get_wdg_top_level_items_list(self):
@@ -90,6 +90,7 @@ class TasksImportFromCore(TasksImportFromUI):
         for each_item in (range(nnn)):
             sel = ccc.child(each_item)
             list_all.append(sel.text(0))
+        print(list_all)
         return list_all
 
     def get_all_items(self):
@@ -124,7 +125,6 @@ class TasksImportFromCore(TasksImportFromUI):
 
                 if child.checkState(0) == QtCore.Qt.Checked:
                     checked_sweeps.append(child.text(0))
-
             checked[signal.text(0)] = checked_sweeps
         return checked
 
@@ -147,15 +147,21 @@ class TasksImportFromCore(TasksImportFromUI):
         return unchecked
 
     def write_wdg_checked_items(self):
+        current_task = Envars().task_name
         checked_items = self.get_wdg_checked_items()
         unchecked_items = self.get_wdg_unchecked_items()
         for k, v in checked_items.items():
             for each in v:
-                DbPubSlot().set_used_by(k, each)
+                DbPubSlot().set_used_by(task_name=k,
+                                        pub_slot=each,
+                                        used_by=current_task)
 
         for k, v in unchecked_items.items():
             for each in v:
-                DbPubSlot().set_used_by(k, each, remove_action=True)
+                DbPubSlot().set_used_by(task_name=k,
+                                        pub_slot=each,
+                                        used_by=current_task,
+                                        remove_action=True)
 
     def clean_wdg(self, sel_item):
         checked = dict()
@@ -180,8 +186,8 @@ class TasksImportFromCore(TasksImportFromUI):
 
     def save_to_database(self):
         self.write_wdg_checked_items()
-        DbTasks.rem_import_slots()
-        DbTasks.imports_from = self.get_wdg_top_level_items_list()
+        DbTasks().rem_import_slots()
+        DbTasks().imports_from = self.get_wdg_top_level_items_list()
 
 # ImportsFromWidget -- END
 
@@ -205,8 +211,8 @@ class TasksImportFromCore(TasksImportFromUI):
             return ["-- no tasks --"]
 
     def remove_self_task(self):
-        get_task = Envars().task_name
-        entries = self.existing_tasks_lwd.findItems(get_task, QtCore.Qt.MatchFixedString)
+        current_task = Envars().task_name
+        entries = self.existing_tasks_lwd.findItems(current_task, QtCore.Qt.MatchFixedString)
         for entry in entries:
             indexes = self.existing_tasks_lwd.indexFromItem(entry)
             self.existing_tasks_lwd.takeItem(indexes.row())
@@ -236,7 +242,7 @@ class TasksImportFromCore(TasksImportFromUI):
             self.add_items_to_list([item.text()])
             print ("{0} item added to schema".format (item.text()))
             self.existing_tasks_lwd.takeItem(self.existing_tasks_lwd.row(item))
-            # self.imports_from_wdg.collapseAll()
+            self.imports_from_wdg.collapseAll()
 
 
 if __name__ == "__main__":
@@ -246,8 +252,8 @@ if __name__ == "__main__":
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "red_hulk"
-    Envars.task_name = "rigging"
+    Envars.entry_name = "new_monster"
+    Envars.task_name = "groom"
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TasksImportFromCore()

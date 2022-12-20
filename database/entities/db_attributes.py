@@ -288,6 +288,9 @@ class DbProjectAttrPaths:
 
 
 class DbTaskAttrPaths:
+    def __init__(self):
+        self.task_name = Envars.task_name
+
 
     @classmethod
     def custom(cls, attr):
@@ -295,23 +298,33 @@ class DbTaskAttrPaths:
         return attr
 
     @classmethod
-    def is_active(cls):
-        return db_path_assembler.make_path("tasks", Envars.task_name,"active")
+    def is_active(cls, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "active")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "active")
 
     @classmethod
-    def status(cls):
-        return db_path_assembler.make_path("tasks", Envars.task_name,"status")
+    def status(cls, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "status")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "status")
 
     @classmethod
-    def artist(cls):
-        return db_path_assembler.make_path("tasks", Envars.task_name,"artist")
+    def artist(cls, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "artist")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "artist")
 
     @classmethod
-    def imports_from(cls):
+    def imports_from(cls, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "imports_from")
         return db_path_assembler.make_path("tasks", Envars.task_name, "imports_from")
 
     @classmethod
-    def pub_slots(cls):
+    def pub_slots(cls, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "pub_slots")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots")
 
 
@@ -347,19 +360,29 @@ class DbPubSlotsAttrPaths:
         """Access path to get the Type of an Entity"""
         return attr
 
-    def is_active(self):
+    def is_active(self, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "active")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "active")
 
-    def is_reviewable(self):
+    def is_reviewable(self, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "reviewable")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "reviewable")
 
-    def used_by(self):
+    def used_by(self, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "used_by")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "used_by")
 
-    def method(self):
+    def method(self, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "method")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "method")
 
-    def type(self):
+    def type(self, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "type")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "type")
 
 
@@ -397,14 +420,15 @@ class DbBundleAttrPaths:
 
 
 if __name__ == '__main__':
-    Envars.show_name="Cicles"
+    Envars.show_name="Test"
     Envars.branch_name="assets"
     Envars.category="characters"
-    Envars.entry_name="circle"
-    Envars.task_name="rigging"
+    Envars.entry_name="red_hulk"
+    Envars.task_name="surfacing"
 
     # pp_path = pp.db_task_pub(relative=False, dict_packed=True)
     # print (pp_path)
-    asset_id = DbPubSlotsAttrPaths(publish_slot="cmuscle_rig").type()
+    asset_id = DbTaskAttrPaths.imports_from()
+
 
     print (asset_id)
