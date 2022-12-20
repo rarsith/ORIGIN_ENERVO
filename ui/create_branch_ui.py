@@ -1,5 +1,6 @@
 import sys
 from PySide2 import QtWidgets
+from envars.envars import Envars
 from PySide2 import QtGui
 from database.entities.db_entities import DbProject
 from database.entities.db_structures import DbProjectBranch
@@ -24,6 +25,7 @@ class CreateShowBranchUI(QtWidgets.QDialog):
     def create_widgets(self):
         self.show_name_cb = QtWidgets.QComboBox()
         self.show_name_cb.addItems(self.get_shows())
+        self.show_name_cb.setCurrentText(Envars().show_name)
 
         self.category_name_le = QtWidgets.QLineEdit()
 
@@ -75,7 +77,6 @@ class CreateShowBranchUI(QtWidgets.QDialog):
 
 
 if __name__ == "__main__":
-    from envars.envars import Envars
 
     Envars.show_name = "Test"
     Envars.branch_name = "assets"

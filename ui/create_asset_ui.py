@@ -57,7 +57,11 @@ class CreateAssetUI(QtWidgets.QDialog):
         self.close()
 
     def db_commit(self):
-        DbAsset().create(name=self.asset_name_le.text())
+        asset_name = self.asset_name_le.text()
+        DbAsset().create(name=asset_name)
+        context = [Envars.show_name, Envars.branch_name, Envars.category]
+        print (context)
+
         self.asset_name_le.clear()
 
     def get_asset_categories(self):

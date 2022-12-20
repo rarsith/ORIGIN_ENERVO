@@ -32,6 +32,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.project_tree_viewer_wdg.itemClicked.connect(self.get_selected_entry_name)
         self.project_tree_viewer_wdg.itemClicked.connect(self.get_sel_show_branch_category)
         self.project_tree_viewer_wdg.itemClicked.connect(self.get_sel_data)
+        self.project_tree_viewer_wdg.itemSelectionChanged.connect(self.get_sel_data)
 
         self.about_action.triggered.connect(self.about)
         self.create_show_action.triggered.connect(self.create_show_menu)
@@ -127,12 +128,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                 names.append(item.text(0))
             return names[0]
 
-    def get_selected_type(self):
-        entry_selected = self.project_tree_viewer_wdg.hasFocus()
-        if entry_selected:
-            get_selected_objects_type = DbAsset().get_entry_type()
-            return get_selected_objects_type
-
     def get_sel_show_branch_category(self):
         get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
         if len(get_selected_objects) == 0:
@@ -219,7 +214,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         else:
             Envars.entry_name = None
 
-        print ("Current Context is: {0}".format([Envars.show_name, Envars.branch_name, Envars.category_name, Envars.entry_name]))
+        # print ("Current Context is: {0}".format([Envars.show_name, Envars.branch_name, Envars.category_name, Envars.entry_name]))
 
     # def get_sel_category(self):
     #     get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
@@ -234,14 +229,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
     #             except:
     #                 pass
 
-    def get_parent_path(self, item):
-        def get_parent(item, outstring):
-            if item.parent() is None:
-                return outstring
-            outstring = item.parent.text(0) + '.' + outstring
-            return get_parent(item.parent, outstring)
-        output = get_parent(item, item.text(0))
-        return output
 
     def get_selected_entry_name(self):
         names = []
@@ -253,7 +240,8 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                 names.append(item.text(0))
             return names[0]
 
-    def get_sel_entry_path(self):
+    def get_sel_parent(self):
+        no_parent = "root"
         get_selected_entry_objects = self.project_tree_viewer_wdg.selectedItems()
         if len(get_selected_entry_objects) == 0:
             return []
@@ -261,17 +249,15 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             for item in get_selected_entry_objects:
                 try:
                     parent = item.parent()
-                    print(">>>", parent.text(0))
                     return parent.text(0)
                 except:
-                    print("NO PARENT > ROOT")
                     return []
 
     def get_selection_type(self):
-        curr_selected = DbProjectBranch().get_type
-        # print (curr_selected)
-        return curr_selected
-
+        curr_selected_items = self.project_tree_viewer_wdg.selectedItems()
+        if curr_selected_items:
+            curr_sel_type = DbProjectBranch().get_type
+            return curr_sel_type
 
     def context_menu(self):
         self.project_tree_viewer_wdg.customContextMenuRequested.connect(self.show_tree_con_menu)
@@ -279,35 +265,34 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
     def show_tree_con_menu(self, point):
         self.get_sel_data()
         context_menu = QtWidgets.QMenu()
-        context_parent = self.get_sel_entry_path()
+        context_parent = self.get_sel_parent()
         selected = self.get_selected_entry_name()
 
-        sel_parent_type = ""
         sel_type = self.get_selection_type()
-        print("TYPE: ",sel_type)
+
 
         if selected == []:
             context_menu.addAction(self.create_show_action)
             context_menu.addAction(self.create_show_branch_action)
             context_menu.exec_(self.mapToGlobal(point))
 
-        elif selected == "sequences":
+        elif selected == Envars.branch_name and sel_type == "shots":
             context_menu.addAction(self.create_seq_action)
             context_menu.exec_(self.mapToGlobal(point))
 
-        elif context_parent == "sequences":
+        elif context_parent == Envars.branch_name and sel_type == "shots":
             context_menu.addAction(self.create_shot_action)
             context_menu.exec_(self.mapToGlobal(point))
 
-        elif context_parent == "assets":
+        elif context_parent == Envars.branch_name and sel_type == "build":
             context_menu.addAction(self.create_asset_action)
             context_menu.exec_(self.mapToGlobal(point))
 
-        elif selected == "assets":
+        elif selected == Envars.branch_name and sel_type == "build":
             context_menu.addAction(self.create_asset_category_action)
             context_menu.exec_(self.mapToGlobal(point))
 
-        elif context_parent != "sequences" or context_menu != "assets":
+        else:
             context_menu.addAction(self.edit_entry_definition)
             context_menu.addAction(self.edit_bundle)
             context_menu.addSeparator()
@@ -351,36 +336,28 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             custom_dialog.close()
 
     def create_show_menu(self):
-        self.window = QtWidgets.QMainWindow()
         self.ui = create_show_ui.CreateShowUI()
         self.ui.show()
 
     def create_show_branches_menu(self):
-        self.window = QtWidgets.QMainWindow()
         self.ui = create_branch_ui.CreateShowBranchUI()
         self.ui.show_name_cb.setDisabled(True)
         self.ui.show()
 
     def create_seq_menu(self):
-        self.window = QtWidgets.QMainWindow()
         self.ui = create_seq_ui.CreateSeqUI()
-        # self.ui.show_name_cb.setDisabled(True)
-        # self.ui.show_name_cb.setCurrentText(self.show_select_cb.currentText())
         self.ui.show()
 
     def create_shot_menu(self):
-        self.window = QtWidgets.QMainWindow()
         self.ui = create_shot_ui.CreateShotUI()
-
         self.ui.show()
 
     def create_asset_menu(self):
-        self.window = QtWidgets.QMainWindow()
         self.ui = create_asset_ui.CreateAssetUI()
         self.ui.show()
 
+
     def create_asset_category_menu(self):
-        self.window = QtWidgets.QMainWindow()
         self.ui = create_asset_category_ui.CreateAssetCategoryUI()
         self.ui.show_name_cb.setCurrentText(self.show_select_cb.currentText())
         self.ui.show_name_cb.setDisabled(True)

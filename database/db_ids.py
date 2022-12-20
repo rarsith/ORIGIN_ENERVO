@@ -15,9 +15,9 @@ class DbIds:
 
     @classmethod
     def create_entity_id(cls, name):
-        entry_id = db_path_assembler.make_path(Envars.show_name,
-                                               Envars.branch_name,
-                                               Envars.category,
+        entry_id = db_path_assembler.make_path(Envars().show_name,
+                                               Envars().branch_name,
+                                               Envars().category,
                                                name)
         return entry_id
 
@@ -140,5 +140,5 @@ if __name__ == '__main__':
     Envars.entry_name = "circle"
     Envars.task_name = "rigging"
 
-    cc = DbIds.create_main_pub_id(version="001")
+    cc = DbIds.create_entity_id(name="xolxter")
     print(cc)
