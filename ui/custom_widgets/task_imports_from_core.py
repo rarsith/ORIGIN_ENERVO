@@ -90,7 +90,6 @@ class TasksImportFromCore(TasksImportFromUI):
         for each_item in (range(nnn)):
             sel = ccc.child(each_item)
             list_all.append(sel.text(0))
-        print(list_all)
         return list_all
 
     def get_all_items(self):
@@ -247,7 +246,6 @@ class TasksImportFromCore(TasksImportFromUI):
 
 if __name__ == "__main__":
 
-    from envars.envars import Envars
 
     Envars.show_name = "Test"
     Envars.branch_name = "assets"

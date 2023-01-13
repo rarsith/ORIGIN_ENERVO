@@ -1,8 +1,8 @@
-from PySide2 import QtWidgets, QtCore, QtGui
+from PySide2 import QtWidgets, QtGui
 from envars.envars import Envars
 from ui.custom_widgets.project_tree_viewer_UI import ProjectTreeViewerUI
-from database.entities.db_entities import DbAsset, DbProject
-from database.entities.db_structures import DbAssetCategories, DbProjectBranch
+from database.entities.db_entities import DbProject
+from database.entities.db_structures import DbProjectBranch
 from common_utils import get_deep_value as gdeepval
 from ui import (create_show_ui,
                 create_seq_ui,
@@ -12,12 +12,12 @@ from ui import (create_show_ui,
                 create_branch_ui)
 
 
-
-
 class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
     def __init__(self, parent=None):
         super(ProjectTreeViewerCore, self).__init__(parent)
+
+
 
         self.create_show_actions()
         self.create_connections()
@@ -117,7 +117,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         selected = self.project_tree_viewer_wdg.selectedItems()
         return selected
 
-
     def get_selected_entry(self):
         names = []
         get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
@@ -184,7 +183,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         else:
             parent = self.get_parent()
             grandparent = self.get_grandparent()
-            if not parent:
+            if not parent and not grandparent:
                 branch.append(get_selected_objects.text(0))
 
             elif not grandparent:
@@ -205,30 +204,16 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             Envars.branch_name = None
 
         if category:
-            Envars.category_name = category[0]
+            Envars.category = category[0]
         else:
-            Envars.category_name = None
+            Envars.category = None
 
         if entry:
             Envars.entry_name = entry[0]
         else:
             Envars.entry_name = None
 
-        # print ("Current Context is: {0}".format([Envars.show_name, Envars.branch_name, Envars.category_name, Envars.entry_name]))
-
-    # def get_sel_category(self):
-    #     get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
-    #
-    #     if len(get_selected_objects) == 0:
-    #         return []
-    #     elif len(get_selected_objects) >= 1:
-    #         for item in get_selected_objects:
-    #             try:
-    #                 parent = item.parent()
-    #                 return parent.text(0)
-    #             except:
-    #                 pass
-
+        # print(Envars.show_name, Envars.branch_name, Envars.category, Envars.entry_name)
 
     def get_selected_entry_name(self):
         names = []
@@ -241,7 +226,6 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             return names[0]
 
     def get_sel_parent(self):
-        no_parent = "root"
         get_selected_entry_objects = self.project_tree_viewer_wdg.selectedItems()
         if len(get_selected_entry_objects) == 0:
             return []
@@ -264,12 +248,12 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
     def show_tree_con_menu(self, point):
         self.get_sel_data()
+
         context_menu = QtWidgets.QMenu()
         context_parent = self.get_sel_parent()
         selected = self.get_selected_entry_name()
 
         sel_type = self.get_selection_type()
-
 
         if selected == []:
             context_menu.addAction(self.create_show_action)
@@ -356,14 +340,11 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.ui = create_asset_ui.CreateAssetUI()
         self.ui.show()
 
-
     def create_asset_category_menu(self):
         self.ui = create_asset_category_ui.CreateAssetCategoryUI()
         self.ui.show_name_cb.setCurrentText(self.show_select_cb.currentText())
         self.ui.show_name_cb.setDisabled(True)
-
         self.ui.show()
-
 
 
 if __name__ == '__main__':

@@ -75,8 +75,8 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         self.publish_slots_wdg.setCellWidget(row, 1, self.set_type_cb)
         self.publish_slots_wdg.setCellWidget(row, 2, self.set_method_cb)
         self.publish_slots_wdg.setCellWidget(row, 3, self.set_source_cb)
-        self.publish_slots_wdg.setCellWidget(row, 4, self.set_reviewable_ckb)
-        self.publish_slots_wdg.setCellWidget(row, 5, self.set_active_ckb)
+        self.publish_slots_wdg.setCellWidget(row, 7, self.set_reviewable_ckb)
+        self.publish_slots_wdg.setCellWidget(row, 8, self.set_active_ckb)
 
     def get_db_pub_type(self, slot):
         properties = self.get_properties()

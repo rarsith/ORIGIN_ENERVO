@@ -17,18 +17,22 @@ class PublishSlotsWidgetBuild(QtWidgets.QTableWidget):
     def widget_build(self):
         self.setDisabled(False)
         self.setMinimumWidth(465)
-        self.setColumnCount(6)
-        self.setHorizontalHeaderLabels(["Slot_Name", "Type", "Method", "Source","R", "A"])
+        self.setColumnCount(9)
+        self.setHorizontalHeaderLabels(["Slot", "Type", "Method", "Source", "Scope", "Mode", "Used By", "R", "A"])
         self.setShowGrid(False)
         # self.setAlternatingRowColors(True)
         header = self.verticalHeader()
         header.hide()
-        self.setColumnWidth(0, 100)
+        self.setColumnWidth(0, 80)
         self.setColumnWidth(1, 80)
-        self.setColumnWidth(2, 95)
-        self.setColumnWidth(3, 80)
-        self.setColumnWidth(4, 20)
-        self.setColumnWidth(5, 20)
+        self.setColumnWidth(2, 80)
+        self.setColumnWidth(3, 60)
+        self.setColumnWidth(4, 60)
+        self.setColumnWidth(5, 60)
+        self.setColumnWidth(6, 60)
+        self.setColumnWidth(7, 20)
+        self.setColumnWidth(8, 20)
+
 
 
 class PublishSlotsWidgetUI(QtWidgets.QWidget):

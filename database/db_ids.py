@@ -15,10 +15,16 @@ class DbIds:
 
     @classmethod
     def create_entity_id(cls, name):
-        entry_id = db_path_assembler.make_path(Envars().show_name,
-                                               Envars().branch_name,
-                                               Envars().category,
+        print("current_proj: ", Envars.show_name)
+        print("current_branch: ", Envars.branch_name)
+        print("current_category: ", Envars().category)
+        print("current_name: ", name)
+
+        entry_id = db_path_assembler.make_path(Envars.show_name,
+                                               Envars.branch_name,
+                                               Envars.category,
                                                name)
+
         return entry_id
 
     @classmethod

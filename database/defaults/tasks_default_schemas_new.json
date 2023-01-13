@@ -1,32 +1,6 @@
 {
   "character": {
     "tasks": {
-      "lidar": {
-      "active": true,
-      "status": "NOT-STARTED",
-      "artist": "None",
-      "imports_from": {},
-      "pub_slots": {
-        "img": {
-          "type": "img",
-          "method": "img_exp",
-          "used_by": [
-            "modeling"
-          ],
-          "source": {},
-          "reviewable": true,
-          "active": true
-        },
-        "pdf": {
-          "type": "scn",
-          "method": "img_exp",
-          "used_by": [],
-          "source": {},
-          "reviewable": true,
-          "active": true
-        }
-      }
-    },
       "concept": {
         "active": true,
         "status": "NOT-STARTED",
@@ -37,9 +11,11 @@
             "type": "img",
             "method": "img_exp",
             "used_by": [
-              "modeling"
+              "modeling.rend_geo"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -47,7 +23,9 @@
             "type": "scn",
             "method": "img_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           }
@@ -57,51 +35,19 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "concept": {}
-        },
+        "imports_from": [
+          "concept.img"
+        ],
         "pub_slots": {
           "ref_geo": {
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "modeling",
-              "surfacing"
+              "modeling.rend_geo"
             ],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "displ": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "normal": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "cavity": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
@@ -111,20 +57,23 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "concept": {},
-          "sculpting": {}
-        },
+        "imports_from": [
+          "concept.img",
+          "sculpting.ref_geo",
+          "texturing.vport_tex"
+        ],
         "pub_slots": {
           "rend_geo": {
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging",
-              "cfx_set",
-              "groom"
+              "rigging.render_rig",
+              "cfx_set.cloth_setup",
+              "groom.groom_set"
             ],
-            "source": {},
+            "source": ["root"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -132,10 +81,12 @@
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging",
-              "cfx_set"
+              "rigging.proxy_rig",
+              "cfx_set.cloth_setup"
             ],
-            "source": {},
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -143,10 +94,12 @@
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging",
-              "cfx_set"
+              "rigging.util_rig",
+              "cfx_set.cloth_setup"
             ],
-            "source": {},
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -154,56 +107,94 @@
             "type": "geo",
             "method": "sf_csh",
             "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "proj_geo": {
-            "type": "geo",
-            "method": "sf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "vport_mat": {
-            "type": "scn",
-            "method": "assign_exp",
-            "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["build", "shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
           "tex_object": {
             "type": "geo",
             "method": "sf_csh",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
           "curvature_map": {
             "type": "img",
             "method": "geo_bake",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texture.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "ao_map": {
             "type": "img",
             "method": "geo_bake",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texture.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "selection_map": {
             "type": "img",
             "method": "geo_bake",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texture.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
+            "active": true
+          },
+          "displ": {
+            "type": "img",
+            "method": "geo_bake",
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
+            "reviewable": true,
+            "active": true
+          },
+          "normal": {
+            "type": "img",
+            "method": "geo_bake",
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          },
+          "cavity": {
+            "type": "img",
+            "method": "geo_bake",
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
+            "reviewable": false,
             "active": true
           }
         }
@@ -212,23 +203,37 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "modeling": {}
-        },
+        "imports_from": [
+          "modeling.tex_object",
+          "modeling.curvature_map",
+          "modeling.ao_map",
+          "modeling.selection_map",
+          "modeling.displ",
+          "modeling.normal",
+          "modeling.cavity"
+        ],
         "pub_slots": {
           "texture_set": {
             "type": "img",
             "method": "img_exp",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "surfacing.look_dev"
+            ],
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "vport_tex": {
             "type": "img",
             "method": "img_exp",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "surfacing.vport_mat"
+            ],
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -236,17 +241,23 @@
             "type": "img",
             "method": "img_exp",
             "used_by": [
-              "groom"
+              "groom.groom_set"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "util_maps": {
             "type": "img",
             "method": "img_exp",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "surfacing.look_dev"
+            ],
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           }
@@ -256,12 +267,21 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "modeling.proxy_geo",
+          "modeling.utility",
+          "facs.main_shapes",
+          "facs.corrective"
+        ],
         "pub_slots": {
           "render_rig": {
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -269,15 +289,9 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "cmuscle_rig": {
-            "type": "scn",
-            "method": "scn_exp",
-            "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -285,28 +299,32 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "facs": {}
         }
       },
       "groom": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "texturing.groom_maps"
+        ],
         "pub_slots": {
           "groom_set": {
             "type": "csh",
             "method": "scn_exp",
             "used_by": [
-              "cfx_set"
+              "surfacing.look_dev"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -314,28 +332,34 @@
             "type": "csh",
             "method": "scn_exp",
             "used_by": [
-              "cfx_set"
+              "cfx_set.fur_setup"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": "False",
             "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "texturing": {}
         }
       },
       "cfx_set": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "modeling.proxy_geo",
+          "modeling.utility",
+          "groom.guides"
+        ],
         "pub_slots": {
           "cloth_setup": {
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -343,7 +367,9 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -351,29 +377,49 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          },
+          "muscle_setup": {
+            "type": "scn",
+            "method": "scn_exp",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          },
+          "crowd_setup": {
+            "type": "scn",
+            "method": "scn_exp",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "groom": {}
         }
       },
       "fx_set": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "modeling": {}
-        },
+        "imports_from": [
+          "modeling.rend_geo"
+        ],
         "pub_slots": {
           "bgeo": {
             "type": "geo",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -381,7 +427,9 @@
             "type": "csh",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
@@ -391,38 +439,55 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "texturing.texture_set",
+          "texturing.util_maps",
+          "sculpting.ref_geo",
+          "groom.groom_set"
+        ],
         "pub_slots": {
           "look_dev": {
             "type": "cfg",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
+          },
+          "vport_mat": {
+            "type": "scn",
+            "method": "assign_exp",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "texturing": {},
-          "sculpting": {}
         }
       },
       "facs": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "modeling": {},
-          "texturing": {}
-        },
+        "imports_from": [
+          "modeling.rend_geo",
+          "texturing.vport_tex"
+        ],
         "pub_slots": {
           "main_shapes": {
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging"
+              "rigging.render_rig",
+              "rigging.proxy_rig"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -430,9 +495,12 @@
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging"
+              "rigging.render_rig",
+              "rigging.proxy_rig"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
@@ -442,32 +510,6 @@
   },
   "prop":{
     "tasks":{
-      "lidar": {
-      "active": true,
-      "status": "NOT-STARTED",
-      "artist": "None",
-      "imports_from": {},
-      "pub_slots": {
-        "img": {
-          "type": "img",
-          "method": "img_exp",
-          "used_by": [
-            "modeling"
-          ],
-          "source": {},
-          "reviewable": true,
-          "active": true
-        },
-        "pdf": {
-          "type": "scn",
-          "method": "img_exp",
-          "used_by": [],
-          "source": {},
-          "reviewable": true,
-          "active": true
-        }
-      }
-    },
       "concept": {
         "active": true,
         "status": "NOT-STARTED",
@@ -478,9 +520,11 @@
             "type": "img",
             "method": "img_exp",
             "used_by": [
-              "modeling"
+              "modeling.rend_geo"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -488,7 +532,9 @@
             "type": "scn",
             "method": "img_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           }
@@ -498,51 +544,19 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "concept": {}
-        },
+        "imports_from": [
+          "concept.img"
+        ],
         "pub_slots": {
           "ref_geo": {
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "modeling",
-              "surfacing"
+              "modeling.rend_geo"
             ],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "displ": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "normal": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "cavity": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
@@ -552,20 +566,23 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "concept": {},
-          "sculpting": {}
-        },
+        "imports_from": [
+          "concept.img",
+          "sculpting.ref_geo",
+          "texturing.vport_tex"
+        ],
         "pub_slots": {
           "rend_geo": {
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging",
-              "cfx_set",
-              "groom"
+              "rigging.render_rig",
+              "cfx_set.cloth_setup",
+              "groom.groom_set"
             ],
-            "source": {},
+            "source": ["root"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -573,10 +590,12 @@
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging",
-              "cfx_set"
+              "rigging.proxy_rig",
+              "cfx_set.cloth_setup"
             ],
-            "source": {},
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -584,10 +603,12 @@
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
-              "rigging",
-              "cfx_set"
+              "rigging.util_rig",
+              "cfx_set.cloth_setup"
             ],
-            "source": {},
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -595,56 +616,94 @@
             "type": "geo",
             "method": "sf_csh",
             "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "proj_geo": {
-            "type": "geo",
-            "method": "sf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "vport_mat": {
-            "type": "scn",
-            "method": "assign_exp",
-            "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["build", "shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
           "tex_object": {
             "type": "geo",
             "method": "sf_csh",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
           "curvature_map": {
             "type": "img",
             "method": "geo_bake",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texture.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "ao_map": {
             "type": "img",
             "method": "geo_bake",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texture.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "selection_map": {
             "type": "img",
             "method": "geo_bake",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "texture.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
+            "active": true
+          },
+          "displ": {
+            "type": "img",
+            "method": "geo_bake",
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
+            "reviewable": true,
+            "active": true
+          },
+          "normal": {
+            "type": "img",
+            "method": "geo_bake",
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          },
+          "cavity": {
+            "type": "img",
+            "method": "geo_bake",
+            "used_by": [
+              "texturing.texture_set"
+            ],
+            "source": ["rend_geo"],
+            "scope": ["build"],
+            "mode": "layer",
+            "reviewable": false,
             "active": true
           }
         }
@@ -653,23 +712,37 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "modeling": {}
-        },
+        "imports_from": [
+          "modeling.tex_object",
+          "modeling.curvature_map",
+          "modeling.ao_map",
+          "modeling.selection_map",
+          "modeling.displ",
+          "modeling.normal",
+          "modeling.cavity"
+        ],
         "pub_slots": {
           "texture_set": {
             "type": "img",
             "method": "img_exp",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "surfacing.look_dev"
+            ],
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "vport_tex": {
             "type": "img",
             "method": "img_exp",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "surfacing.vport_mat"
+            ],
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -677,17 +750,23 @@
             "type": "img",
             "method": "img_exp",
             "used_by": [
-              "groom"
+              "groom.groom_set"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
           "util_maps": {
             "type": "img",
             "method": "img_exp",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "surfacing.look_dev"
+            ],
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           }
@@ -697,12 +776,21 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "modeling.proxy_geo",
+          "modeling.utility",
+          "facs.main_shapes",
+          "facs.corrective"
+        ],
         "pub_slots": {
           "render_rig": {
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -710,15 +798,9 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "cmuscle_rig": {
-            "type": "scn",
-            "method": "scn_exp",
-            "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -726,28 +808,32 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "facs": {}
         }
       },
       "groom": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "texturing.groom_maps"
+        ],
         "pub_slots": {
           "groom_set": {
             "type": "csh",
             "method": "scn_exp",
             "used_by": [
-              "cfx_set"
+              "surfacing.look_dev"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
           },
@@ -755,28 +841,34 @@
             "type": "csh",
             "method": "scn_exp",
             "used_by": [
-              "cfx_set"
+              "cfx_set.fur_setup"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["build"],
+            "mode": "layer",
             "reviewable": "False",
             "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "texturing": {}
         }
       },
       "cfx_set": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "modeling.proxy_geo",
+          "modeling.utility",
+          "groom.guides"
+        ],
         "pub_slots": {
           "cloth_setup": {
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -784,7 +876,9 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -792,29 +886,49 @@
             "type": "scn",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          },
+          "muscle_setup": {
+            "type": "scn",
+            "method": "scn_exp",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          },
+          "crowd_setup": {
+            "type": "scn",
+            "method": "scn_exp",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "groom": {}
         }
       },
       "fx_set": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "modeling": {}
-        },
+        "imports_from": [
+          "modeling.rend_geo"
+        ],
         "pub_slots": {
           "bgeo": {
             "type": "geo",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -822,7 +936,9 @@
             "type": "csh",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
@@ -832,52 +948,40 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
+        "imports_from": [
+          "modeling.rend_geo",
+          "texturing.texture_set",
+          "texturing.util_maps",
+          "sculpting.ref_geo",
+          "groom.groom_set"
+        ],
         "pub_slots": {
           "look_dev": {
             "type": "cfg",
             "method": "scn_exp",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
+          },
+          "vport_mat": {
+            "type": "scn",
+            "method": "assign_exp",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
           }
-        },
-        "imports_from": {
-          "modeling": {},
-          "texturing": {},
-          "sculpting": {}
         }
       }
     }
   },
   "environment":{
     "tasks":{
-      "lidar": {
-      "active": true,
-      "status": "NOT-STARTED",
-      "artist": "None",
-      "imports_from": {},
-      "pub_slots": {
-        "img": {
-          "type": "img",
-          "method": "img_exp",
-          "used_by": [
-            "modeling"
-          ],
-          "source": {},
-          "reviewable": true,
-          "active": true
-        },
-        "pdf": {
-          "type": "scn",
-          "method": "img_exp",
-          "used_by": [],
-          "source": {},
-          "reviewable": true,
-          "active": true
-        }
-      }
-    },
       "concept": {
         "active": true,
         "status": "NOT-STARTED",
@@ -908,54 +1012,37 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "concept": {}
-        },
+        "imports_from": [
+          "concept.img"
+        ],
         "pub_slots": {
-          "ref_geo": {
+          "prototypes": {
             "type": "geo",
             "method": "sf_csh",
             "used_by": [
               "modeling",
               "surfacing"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
-          "displ": {
+          "point_cloud": {
             "type": "img",
             "method": "geo_bake",
             "used_by": [
               "texturing",
               "surfacing"
             ],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": true,
             "active": true
-          },
-          "normal": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "cavity": {
-            "type": "img",
-            "method": "geo_bake",
-            "used_by": [
-              "texturing",
-              "surfacing"
-            ],
-            "source": {},
-            "reviewable": false,
-            "active": true
           }
+
         }
       }
     }
@@ -963,43 +1050,40 @@
   "shot": {
     "tasks": {
       "plateio": {
-      "active": true,
-      "status": "NOT-STARTED",
-      "artist": "None",
-      "imports_from": {},
-      "pub_slots": {
-        "master": {
-          "type": "img",
-          "method": "img_exp",
-          "used_by": [],
-          "source": {},
-          "reviewable": false,
-          "active": true
-        },
-        "vport": {
-          "type": "img",
-          "method": "img_exp",
-          "used_by": [],
-          "source": {},
-          "reviewable": false,
-          "active": true
-        }
-      },
-      "subtask": {}
-    },
-      "cam_track": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "plateio": {}
-        },
+        "imports_from": [],
+        "pub_slots": {
+          "master": {
+            "type": "img",
+            "method": "img_exp",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          }
+        }
+      },
+      "matchmove": {
+        "active": true,
+        "status": "NOT-STARTED",
+        "artist": "None",
+        "imports_from": [
+          "plateio.master"
+        ],
         "pub_slots": {
           "distortion": {
             "type": "cfg",
             "method": "cfg_scn_exp",
-            "used_by": [],
-            "source": {},
+            "used_by": [
+              "compositing.comp_out"
+            ],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "non-layer",
             "reviewable": false,
             "active": true
           },
@@ -1011,129 +1095,71 @@
             "reviewable": false,
             "active": true
           },
-          "HO": {
+          "vport_shot_cam": {
             "type": "csh",
-            "method": "sf_csh",
+            "method": "mf_csh",
             "used_by": [],
             "source": {},
+            "reviewable": false,
+            "active": true
+          },
+          "vport_plates": {
+            "type": "img",
+            "method": "img_exp",
+            "used_by": [
+              "layout",
+              "rotomation",
+              "animation"
+            ],
+            "source": ["distortion"],
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": true,
+            "active": true
+          },
+          "helper_objects": {
+            "type": "csh",
+            "method": "sf_csh",
+            "used_by": [
+              "layout",
+              "rotomation",
+              "animation"
+            ],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
           "locators": {
-            "type": "img",
-            "method": "sf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "wit_cam_01": {
             "type": "csh",
             "method": "mf_csh",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
-          "wit_cam_02": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "wit_cam_03": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "wit_cam_04": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "wit_cam_05": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          }
-        }
-      },
-      "body_track": {
-        "active": true,
-        "status": "NOT-STARTED",
-        "artist": "None",
-        "imports_from": {
-          "cam_track": {},
-          "plateio": {}
-        },
-        "pub_slots": {
-          "rend_geo": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "proxy_geo": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "util_geo": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "util_rig": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "anm_crv": {
-            "type": "cfg",
-            "method": "anm_crv",
-            "used_by": [],
-            "source": {},
-            "reviewable": false,
-            "active": true
-          }
+          "wit_cams": {"TODO_insert_template": {}}
         }
       },
       "layout": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "cam_track": {},
-          "plateio": {}
-        },
+        "imports_from":[
+          "assignments.rigging",
+          "matchmove.vport_shot_cam"
+        ],
         "pub_slots": {
           "positions": {
             "type": "cfg",
             "method": "scatter",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -1142,6 +1168,8 @@
             "method": "cfg_exp",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -1150,6 +1178,8 @@
             "method": "mf_csh",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -1158,6 +1188,8 @@
             "method": "anm_crv",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -1166,6 +1198,8 @@
             "method": "mf_csh",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -1174,6 +1208,49 @@
             "method": "cfg_exp",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
+            "reviewable": false,
+            "active": true
+          }
+        }
+      },
+      "rotomation": {
+        "active": true,
+        "status": "NOT-STARTED",
+        "artist": "None",
+        "imports_from": [
+          "cam_track.vport_shot_cam",
+          "cam_track.wit_cams"
+        ],
+        "pub_slots": {
+          "blocking": {
+            "type": "csh",
+            "method": "mf_csh",
+            "used_by": [],
+            "source": [],
+            "scope": ["shot"],
+            "mode": "non_layer",
+            "reviewable": true,
+            "active": true
+          },
+          "rough": {
+            "type": "csh",
+            "method": "mf_csh",
+            "used_by": [],
+            "source": {},
+            "scope": ["shot"],
+            "mode": "non_layer",
+            "reviewable": true,
+            "active": true
+          },
+          "full": {
+            "type": "csh",
+            "method": "mf_csh",
+            "used_by": [],
+            "source": {},
+            "scope": ["shot"],
+            "mode": "non_layer",
             "reviewable": false,
             "active": true
           }
@@ -1183,40 +1260,38 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "cam_track": {},
-          "plateio": {}
-        },
+        "imports_from": [
+          "cam_track.vport_shot_cam",
+          "cam_track.wit_cams"
+        ],
         "pub_slots": {
-          "rend_geo": {
+          "blocking": {
             "type": "csh",
             "method": "mf_csh",
             "used_by": [],
-            "source": {},
+            "source": [],
+            "scope": ["shot"],
+            "mode": "non_layer",
             "reviewable": true,
             "active": true
           },
-          "proxy_geo": {
+          "rough": {
             "type": "csh",
             "method": "mf_csh",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "non_layer",
             "reviewable": true,
             "active": true
           },
-          "util_geo": {
+          "full": {
             "type": "csh",
             "method": "mf_csh",
             "used_by": [],
             "source": {},
-            "reviewable": false,
-            "active": true
-          },
-          "util_rig": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
+            "scope": ["shot"],
+            "mode": "non_layer",
             "reviewable": false,
             "active": true
           },
@@ -1225,6 +1300,8 @@
             "method": "anm_crv",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           },
@@ -1233,6 +1310,8 @@
             "method": "mf_csh",
             "used_by": [],
             "source": {},
+            "scope": ["shot"],
+            "mode": "layer",
             "reviewable": false,
             "active": true
           }
@@ -1242,70 +1321,27 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "animation": {},
-          "body_track": {},
-          "cam_track": {},
-          "layout": {}
-        },
-        "pub_slots": {
-          "rend_geo": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "proxy_geo": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          }
-        }
+        "imports_from": [
+          "animation.full",
+          "rotomation.full",
+          "matchmove.vport_shot_cam",
+          "layout.content"
+        ],
+        "pub_slots": {}
       },
       "fx": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "animation": {},
-          "body_track": {},
-          "cam_track": {},
-          "layout": {},
-          "plateio": {}
-        },
-        "pub_slots": {
-          "rend_geo": {
-            "type": "img",
-            "method": "img_exp",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "light_geo": {
-            "type": "csh",
-            "method": "mf_csh",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          },
-          "vdb": {
-            "type": "csh",
-            "method": "scn_exp",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          }
-        }
+        "imports_from": [
+          "animation.full",
+          "rotomation.full",
+          "matchmove.vport_shot_cam",
+          "layout.content"
+        ],
+        "pub_slots": {}
       },
-      "shot_sculpt": {
+      "sho-t_sculpt": {
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
@@ -1331,55 +1367,9 @@
         "active": true,
         "status": "NOT-STARTED",
         "artist": "None",
-        "imports_from": {
-          "animation": {},
-          "body_track": {},
-          "cam_track": {},
-          "layout": {},
-          "plateio": {},
-          "fx": {},
-          "cfx": {}
-        },
+        "imports_from": ["Master_Shot_Bundle"],
         "pub_slots": {
           "render_set": {
-            "type": "img",
-            "method": "img_exp",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          }
-        }
-      },
-      "roto": {
-        "active": true,
-        "status": "NOT-STARTED",
-        "artist": "None",
-        "imports_from": {
-          "plateio": {},
-          "cam_track": {}
-        },
-        "pub_slots": {
-          "roto_out": {
-            "type": "img",
-            "method": "img_exp",
-            "used_by": [],
-            "source": {},
-            "reviewable": true,
-            "active": true
-          }
-        }
-      },
-      "paint": {
-        "active": true,
-        "status": "NOT-STARTED",
-        "artist": "None",
-        "imports_from": {
-          "plateio": {},
-          "cam_track": {}
-        },
-        "pub_slots": {
-          "paint_out": {
             "type": "img",
             "method": "img_exp",
             "used_by": [],
@@ -1401,6 +1391,22 @@
           "roto": {}
         },
         "pub_slots": {
+          "roto_out": {
+            "type": "img",
+            "method": "img_exp",
+            "used_by": [],
+            "source": {},
+            "reviewable": true,
+            "active": true
+          },
+          "paint_out": {
+            "type": "img",
+            "method": "img_exp",
+            "used_by": [],
+            "source": {},
+            "reviewable": true,
+            "active": true
+          },
           "comp_out": {
             "type": "img",
             "method": "img_exp",

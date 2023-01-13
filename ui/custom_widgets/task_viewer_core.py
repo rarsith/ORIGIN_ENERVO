@@ -1,4 +1,5 @@
 from PySide2 import QtWidgets, QtGui
+from envars.envars import Envars
 from ui.custom_widgets.task_viewer_UI import TaskViewerUI
 from database.entities.db_entities import DbTasks
 
@@ -13,7 +14,7 @@ class TaskViewerCore(TaskViewerUI):
 
     def create_connections(self):
         self.add_btn.clicked.connect(self.add_to_task_list)
-
+        self.task_viewer_wdg.itemSelectionChanged.connect(self.get_task_list_current_selected)
 
     def populate_tasks(self):
         self.task_viewer_wdg.clear()
@@ -47,6 +48,7 @@ class TaskViewerCore(TaskViewerUI):
     def get_task_list_current_selected(self):
         get_selected_task = self.task_viewer_wdg.selectedItems()
         for i in get_selected_task:
+            Envars.task_name = i.text()
             return i.text()
 
     def insert_task_row(self, name):
@@ -87,20 +89,18 @@ class TaskViewerCore(TaskViewerUI):
 if __name__ == '__main__':
     import sys
 
-    from envars.envars import Envars
-
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
     Envars.entry_name = "red_hulk"
-    Envars.task_name = "cfx_set"
+    # Envars.task_name = "cfx_set"
 
 
     app = QtWidgets.QApplication(sys.argv)
     font = app.instance().setFont(QtGui.QFont())
 
     test_dialog = TaskViewerCore()
-    test_dialog.populate_tasks()
+    # test_dialog.populate_tasks()
 
     test_dialog.show()
     sys.exit(app.exec_())

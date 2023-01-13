@@ -196,13 +196,10 @@ class OriginControlCenterUI(QtWidgets.QWidget):
 
     def create_widgets(self):
         self.menu_bar = QtWidgets.QMenuBar()
-        self.shows_lb = QtWidgets.QLabel("Select Show")
-        self.show_settings_btn = QtWidgets.QPushButton("Show Settings")
         # self.show_name_cb = QtWidgets.QComboBox()
         # self.show_name_cb.addItems(self.get_shows())
 
         self.show_view_twd = ProjectTreeViewerCore()
-        # ----------------------------------------------
         self.tasks_view_lwd = TaskViewerCore()
 
         self.empty_stack = QtWidgets.QWidget()
@@ -300,7 +297,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         views_layout.setSpacing(2)
         views_layout.addWidget(self.show_view_twd)
         views_layout.addWidget(self.tasks_view_lwd)
-
         views_layout.addWidget(self.middle_tabmenu_tab)
         views_layout.addWidget(self.details_tabmenu_tab)
 
@@ -489,10 +485,10 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.components_wdg.slot_component_viewer_tw.clearSelection()
 
     def get_tasks(self):
-        self.tasks_view_lwd.show_name = (self.show_view_twd.curr_sel_show())
-        self.tasks_view_lwd.branch_name = (self.show_view_twd.get_sel_show_branch())
-        self.tasks_view_lwd.category_name = (self.show_view_twd.get_sel_category())
-        self.tasks_view_lwd.entry_name = (self.show_view_twd.get_selected_entry())
+        # self.tasks_view_lwd.show_name = (self.show_view_twd.curr_sel_show())
+        # self.tasks_view_lwd.branch_name = (self.show_view_twd.get_sel_show_branch())
+        # self.tasks_view_lwd.category_name = (self.show_view_twd.get_sel_category())
+        # self.tasks_view_lwd.entry_name = (self.show_view_twd.get_selected_entry())
         self.tasks_view_lwd.populate_tasks()
 
     def get_selected_type(self):
