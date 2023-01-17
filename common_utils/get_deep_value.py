@@ -38,7 +38,7 @@ def deep_values(key, dictionary):
 
 if __name__ =="__main__":
 
-    key = "assets"
+    key = "characters"
 
     dictionary_target = {"structure": {"sequences": {"type": "shots"}, "assets": {"type": "build", "characters": ["dudu","dada","kookoo"], "environments": ["env001","env002","env003"],"props": []}}}
     # print (dictionary_target.keys())

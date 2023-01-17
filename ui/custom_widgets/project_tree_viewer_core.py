@@ -4,12 +4,8 @@ from ui.custom_widgets.project_tree_viewer_UI import ProjectTreeViewerUI
 from database.entities.db_entities import DbProject
 from database.entities.db_structures import DbProjectBranch
 from common_utils import get_deep_value as gdeepval
-from ui import (create_show_ui,
-                create_seq_ui,
-                create_asset_ui,
-                create_shot_ui,
-                create_asset_category_ui,
-                create_branch_ui)
+from ui.custom_widgets import create_show_ui, create_shot_ui, create_asset_ui, create_seq_ui, create_branch_ui, \
+    create_asset_category_ui
 
 
 class ProjectTreeViewerCore(ProjectTreeViewerUI):
