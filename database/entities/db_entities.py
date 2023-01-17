@@ -71,7 +71,7 @@ class _DbConstructors:
             type=DbProjectBranch().get_type,
             status=" ",
             assignment={},
-            tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks)[0],
+            tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks),
             sync_tasks=DbSyncTasks().create_from_template(),
             master_bundle=dict(main_stream=[]),
             active=True,
@@ -350,16 +350,37 @@ class DbAsset:
         except ValueError as val:
             raise ("{} Error! Nothing Done!".format(val))
 
+    def get_anything(self, attrib):
+        try:
+            result = QEntity(db_collection=From().entities,
+                             entry_id=DbIds.curr_entry_id(),
+                             attribute=attrib
+                             ).get_attr_names()
+            return result
+        except ValueError as val:
+            raise("{} Error! Nothing Done!".format(val))
+
     @staticmethod
     def get_definition():
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
                              attribute=DbEntityAttrPaths.definition()
-                             ).get_attr_names()
+                             ).get_attr_values()
             return result
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
+
+    @staticmethod
+    def get_definition_element(definition_element):
+        try:
+            result = QEntity(db_collection=From().entities,
+                             entry_id=DbIds.curr_entry_id(),
+                             attribute=DbEntityAttrPaths.definition(element=definition_element)
+                             ).get_attr_names()
+            return result
+        except ValueError as val:
+            raise ("{} Error! Nothing Done!".format(val))
 
     @staticmethod
     def get_entry_type():
@@ -418,6 +439,7 @@ class DbAsset:
 
 
 class DbTasks:
+
     def create(self, name):
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
@@ -560,51 +582,57 @@ class DbPublish:
     def get_db_publishes_ids(self, collection, view_limit=0):
         #TODO change this to database aggregations
         store_value = list()
-
         cursor = self.db[collection]
+        curr_envars_set = Envars().get_envars_set()
 
-        if Envars().show_name and Envars().branch_name and Envars().category and Envars().entry_name and Envars().task_name:
-            test = cursor.find(
-                {"show_name": Envars().show_name,
-                 "branch_name": Envars().branch_name,
-                 "category": Envars().category,
-                 "entry_name": Envars().entry_name,
-                 "task_name": Envars().task_name}).limit(view_limit)
-            for publishes in test:
-                store_value.append(str(publishes["_id"]))
+        test = cursor.find(curr_envars_set).limit(view_limit)
 
-        elif Envars().show_name and Envars().branch_name and Envars().category and Envars().entry_name:
-            test = cursor.find({"show_name": Envars().show_name,
-                                "branch_name": Envars().branch_name,
-                                "category": Envars().category,
-                                "entry_name": Envars().entry_name}).limit(view_limit)
-            for publishes in test:
-                store_value.append(str(publishes["_id"]))
-
-        elif Envars().show_name and Envars().branch_name and Envars().category:
-            test = cursor.find({"show_name": Envars().show_name,
-                                "branch_name": Envars().branch_name,
-                                "category": Envars().category}).limit(view_limit)
-            for publishes in test:
-                store_value.append(str(publishes["_id"]))
-
-        elif Envars().show_name and Envars().branch_name:
-            test = cursor.find({"show_name": Envars().show_name,
-                                "branch_name": Envars().branch_name}).limit(view_limit)
-            for publishes in test:
-                store_value.append(str(publishes["_id"]))
-
-        elif Envars().show_name:
-            test = cursor.find({"show_name": Envars().show_name}).limit(view_limit)
-            for publishes in test:
-                store_value.append(str(publishes["_id"]))
-
-        else:
-            test = cursor.find({}).limit(view_limit)
-            for publishes in test:
-                store_value.append(str(publishes["_id"]))
-
+        for publishes in test:
+            store_value.append(str(publishes["_id"]))
         return store_value
+
+        # if Envars().show_name and Envars().branch_name and Envars().category and Envars().entry_name and Envars().task_name:
+        #     test = cursor.find(
+        #         {"show_name": Envars().show_name,
+        #          "branch_name": Envars().branch_name,
+        #          "category": Envars().category,
+        #          "entry_name": Envars().entry_name,
+        #          "task_name": Envars().task_name}).limit(view_limit)
+        #     for publishes in test:
+        #         store_value.append(str(publishes["_id"]))
+        #
+        # elif Envars().show_name and Envars().branch_name and Envars().category and Envars().entry_name:
+        #     test = cursor.find({"show_name": Envars().show_name,
+        #                         "branch_name": Envars().branch_name,
+        #                         "category": Envars().category,
+        #                         "entry_name": Envars().entry_name}).limit(view_limit)
+        #     for publishes in test:
+        #         store_value.append(str(publishes["_id"]))
+        #
+        # elif Envars().show_name and Envars().branch_name and Envars().category:
+        #     test = cursor.find({"show_name": Envars().show_name,
+        #                         "branch_name": Envars().branch_name,
+        #                         "category": Envars().category}).limit(view_limit)
+        #     for publishes in test:
+        #         store_value.append(str(publishes["_id"]))
+        #
+        # elif Envars().show_name and Envars().branch_name:
+        #     test = cursor.find({"show_name": Envars().show_name,
+        #                         "branch_name": Envars().branch_name}).limit(view_limit)
+        #     for publishes in test:
+        #         store_value.append(str(publishes["_id"]))
+        #
+        # elif Envars().show_name:
+        #     test = cursor.find({"show_name": Envars().show_name}).limit(view_limit)
+        #     for publishes in test:
+        #         store_value.append(str(publishes["_id"]))
+        #
+        # else:
+        #     test = cursor.find({}).limit(view_limit)
+        #     for publishes in test:
+        #         store_value.append(str(publishes["_id"]))
+        #
+        # return store_value
 
     def get_db_values(self, collection, document_id, value_to_return):
         if not collection or not document_id or collection == None or document_id == None:
@@ -923,7 +951,6 @@ class DbPubSlot:
                 get_pub_slots.append(x)
         return get_pub_slots
 
-
     def get_is_reviewable(self, pub_slot: str) -> bool:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
@@ -946,7 +973,7 @@ class DbPubSlot:
         except Exception as e:
             raise ValueError("Error! Nothing Done! -- {}".format(e))
 
-    def set_used_by(self, task_name: str, pub_slot: str, used_by: str, remove_action: bool=False) -> None:
+    def set_used_by(self, task_name: str, pub_slot: str, used_by: str=None, remove_action: bool=False) -> None:
         used_by_data = QEntity(db_collection=From().entities,
                                entry_id=DbIds.curr_entry_id(),
                                attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by(task_name=task_name)
@@ -980,10 +1007,10 @@ class DbSyncTasks:
     @staticmethod
     def create_from_template():
         get_tasks_config = DbDefaults().get_show_defaults(DbDefaults().root_tasks)
-        entity_tasks = list(get_tasks_config[0])
+        entity_tasks = list(get_tasks_config)
         save_elements_list = dict()
         for task in entity_tasks:
-            task_definition = (get_tasks_config[0][task])
+            task_definition = (get_tasks_config[task])
             task_pub_slots = (list(task_definition["pub_slots"].keys()))
             make_dictionary = dict.fromkeys(task_pub_slots, {})
             nest_slot = {task: make_dictionary}
@@ -1118,7 +1145,7 @@ if __name__ == '__main__':
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "yellow_hulk"
+    Envars.entry_name = "red_hulk"
     Envars.task_name = "modeling"
 
     # print (Envars().branch_name)
@@ -1130,13 +1157,15 @@ if __name__ == '__main__':
     # xx = DbProject().create(name="GooGoo")
     # print (xx)
 
-    used_by_data = QEntity(db_collection=From().entities,
-                           entry_id=DbIds.curr_entry_id(),
-                           attribute=DbPubSlotsAttrPaths(publish_slot="rend_geo").used_by()
-                           ).get_attr_values()
+    # used_by_data = QEntity(db_collection=From().entities,
+    #                        entry_id=DbIds.curr_entry_id(),
+    #                        attribute=DbPubSlotsAttrPaths(publish_slot="rend_geo").used_by()
+    #                        ).get_attr_values()
 
     # pubs = DbPubSlot().get_used_by("img")
-    print (used_by_data)
+    # print (pubs)
 
+    xxx = DbAsset().get_definition_element(definition_element="shot_type")
+    print(xxx)
 
 

@@ -143,8 +143,8 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
                                                           'method':self.get_pub_method(r, 2),
                                                           'used_by':get_used_by,
                                                           'source':self.get_pub_source(r, 3),
-                                                          'reviewable':self.reviewable_is_checked(r, 4),
-                                                          'active':self.active_is_checked(r, 5)}}
+                                                          'reviewable':self.reviewable_is_checked(r, 7),
+                                                          'active':self.active_is_checked(r, 8)}}
 
             items.append(dictionary_build)
 

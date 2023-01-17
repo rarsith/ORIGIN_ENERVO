@@ -35,7 +35,6 @@ class MainPublishesViewCore(MainPublishesViewUI):
 # PublishSlotsWidget -- START
     def get_value_of(self, slot):
         publishes = DbPublish().get_db_publishes_ids("publishes")
-        print (publishes)
         return publishes
 
     def populate_main_widget(self):

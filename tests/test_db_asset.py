@@ -10,8 +10,8 @@ existing_modeling_pub_slots = ['rend_geo', 'proxy_geo', 'utility', 'lidar', 'pro
 Envars.show_name = "Test"
 Envars.branch_name = "assets"
 Envars.category = "characters"
-Envars.entry_name = "red_hulk"
-Envars.task_name = "modeling"
+Envars.entry_name = "gold_hulk"
+Envars.task_name = "groom"
 
 #print(Envars().show_name, Envars().branch_name, Envars().category, Envars().entry_name, Envars().task_name)
 
@@ -39,15 +39,15 @@ test_bundle = False
 
 # PROJECT METHODS
 if test_project:
-    # project.create("FooFoo")
+    project.create("Test")
     # DbProjectBranch().add_branch(name="references", branch_type=Branch.reference())
     # DbAssetCategories().add_category(name="grass`", tasks_type=Tasks.props())
-    project_type = project.get_type()
-    branch_type = DbProjectBranch().get_type
-    project_struct = project.get_structure()
+    # project_type = project.get_type()
+    # branch_type = DbProjectBranch().get_type
+    # project_struct = project.get_structure()
     # print(project_type)
     # print(branch_type, "<<")
-    pprint.pprint(list(project_struct.values()))
+    # pprint.pprint(list(project_struct.values()))
 
     proj_branches=DbProjectBranch().get_branches()
     branch_categories = DbAssetCategories().get_categories()
@@ -58,15 +58,15 @@ if test_project:
 
 # ASSET METHODS
 if test_assets:
-    assets_list = ["new_monster"]
+    assets_list = ["gold_hulk"]
     for asset in assets_list:
         assets.create(name=asset)
-    asset_type = assets.get_entry_type()
-    asset_definition=assets.get_definition()
-    asset_is_active=assets.set_active(is_active=True)
-    print (asset_type)
-    print (asset_definition[0])
-    print (asset_is_active)
+    # asset_type = assets.get_entry_type()
+    # asset_definition=assets.get_definition()
+    # asset_is_active=assets.set_active(is_active=True)
+    # print (asset_type)
+    # print (asset_definition)
+    # print (asset_is_active)
 
 
 # TASKS METHODS

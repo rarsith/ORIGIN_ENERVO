@@ -85,3 +85,18 @@ class Envars():
     def taget_path(self, *args):
         path = '.'.join(args)
         return path
+
+    def get_envars_set(self):
+        current_envars = {"show_name": Envars().show_name,
+                          "branch_name": Envars().branch_name,
+                          "category": Envars().category,
+                          "entry_name": Envars().entry_name,
+                          "task_name": Envars().task_name}
+
+        selection_key = dict()
+
+        for key, value in current_envars.items():
+            if value:
+                selection_key[key]=value
+
+        return selection_key

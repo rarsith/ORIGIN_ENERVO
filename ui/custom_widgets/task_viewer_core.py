@@ -9,7 +9,7 @@ class TaskViewerCore(TaskViewerUI):
 
         self.create_tasks_actions()
         self.create_connections()
-        self.populate_tasks()
+        # self.populate_tasks()
         self.context_menu()
 
     def create_connections(self):

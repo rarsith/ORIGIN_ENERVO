@@ -209,7 +209,9 @@ class DbEntityAttrPaths:
         return "assignment"
 
     @classmethod
-    def definition(cls):
+    def definition(cls, element=None):
+        if element:
+            return db_path_assembler.make_path("definition", element)
         """Access path for tasks of the entry"""
         return "definition"
 
@@ -336,7 +338,9 @@ class DbSyncTaskAttrPaths:
         return attr
 
     @classmethod
-    def sync_pub_slots(cls):
+    def sync_pub_slots(cls, task_name=None):
+        if task_name:
+            return db_path_assembler.make_path("sync_tasks", task_name)
         return db_path_assembler.make_path("sync_tasks", Envars.task_name)
 
 

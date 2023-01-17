@@ -11,11 +11,12 @@ class TasksImportFromCore(TasksImportFromUI):
         super(TasksImportFromCore, self).__init__(parent)
 
         self.create_connections()
-        self.populate_main_widget()
+        # self.populate_main_widget()
 
     def create_connections(self):
         self.save_btn.clicked.connect(self.save_to_database)
         self.rem_sel_item_btn.clicked.connect(self.remove_import_task_slot)
+        # self.rem_sel_item_btn.clicked.connect(self.populate_main_widget)
         self.refresh_btn.clicked.connect(self.populate_main_widget)
         self.move_to_right_btn.clicked.connect(self.move_selection_to_right)
 
@@ -174,7 +175,7 @@ class TasksImportFromCore(TasksImportFromUI):
 
         for k, v in checked.items():
             for each in v:
-                DbPubSlot.set_used_by(k, each, remove_action=True)
+                DbPubSlot().set_used_by(task_name=k, pub_slot=each, remove_action=True)
 
     def remove_import_task_slot(self):
         listItems = self.imports_from_wdg.currentItem()

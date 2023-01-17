@@ -1,5 +1,4 @@
 from database import db_templates
-from database.db_types import BranchTypes, TaskTypes
 from database.utils.db_q_entity import From, QEntity
 from database.entities.db_attributes import DbProjectAttrPaths
 from database.db_ids import DbIds

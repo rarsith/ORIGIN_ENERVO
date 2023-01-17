@@ -26,5 +26,15 @@ class DbDefaults(object):
 
         for data in category_tasks:
             full_structure = data["show_defaults"][(Envars().category + "_" + default_type)]
-            properties_names = list(full_structure.keys())
-            return full_structure, properties_names
+            return full_structure
+
+if __name__ == "__main__":
+    Envars.show_name = "Test"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "red_hulk"
+    Envars.task_name = "modeling"
+
+
+    xx = DbDefaults().get_show_defaults("definition")
+    print (xx)

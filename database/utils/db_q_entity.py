@@ -259,13 +259,14 @@ if __name__ == '__main__':
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "blue_hulk"
+    Envars.entry_name = "red_hulk"
     Envars.task_name = "modeling"
 
+    result = QEntity(db_collection=From().entities, entry_id=DbIds.curr_entry_id(), attribute=DbEntityAttrPaths.definition()).get_attr_values()
 
-    origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbProjectAttrPaths.curr_branch()).get()
+    origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbEntityAttrPaths.type()).get_attr_values()
 
-    print (origin)
+    print (result)
     # print ("FROM ?<<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
 
     # db = mdbconn.server[mdbconn.database_name]

@@ -1,11 +1,7 @@
 import sys
 from PySide2 import QtWidgets, QtCore, QtGui
-# from xcg_data_base import xcg_db_connection as xcon
-# from xcg_data_base import xcg_db_helpers as xhlp
-# from xcg_data_base import xcg_db_actions as xac
-# from xcg_config import xcg_validation as xval
-from common_utils import nice_names as nice_names
 
+from database.entities.db_entities import DbTasks, DbAsset
 from custom_widgets.task_imports_from_core import TasksImportFromCore
 from custom_widgets.task_publishing_slots_core import PublishSlotsWidgetCore
 from custom_widgets.main_publishes_view_core import MainPublishesViewCore
@@ -13,12 +9,7 @@ from custom_widgets.slots_publishes_view_core import SlotPublishesViewCore
 from custom_widgets.slot_component_viewer_core import SlotComponentsViewerCore
 from custom_widgets.project_tree_viewer_core import ProjectTreeViewerCore
 from custom_widgets.task_viewer_core import TaskViewerCore
-
-
-
-# db = xcon.server.exchange
-# test_position = db.show_name
-# test = test_position.find({}, {"_id":1, "show_name":1})
+from custom_widgets.entry_properties_editor_UI import EntryPropertiesEditorUI
 
 
 class BundleViewListWidget(QtWidgets.QListWidget):
@@ -56,63 +47,6 @@ class BundleViewWidget(QtWidgets.QTableWidget):
                                         'task05',
                                         'task06',
                                         'task07'])
-
-
-class PropertiesViewWidget(QtWidgets.QTableWidget):
-    def __init__(self, parent=None):
-        super(PropertiesViewWidget, self).__init__(parent)
-
-        self.widget_build()
-
-    def widget_build(self):
-        self.setColumnCount(2)
-        # self.setColumnWidth(0, 250)
-        # self.setColumnWidth(1, 120)
-        # self.setMaximumHeight(410)
-
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        # self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.verticalScrollBar().setVisible(False)
-        self.horizontalScrollBar().setVisible(False)
-
-        self.setShowGrid(False)
-        vertical_header = self.verticalHeader()
-
-        for row in range(self.rowCount()):
-            self.setRowHeight(row, 10)
-
-        self.setAlternatingRowColors(True)
-
-        header = self.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-
-        vertical_header.setDefaultSectionSize(2)
-        vertical_header.hide()
-        horizontal_header = self.horizontalHeader()
-        horizontal_header.setMinimumHeight(2)
-        horizontal_header.setMaximumHeight(3)
-        horizontal_header.hide()
-
-
-    def create_properties(self, properties):
-        try:
-            self.setRowCount(0)
-            store_attributes_names = (list(properties.keys()))
-            write_attrib_nice = xutil.write_nice_names(store_attributes_names)
-
-            for i in range(len(properties)):
-                get_properties_names = write_attrib_nice[i]
-                get_properties_values = list(properties.values())[i]
-                self.insertRow(i)
-                self.insert_item(i, 0, str(get_properties_names))
-                self.insert_item(i, 1, str(get_properties_values))
-        except:
-            pass
-
-    def insert_item(self, row, column, text):
-        item = QtWidgets.QTableWidgetItem(text)
-        self.setItem(row, column, item)
 
 
 class ContentViewWidget(QtWidgets.QTableWidget):
@@ -175,8 +109,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.setMinimumHeight(700)
         self.setMinimumWidth(1900)
 
-        self.create_tasks_actions()
-
         self.create_widgets()
 
         self.create_layout()
@@ -184,20 +116,12 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.task_properties_UI()
         self.publishes_properties_UI()
         self.shot_definition_UI()
-        self.asset_definition_UI()
         self.populate_main_publishes()
 
         # self.refresh_tree_widget()
 
-    def create_tasks_actions(self):
-        self.about_action = QtWidgets.QAction("About", self)
-        self.edit_entry_definition = QtWidgets.QAction("Edit Definition...", self)
-        self.edit_bundle = QtWidgets.QAction("Edit Bundle...", self)
-
     def create_widgets(self):
         self.menu_bar = QtWidgets.QMenuBar()
-        # self.show_name_cb = QtWidgets.QComboBox()
-        # self.show_name_cb.addItems(self.get_shows())
 
         self.show_view_twd = ProjectTreeViewerCore()
         self.tasks_view_lwd = TaskViewerCore()
@@ -221,9 +145,8 @@ class OriginControlCenterUI(QtWidgets.QWidget):
 
         self.stacked_properties_wdg = QtWidgets.QStackedWidget()
         self.stacked_properties_wdg.addWidget(self.empty_stack)
-        self.stacked_properties_wdg.addWidget(self.entry_task_properties_stack)
         self.stacked_properties_wdg.addWidget(self.shots_definition_properties_stack)
-        self.stacked_properties_wdg.addWidget(self.assets_definition_properties_stack)
+        self.stacked_properties_wdg.addWidget(self.entry_task_properties_stack)
 
         self.middle_tabmenu_tab = QtWidgets.QTabWidget()
         self.middle_tabmenu_tab.addTab(self.publishes_viewer_wdg, "Publishes")
@@ -231,11 +154,10 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.middle_tabmenu_tab.addTab(self.bundle_view_tvw, "Bundle View")
         self.middle_tabmenu_tab.addTab(self.graph_view_lw, "Graph View")
 
-        self.properties_wdg = PropertiesViewWidget()
-        self.asset_properties_wdg = PropertiesViewWidget()
+        self.properties_wdg = EntryPropertiesEditorUI()
+        # self.asset_properties_wdg = PropertiesViewWidget()
 
         # StackWidget for Entry Tasks Properties
-
         self.task_is_active_properties_ckb = QtWidgets.QCheckBox()
         self.task_status_properties_cb = QtWidgets.QComboBox()
         # self.task_status_properties_cb.addItems(xval.VALID_TASK_STATUSES)
@@ -245,7 +167,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.task_user_properties_wdg = QtWidgets.QLineEdit()
 
         # Create the individual Widgets that will be part of the Layout
-
         self.tasks_imports_from_properties_wdg = TasksImportFromCore()
         self.tasks_imports_from_edit_properties_btn = QtWidgets.QPushButton("Edit")
         self.tasks_imports_from_commit_btn = QtWidgets.QPushButton('Commit')
@@ -260,15 +181,12 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.asset_edit_definition_btn = QtWidgets.QPushButton("Edit")
 
         # StackWidget for Shot definition
-
         # Create the individual Widgets that will be part of the Layout
-
         self.shot_edit_definitions_btn = QtWidgets.QPushButton("Edit")
 
         # widgets for Shot Content----START
         self.shot_content_lb = QtWidgets.QLabel("Content")
         self.shot_content_twd = ContentViewWidget()
-
         # widgets for Shot Content----END
 
         # Construct the Links Tab
@@ -291,7 +209,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.refresh_btn = QtWidgets.QPushButton("Refresh")
 
     def create_layout(self):
-
         views_layout = QtWidgets.QHBoxLayout()
         views_layout.setContentsMargins(2, 2, 2, 2)
         views_layout.setSpacing(2)
@@ -310,7 +227,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         main_layout.addLayout(button_layout)
 
     def create_connections(self):
-
         self.show_view_twd.show_select_cb.currentIndexChanged.connect(self.populate_main_publishes)
         self.show_view_twd.show_select_cb.currentIndexChanged.connect(self.get_tasks)
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_slot_publishes)
@@ -338,43 +254,8 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.task_is_active_properties_ckb.clicked.connect(self.set_task_is_active)
         self.task_is_active_properties_ckb.clicked.connect(self.populate_task_details)
 
-        self.shot_edit_definitions_btn.clicked.connect(self.create_entry_definition_menu)
-        self.asset_edit_definition_btn.clicked.connect(self.create_entry_definition_menu)
-
         self.refresh_btn.clicked.connect(self.show_view_twd.refresh_shows)
         self.refresh_btn.clicked.connect(self.show_view_twd.refresh_tree_widget)
-
-    # def get_shows(self):
-    #     get_versions = xac.get_all_active_shows()
-    #     return get_versions
-
-    # def refresh_shows(self):
-    #     store = []
-    #     current_selected_show = self.comboBox_shows()
-    #     get_versions = xac.get_all_active_shows()
-    #     for show in get_versions:
-    #         store.append(show)
-    #
-    #     self.show_name_cb.clear()
-    #     self.show_name_cb.addItems(store)
-    #     self.show_name_cb.setCurrentText(current_selected_show)
-    #     return store
-
-    # def comboBox_shows(self):
-    #     text = self.show_name_cb.currentText()
-    #     return text
-
-    # def show_tree_create_item(self, name):
-    #     item = QtWidgets.QTreeWidgetItem([name])
-    #     self.add_children(item)
-    #     return item
-
-    # def add_children(self, item):
-    #     get_children = xhlp.deep_values(item.text(0), self.get_show_structure())
-    #     for children in get_children:
-    #         for child in children:
-    #             child_item = self.show_tree_create_item(child)
-    #             item.addChild(child_item)
 
     def get_task_type(self):
         task_name = self.tasks_view_lwd.get_selected_task()
@@ -385,13 +266,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
     def set_task_status(self):
         read_selected_status = self.task_status_properties_cb.currentText()
         try:
-            xac.update_task_status(self.show_view_twd.get_selected_show(),
-                                   self.show_view_twd.get_sel_show_branch(),
-                                   self.show_view_twd.get_sel_category(),
-                                   self.show_view_twd.get_selected_entry_name(),
-                                   self.tasks_view_lwd.get_selected_task(),
-                                   read_selected_status)
-            print(read_selected_status)
+            DbTasks().status = read_selected_status
         except:
             pass
         print('{} status changed to {}'.format(self.get_selected_task(), read_selected_status))
@@ -399,52 +274,28 @@ class OriginControlCenterUI(QtWidgets.QWidget):
     def set_task_is_active(self):
         is_active = self.task_is_active_properties_ckb.isChecked()
         try:
-            xac.update_task_is_active(self.show_view_twd.get_selected_show(),
-                                      self.show_view_twd.get_sel_show_branch(),
-                                      self.show_view_twd.get_sel_category(),
-                                      self.show_view_twd.get_selected_entry_name(),
-                                      self.tasks_view_lwd.get_selected_task(),
-                                      is_active)
-
+            DbTasks().current_is_active = is_active
             self.populate_task_details()
-
         except:
             pass
         print('{} status changed to {}'.format(self.tasks_view_lwd.get_selected_task(), is_active))
 
     def get_task_status(self):
         try:
-            task_status = xac.get_task_status(self.show_view_twd.get_selected_show(),
-                                              self.show_view_twd.get_sel_show_branch(),
-                                              self.show_view_twd.get_sel_category(),
-                                              self.show_view_twd.get_selected_entry_name(),
-                                              self.tasks_view_lwd.get_selected_task())
-            return task_status[0]
+            task_status = DbTasks().status
+            return task_status
         except:
             pass
 
     def get_task_is_active(self):
         try:
-            task_is_active = xac.get_task_is_active(self.show_view_twd.comboBox_shows(),
-                                                    self.show_view_twd.get_sel_show_branch(),
-                                                    self.show_view_twd.get_sel_category(),
-                                                    self.show_view_twd.get_selected_entry_name(),
-                                                    self.tasks_view_lwd.get_selected_task())
-            return task_is_active[0]
+            task_is_active = DbTasks().current_is_active
+            return task_is_active
         except:
             pass
 
     def populate_task_import_schema(self):
-        self.tasks_imports_from_properties_wdg.show_name = (self.show_view_twd.comboBox_shows())
-        self.tasks_imports_from_properties_wdg.branch_name = (self.show_view_twd.get_sel_show_branch())
-        self.tasks_imports_from_properties_wdg.category_name = (self.show_view_twd.get_sel_category())
-        self.tasks_imports_from_properties_wdg.entry_name = (self.show_view_twd.get_selected_entry())
-        self.tasks_imports_from_properties_wdg.task_name = (self.tasks_view_lwd.get_selected_task())
-
-        self.tasks_imports_from_properties_wdg.populate_task_import_schema()
         self.tasks_imports_from_properties_wdg.populate_main_widget()
-        self.tasks_imports_from_properties_wdg.remove_self_task()
-        self.tasks_imports_from_properties_wdg.remove_already_assigned()
 
     def populate_main_publishes(self):
         main_pub_show_name = self.show_view_twd.show_select_cb.currentText()
@@ -485,20 +336,14 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.components_wdg.slot_component_viewer_tw.clearSelection()
 
     def get_tasks(self):
-        # self.tasks_view_lwd.show_name = (self.show_view_twd.curr_sel_show())
-        # self.tasks_view_lwd.branch_name = (self.show_view_twd.get_sel_show_branch())
-        # self.tasks_view_lwd.category_name = (self.show_view_twd.get_sel_category())
-        # self.tasks_view_lwd.entry_name = (self.show_view_twd.get_selected_entry())
         self.tasks_view_lwd.populate_tasks()
 
     def get_selected_type(self):
         entry_selected = self.show_view_twd.project_tree_viewer_wdg.hasFocus()
         task_selected = self.tasks_view_lwd.task_viewer_wdg.hasFocus()
+
         if entry_selected:
-            get_selected_objects_type = xac.get_entry_type(self.show_view_twd.curr_sel_show(),
-                                                           self.show_view_twd.get_sel_show_branch(),
-                                                           self.show_view_twd.get_sel_category(),
-                                                           self.show_view_twd.get_selected_entry_name())
+            get_selected_objects_type = DbAsset().get_entry_type()
             return get_selected_objects_type
 
         elif task_selected:
@@ -508,15 +353,11 @@ class OriginControlCenterUI(QtWidgets.QWidget):
     def update_entry_properties_list(self):
         properties = self.get_entry_properties()
         self.properties_wdg.create_properties(properties)
-        self.asset_properties_wdg.create_properties(properties)
 
     def get_entry_properties(self):
-        spare_it = []
-        db_connection = self.show_view_twd.get_sel_show_branch_category()
-        definitions_list = xac.get_entry_definition(self.show_view_twd.get_selected_show(),
-                                                    db_connection,
-                                                    self.show_view_twd.get_sel_category(),
-                                                    self.show_view_twd.get_selected_entry_name())
+        spare_it = {}
+        definitions_list = DbAsset().get_definition()
+
         if definitions_list == None:
             return spare_it
         else:
@@ -536,11 +377,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
             self.task_is_active_properties_ckb.setChecked(task_is_active)
 
     def populate_pub_slots(self):
-        self.tasks_pub_slots_properties_wdg.show_name = self.show_view_twd.curr_sel_show()
-        self.tasks_pub_slots_properties_wdg.branch_name = self.show_view_twd.get_sel_show_branch()
-        self.tasks_pub_slots_properties_wdg.category_name = self.show_view_twd.get_sel_category()
-        self.tasks_pub_slots_properties_wdg.entry_name = self.show_view_twd.get_selected_entry_name()
-        self.tasks_pub_slots_properties_wdg.task_name = self.tasks_view_lwd.get_selected_task()
         self.tasks_pub_slots_properties_wdg.populate_main_widget()
 
     def publishes_properties_UI(self):
@@ -593,26 +429,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
 
         self.entry_task_properties_stack.setLayout(main_layout)
 
-    def asset_definition_UI(self):
-
-        bundle_layout = QtWidgets.QVBoxLayout()
-        bundle_layout.addWidget(self.asset_bundle_view_lwd)
-        bundle_layout.addWidget(self.asset_bundle_edit_btn)
-
-        asset_def_new = QtWidgets.QVBoxLayout()
-        asset_def_new.addWidget(self.asset_properties_wdg)
-        asset_def_new.addWidget(self.asset_edit_definition_btn)
-
-        shot_content_layout = QtWidgets.QVBoxLayout()
-        shot_content_layout.addWidget(self.shot_content_lb)
-        shot_content_layout.addWidget(self.shot_content_twd)
-
-        main_layout = QtWidgets.QHBoxLayout()
-        main_layout.addLayout(asset_def_new)
-        main_layout.addLayout(bundle_layout)
-
-        self.assets_definition_properties_stack.setLayout(main_layout)
-
     def shot_definition_UI(self):
 
         bundle_layout = QtWidgets.QVBoxLayout()
@@ -622,10 +438,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         shot_def_new = QtWidgets.QVBoxLayout()
         shot_def_new.addWidget(self.properties_wdg)
         shot_def_new.addWidget(self.shot_edit_definitions_btn)
-
-        shot_content_layout = QtWidgets.QVBoxLayout()
-        shot_content_layout.addWidget(self.shot_content_lb)
-        shot_content_layout.addWidget(self.shot_content_twd)
 
         main_layout = QtWidgets.QHBoxLayout()
         main_layout.addLayout(shot_def_new)
@@ -643,11 +455,11 @@ class OriginControlCenterUI(QtWidgets.QWidget):
     def properties_UI_switcher(self):
         current_selection_type = self.get_selected_type()
 
-        if current_selection_type == "asset":
-            assets_index = self.stacked_properties_wdg.indexOf(self.assets_definition_properties_stack)
+        if current_selection_type == "build":
+            assets_index = self.stacked_properties_wdg.indexOf(self.shots_definition_properties_stack)
             return assets_index
 
-        elif current_selection_type == "shot":
+        elif current_selection_type == "shots":
             shots_index = self.stacked_properties_wdg.indexOf(self.shots_definition_properties_stack)
             return shots_index
 
@@ -656,47 +468,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
             return task_index
 
     # CONTEXT MENU
-    def create_entry_definition_menu(self):
-        self.window = QtWidgets.QMainWindow()
-        self.ui = edit_entry_definition_ui.EditEntryDefinitionsUI()
-
-        shows_index = self.ui.show_name_cb.findText(self.show_view_twd.comboBox_shows(), QtCore.Qt.MatchFixedString)
-        if shows_index >= 0:
-            self.ui.show_name_cb.setCurrentIndex(shows_index)
-
-        self.ui.show_branch_cb.addItems(self.ui.get_show_branches())
-
-        show_branches = self.ui.show_branch_cb.findText(self.show_view_twd.get_sel_show_branch(),
-                                                        QtCore.Qt.MatchFixedString)
-        if show_branches >= 0:
-            self.ui.show_branch_cb.setCurrentIndex(show_branches)
-
-        self.ui.category_cb.addItems(self.ui.get_categories())
-
-        categories = self.ui.category_cb.findText(self.show_view_twd.get_sel_category(), QtCore.Qt.MatchFixedString)
-        if categories >= 0:
-            self.ui.category_cb.setCurrentIndex(categories)
-
-        self.ui.entry_name_cb.addItems(self.ui.get_entries())
-
-        entries = self.ui.entry_name_cb.findText(self.show_view_twd.get_selected_entry_name(),
-                                                 QtCore.Qt.MatchFixedString)
-        if entries >= 0:
-            self.ui.entry_name_cb.setCurrentIndex(entries)
-
-        self.ui.show_name_cb.setDisabled(True)
-        self.ui.show_branch_cb.setDisabled(True)
-        self.ui.category_cb.setDisabled(True)
-        self.ui.entry_name_cb.setDisabled(True)
-
-        self.ui.shot_commit_btn.clicked.connect(self.update_entry_properties_list)
-        self.ui.shot_commit_and_close_btn.clicked.connect(self.update_entry_properties_list)
-
-        self.ui.asset_commit_btn.clicked.connect(self.update_entry_properties_list)
-        self.ui.asset_commit_and_close_btn.clicked.connect(self.update_entry_properties_list)
-
-        self.ui.show()
-
     # TABS MENUS
     def show_properties_menu(self):
         print("First Tab")
@@ -711,13 +482,12 @@ class MainUI(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
-    from envars.envars import Envars
 
-    Envars.show_name = "Test"
-    Envars.branch_name = "assets"
-    Envars.category = "characters"
-    Envars.entry_name = "new_monster"
-    Envars.task_name = "groom"
+    # Envars.show_name = "Test"
+    # Envars.branch_name = "assets"
+    # Envars.category = "characters"
+    # Envars.entry_name = "new_monster"
+    # Envars.task_name = "groom"
 
     app = QtWidgets.QApplication(sys.argv)
 
