@@ -1,7 +1,8 @@
 import sys
-from PySide2 import QtWidgets, QtCore, QtGui
+from PySide2 import QtWidgets, QtCore
 
 from database.entities.db_entities import DbTasks, DbAsset
+from database.db_statuses import DbStatuses
 from ui.custom_widgets.task_imports_from_core import TasksImportFromCore
 from ui.custom_widgets.task_publishing_slots_core import PublishSlotsWidgetCore
 from ui.custom_widgets.main_publishes_view_core import MainPublishesViewCore
@@ -118,11 +119,8 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.shot_definition_UI()
         self.populate_main_publishes()
 
-        # self.refresh_tree_widget()
-
     def create_widgets(self):
         self.menu_bar = QtWidgets.QMenuBar()
-
         self.show_view_twd = ProjectTreeViewerCore()
         self.tasks_view_lwd = TaskViewerCore()
 
@@ -155,12 +153,11 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.middle_tabmenu_tab.addTab(self.graph_view_lw, "Graph View")
 
         self.properties_wdg = EntryPropertiesEditorUI()
-        # self.asset_properties_wdg = PropertiesViewWidget()
 
         # StackWidget for Entry Tasks Properties
         self.task_is_active_properties_ckb = QtWidgets.QCheckBox()
         self.task_status_properties_cb = QtWidgets.QComboBox()
-        # self.task_status_properties_cb.addItems(xval.VALID_TASK_STATUSES)
+        self.task_status_properties_cb.addItems(DbStatuses().list_all())
 
         self.task_edit_user_properties_btn = QtWidgets.QPushButton("Edit")
         self.tasks_pub_slots_edit_properties_btn = QtWidgets.QPushButton("Edit")
@@ -355,10 +352,10 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.properties_wdg.create_properties(properties)
 
     def get_entry_properties(self):
-        spare_it = {}
+        spare_it = []
         definitions_list = DbAsset().get_definition()
 
-        if definitions_list == None:
+        if definitions_list is None:
             return spare_it
         else:
             try:
@@ -372,7 +369,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
     def populate_task_details(self):
         task_status = self.get_task_status()
         task_is_active = self.get_task_is_active()
-        if task_status or task_is_active != None:
+        if task_status or task_is_active is not None:
             self.task_status_properties_cb.setCurrentText(task_status)
             self.task_is_active_properties_ckb.setChecked(task_is_active)
 
@@ -455,13 +452,13 @@ class OriginControlCenterUI(QtWidgets.QWidget):
     def properties_UI_switcher(self):
         current_selection_type = self.get_selected_type()
 
-        if current_selection_type == "build":
+        if current_selection_type is None:
             assets_index = self.stacked_properties_wdg.indexOf(self.shots_definition_properties_stack)
             return assets_index
 
-        elif current_selection_type == "shots":
-            shots_index = self.stacked_properties_wdg.indexOf(self.shots_definition_properties_stack)
-            return shots_index
+        if current_selection_type == "build" or current_selection_type == "shots":
+            assets_index = self.stacked_properties_wdg.indexOf(self.shots_definition_properties_stack)
+            return assets_index
 
         elif current_selection_type == "task":
             task_index = self.stacked_properties_wdg.indexOf(self.entry_task_properties_stack)
@@ -483,16 +480,10 @@ class MainUI(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
 
-    # Envars.show_name = "Test"
-    # Envars.branch_name = "assets"
-    # Envars.category = "characters"
-    # Envars.entry_name = "new_monster"
-    # Envars.task_name = "groom"
-
     app = QtWidgets.QApplication(sys.argv)
 
 
-    font = app.instance().setFont(QtGui.QFont())
+    # font = app.instance().setFont(QtGui.QFont())
     # huhu = {'full_range_in': 'ingest plate', 'full_range_out': 'ingest plate', 'frame_in': '1001', 'frame_out': '1200', 'handles_head': '8', 'handles_tail': '8', 'preroll': '10', 'shot_type': 'vfx', 'cut_in': '1009', 'cut_out': '1192', 'frame_rate': '24', 'motion_blur_high': '0.25', 'motion_blur_low': '-0.25', 'res_x': 'from plate', 'res_y': 'from plate'}
     # huhu2 = {'full_range_in': 'ingest XXXlXXXteXX'}
     test_dialog = MainUI()

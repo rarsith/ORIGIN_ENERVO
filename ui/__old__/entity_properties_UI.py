@@ -39,7 +39,6 @@ class EntityPropertiesUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(EntityPropertiesUI, self).__init__(parent)
 
-
         self.create_widgets()
         self.create_layout()
 
@@ -70,11 +69,6 @@ class EntityPropertiesUI(QtWidgets.QWidget):
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(layout)
-
-
-
-
-
 
 
 if __name__ == "__main__":

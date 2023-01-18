@@ -200,7 +200,7 @@ class QEntity:
         #TODO:need to find out how to query data field type (need to get field type and restore with the original type)
         """Removes the full content of an attribute by first removing the full atrribute and then recreating it empty"""
         self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: 1}})
-        # self.db[self.collection].update_one({"_id": self.db_id}, {"$pull": {self.attribute: {}}})
+        # self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: {}}})
 
 
 class DbRef:
@@ -262,9 +262,9 @@ if __name__ == '__main__':
     Envars.entry_name = "red_hulk"
     Envars.task_name = "modeling"
 
-    result = QEntity(db_collection=From().entities, entry_id=DbIds.curr_entry_id(), attribute=DbEntityAttrPaths.definition()).get_attr_values()
+    result = QEntity(db_collection=From().entities, entry_id=DbIds.curr_entry_id(), attribute=DbEntityAttrPaths.to_definition()).get_attr_values()
 
-    origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbEntityAttrPaths.type()).get_attr_values()
+    origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbEntityAttrPaths.to_type()).get_attr_values()
 
     print (result)
     # print ("FROM ?<<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))

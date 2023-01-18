@@ -80,10 +80,14 @@ class DbIds:
 
     @classmethod
     def curr_entry_id(cls):
-        return db_path_assembler.make_path(Envars.show_name,
-                                           Envars.branch_name,
-                                           Envars.category,
-                                           Envars.entry_name)
+        entry_id = db_path_assembler.make_path(Envars.show_name,
+                                               Envars.branch_name,
+                                               Envars.category,
+                                               Envars.entry_name)
+        if entry_id is not None:
+            return entry_id
+
+        return ""
 
     @classmethod
     def get_wip_file_id(cls, version):
@@ -135,11 +139,11 @@ class DbIds:
 
 
 if __name__ == '__main__':
-    Envars.show_name = "Green"
+    Envars.show_name = "Test"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "circle"
-    Envars.task_name = "rigging"
+    # Envars.entry_name = "circle"
+    # Envars.task_name = "rigging"
 
-    cc = DbIds.create_entity_id(name="xolxter")
+    cc = DbIds().curr_entry_id()
     print(cc)

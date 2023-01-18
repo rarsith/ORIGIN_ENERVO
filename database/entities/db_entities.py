@@ -365,9 +365,12 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.definition()
+                             attribute=DbEntityAttrPaths.to_definition()
                              ).get_attr_values()
+            if not result:
+                return ""
             return result
+
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
@@ -376,7 +379,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.definition(element=definition_element)
+                             attribute=DbEntityAttrPaths.to_definition(element=definition_element)
                              ).get_attr_names()
             return result
         except ValueError as val:
@@ -387,9 +390,12 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.type()
+                             attribute=DbEntityAttrPaths.to_type()
                              ).get_attr_names()
+            if not result:
+                return ""
             return result
+
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
@@ -398,7 +404,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.assignments()
+                             attribute=DbEntityAttrPaths.to_assignments()
                              ).get_attr_names()
             return result
         except ValueError as val:
@@ -408,7 +414,7 @@ class DbAsset:
     def set_active(is_active=True):
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.is_active()
+                attribute=DbEntityAttrPaths.to_is_active()
                 ).update(is_active)
 
         print("{0} active Status set to {1}!".format(DbIds.curr_entry_id(), is_active))
@@ -417,7 +423,7 @@ class DbAsset:
     def set_definition(data):
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.definition
+                attribute=DbEntityAttrPaths.to_definition
                 ).update(data)
         print("{} Definition Updated!".format(Envars.entry_name))
 
@@ -431,7 +437,7 @@ class DbAsset:
 
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbEntityAttrPaths.type()
+                    attribute=DbEntityAttrPaths.to_type()
                     ).remove()
 
         except ValueError as val:
@@ -443,7 +449,7 @@ class DbTasks:
     def create(self, name):
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.tasks()
+                attribute=DbEntityAttrPaths.to_tasks()
                 ).add_property(name=name, add_data=db_templates.task_defaults())
 
         QEntity(db_collection=From().entities,
@@ -458,7 +464,7 @@ class DbTasks:
         try:
             tasks_list = QEntity(db_collection=From().entities,
                                  entry_id=DbIds.curr_entry_id(),
-                                 attribute=DbEntityAttrPaths.tasks()
+                                 attribute=DbEntityAttrPaths.to_tasks()
                                  ).get_attr_names()
 
             return tasks_list
@@ -470,7 +476,7 @@ class DbTasks:
         try:
             tasks_list = QEntity(db_collection=From().entities,
                                  entry_id=DbIds.curr_entry_id(),
-                                 attribute=DbEntityAttrPaths.tasks()
+                                 attribute=DbEntityAttrPaths.to_tasks()
                                  ).get()
 
             return tasks_list
@@ -563,7 +569,7 @@ class DbTasks:
                     entry_id=DbIds.curr_entry_id(),
                     attribute=DbTaskAttrPaths.imports_from()
                     ).add(data=each)
-            print("{} task added as import_source".format(each))
+            # print("{} task added as import_source".format(each))
 
     def rem_import_slots(self) -> None:
         try:
@@ -590,49 +596,6 @@ class DbPublish:
         for publishes in test:
             store_value.append(str(publishes["_id"]))
         return store_value
-
-        # if Envars().show_name and Envars().branch_name and Envars().category and Envars().entry_name and Envars().task_name:
-        #     test = cursor.find(
-        #         {"show_name": Envars().show_name,
-        #          "branch_name": Envars().branch_name,
-        #          "category": Envars().category,
-        #          "entry_name": Envars().entry_name,
-        #          "task_name": Envars().task_name}).limit(view_limit)
-        #     for publishes in test:
-        #         store_value.append(str(publishes["_id"]))
-        #
-        # elif Envars().show_name and Envars().branch_name and Envars().category and Envars().entry_name:
-        #     test = cursor.find({"show_name": Envars().show_name,
-        #                         "branch_name": Envars().branch_name,
-        #                         "category": Envars().category,
-        #                         "entry_name": Envars().entry_name}).limit(view_limit)
-        #     for publishes in test:
-        #         store_value.append(str(publishes["_id"]))
-        #
-        # elif Envars().show_name and Envars().branch_name and Envars().category:
-        #     test = cursor.find({"show_name": Envars().show_name,
-        #                         "branch_name": Envars().branch_name,
-        #                         "category": Envars().category}).limit(view_limit)
-        #     for publishes in test:
-        #         store_value.append(str(publishes["_id"]))
-        #
-        # elif Envars().show_name and Envars().branch_name:
-        #     test = cursor.find({"show_name": Envars().show_name,
-        #                         "branch_name": Envars().branch_name}).limit(view_limit)
-        #     for publishes in test:
-        #         store_value.append(str(publishes["_id"]))
-        #
-        # elif Envars().show_name:
-        #     test = cursor.find({"show_name": Envars().show_name}).limit(view_limit)
-        #     for publishes in test:
-        #         store_value.append(str(publishes["_id"]))
-        #
-        # else:
-        #     test = cursor.find({}).limit(view_limit)
-        #     for publishes in test:
-        #         store_value.append(str(publishes["_id"]))
-        #
-        # return store_value
 
     def get_db_values(self, collection, document_id, value_to_return):
         if not collection or not document_id or collection == None or document_id == None:
@@ -903,7 +866,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).type()
+                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).type()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -914,7 +877,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).method()
+                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).method()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -925,7 +888,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by()
+                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -937,12 +900,9 @@ class DbPubSlot:
         get_slots = list(data.keys())
 
         if task_name:
-
             for x in get_slots:
                 if task_name in data[x]['used_by']:
-                    print (task_name)
                     get_pub_slots.append(x)
-            print (get_pub_slots)
             return get_pub_slots
 
         task_name = Envars().task_name
@@ -955,7 +915,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).is_reviewable()
+                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).is_reviewable()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -966,31 +926,32 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).is_active()
+                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).is_active()
                                      ).get_attr_values()
             return pub_slots_data
 
         except Exception as e:
             raise ValueError("Error! Nothing Done! -- {}".format(e))
 
-    def set_used_by(self, task_name: str, pub_slot: str, used_by: str=None, remove_action: bool=False) -> None:
-        used_by_data = QEntity(db_collection=From().entities,
-                               entry_id=DbIds.curr_entry_id(),
-                               attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by(task_name=task_name)
-                               ).get_attr_values()
+    def set_used_by(self, task_name: str, pub_slot: str, used_by_data: str = None, remove_action: bool = False) -> None:
+        existing_used_by_data = QEntity(db_collection=From().entities,
+                                        entry_id=DbIds.curr_entry_id(),
+                                        attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(
+                                            parent_task_name=task_name)
+                                        ).get_attr_values()
         if not remove_action:
-            if used_by not in used_by_data:
+            if used_by_data not in existing_used_by_data:
                 QEntity(db_collection=From().entities,
                         entry_id=DbIds.curr_entry_id(),
-                        attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by(task_name=task_name)
-                        ).add(data=used_by)
+                        attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(parent_task_name=task_name)
+                        ).add(data=used_by_data)
 
         else:
-            if used_by in used_by_data:
+            if used_by_data in existing_used_by_data:
                 QEntity(db_collection=From().entities,
                         entry_id=DbIds.curr_entry_id(),
-                        attribute=DbPubSlotsAttrPaths(publish_slot=pub_slot).used_by(task_name=task_name)
-                        ).remove_value(data=used_by)
+                        attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(parent_task_name=task_name)
+                        ).remove_value(data=used_by_data)
 
     def remove_all(self) -> None:
         try:

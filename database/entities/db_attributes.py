@@ -184,17 +184,17 @@ class DbEntityAttrPaths:
         return attr
 
     @classmethod
-    def is_active(cls):
+    def to_is_active(cls):
         """Access path to get if an Entity is active"""
         return "active"
 
     @classmethod
-    def type(cls):
+    def to_type(cls):
         """Access path to get the Type of an Entity"""
         return "type"
 
     @classmethod
-    def tasks(cls):
+    def to_tasks(cls):
         """Access path for tasks of the entry"""
         return "tasks"
 
@@ -204,12 +204,12 @@ class DbEntityAttrPaths:
         return "sync_tasks"
 
     @classmethod
-    def assignments(cls):
+    def to_assignments(cls):
         """Access path for tasks of the entry"""
         return "assignment"
 
     @classmethod
-    def definition(cls, element=None):
+    def to_definition(cls, element=None):
         if element:
             return db_path_assembler.make_path("definition", element)
         """Access path for tasks of the entry"""
@@ -357,36 +357,36 @@ class DbMainPubAttrPaths:
 
 
 class DbPubSlotsAttrPaths:
-    def __init__(self, publish_slot):
-        self.pub_slot_name = publish_slot
+    def __init__(self, publish_slot_name):
+        self.pub_slot_name = publish_slot_name
 
     def custom(self, attr):
         """Access path to get the Type of an Entity"""
         return attr
 
-    def is_active(self, task_name=None):
-        if task_name:
-            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "active")
+    def is_active(self, parent_task_name=None):
+        if parent_task_name:
+            return db_path_assembler.make_path("tasks", parent_task_name, "pub_slots", self.pub_slot_name, "active")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "active")
 
-    def is_reviewable(self, task_name=None):
-        if task_name:
-            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "reviewable")
+    def is_reviewable(self, parent_task_name=None):
+        if parent_task_name:
+            return db_path_assembler.make_path("tasks", parent_task_name, "pub_slots", self.pub_slot_name, "reviewable")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "reviewable")
 
-    def used_by(self, task_name=None):
-        if task_name:
-            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "used_by")
+    def path_to_used_by(self, parent_task_name=None):
+        if parent_task_name:
+            return db_path_assembler.make_path("tasks", parent_task_name, "pub_slots", self.pub_slot_name, "used_by")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "used_by")
 
-    def method(self, task_name=None):
-        if task_name:
-            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "method")
+    def method(self, parent_task_name=None):
+        if parent_task_name:
+            return db_path_assembler.make_path("tasks", parent_task_name, "pub_slots", self.pub_slot_name, "method")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "method")
 
-    def type(self, task_name=None):
-        if task_name:
-            return db_path_assembler.make_path("tasks", task_name, "pub_slots", self.pub_slot_name, "type")
+    def type(self, parent_task_name=None):
+        if parent_task_name:
+            return db_path_assembler.make_path("tasks", parent_task_name, "pub_slots", self.pub_slot_name, "type")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "type")
 
 

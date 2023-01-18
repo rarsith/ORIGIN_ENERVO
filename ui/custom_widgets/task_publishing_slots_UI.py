@@ -6,32 +6,27 @@ class PublishSlotsWidgetBuild(QtWidgets.QTableWidget):
     def __init__(self, parent=None):
         super(PublishSlotsWidgetBuild, self).__init__(parent)
 
-        self.show_sel = ''
-        self.branch = ''
-        self.category = ''
-        self.entry = ''
-        self.task = ''
-
         self.widget_build()
 
     def widget_build(self):
         self.setDisabled(False)
-        self.setMinimumWidth(465)
-        self.setColumnCount(9)
-        self.setHorizontalHeaderLabels(["Slot", "Type", "Method", "Source", "Scope", "Mode", "Used By", "R", "A"])
+        self.setMinimumWidth(790)
+        self.setColumnCount(10)
+        self.setHorizontalHeaderLabels(["Slot", "Type", "Method", "Source", "Scope", "Mode", "Used By", "Artists","R", "A"])
         self.setShowGrid(False)
         # self.setAlternatingRowColors(True)
         header = self.verticalHeader()
         header.hide()
-        self.setColumnWidth(0, 80)
+        self.setColumnWidth(0, 110)
         self.setColumnWidth(1, 80)
-        self.setColumnWidth(2, 80)
-        self.setColumnWidth(3, 60)
-        self.setColumnWidth(4, 60)
+        self.setColumnWidth(2, 110)
+        self.setColumnWidth(3, 110)
+        self.setColumnWidth(4, 50)
         self.setColumnWidth(5, 60)
-        self.setColumnWidth(6, 60)
-        self.setColumnWidth(7, 20)
+        self.setColumnWidth(6, 110)
+        self.setColumnWidth(7, 80)
         self.setColumnWidth(8, 20)
+        self.setColumnWidth(9, 20)
 
 
 

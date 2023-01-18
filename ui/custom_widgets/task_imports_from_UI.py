@@ -8,12 +8,12 @@ class ImportsFromWidgetBuild(QtWidgets.QTreeWidget):
 
     def widget_build(self):
         self.setAlternatingRowColors(True)
-        self.setHeaderLabels(['task', 'Preview'])
+        self.setHeaderLabels(['task'])
         self.setMinimumWidth(310)
         self.setMaximumWidth(310)
         self.setMinimumHeight(300)
         self.setColumnWidth(0, 170)
-        self.setColumnWidth(1, 80)
+
 
 
 class ListEntryTasksBuild(QtWidgets.QListWidget):
