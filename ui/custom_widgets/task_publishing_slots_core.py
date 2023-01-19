@@ -1,12 +1,14 @@
 import sys
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtCore, QtGui
 from ui.custom_widgets.task_publishing_slots_UI import PublishSlotsWidgetUI
 from database.entities.db_entities import DbProject, DbTasks, DbPubSlot
+from common_utils.users import Users
+from envars.envars import Envars
 
 SLOTS_TYPES = ['abc', 'tex', 'vdb', 'bgeo', 'ptc', 'rend', 'exr', 'mat', 'pbr','img','scn', 'geo', 'csh', 'cfg']
 SLOTS_SCOPE = ["build", "shots"]
 SLOT_MODE = ["layer", "non_layer"]
-SLOT_ARTISTS =["unassigned"]
+SLOT_ARTISTS =["unassigned", Users().curr_user()]
 SLOTS_METHODS = {'m1':'sf_csh',
                  'm2':'mf_csh',
                  'm3':'sf_geo',
@@ -22,7 +24,6 @@ SLOTS_METHODS = {'m1':'sf_csh',
                  'm13':'cfg_exp'}
 
 
-
 class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
     def __init__(self, parent=None):
         super(PublishSlotsWidgetCore, self).__init__(parent)
@@ -34,9 +35,142 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         self.delete_list_item_btn.clicked.connect(self.remove_pub_slot)
         self.save_btn.clicked.connect(self.db_commit)
         self.refresh_btn.clicked.connect(self.populate_main_widget)
+        self.refresh_btn.clicked.connect(self.populate_all_pub_slots)
         self.add_pub_slot_btn.clicked.connect(self.add_to_pub_list)
+        self.publish_slots_wdg.cellClicked.connect(self.populate_all_pub_slots)
+        self.publish_slots_wdg.cellClicked.connect(self.change_label_text)
+        self.dependent_pub_slots_wdg.itemClicked.connect(self.test_action)
 
-# PublishSlotsWidget -- START
+    def test_action(self):
+        self.write_wdg_checked_items()
+        self.populate_all_pub_slots()
+
+    def return_slot_name(self):
+        button = self.sender()
+        current_row = self.publish_slots_wdg.currentRow()
+
+        if button:
+            slot_name = self.get_slot_name(current_row, 0)
+            return slot_name
+
+    def change_label_text(self):
+        slot_name = self.return_slot_name()
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+
+        self.all_pub_slots_lb.clear()
+        self.all_pub_slots_lb.setText("{0} -> used by".format(slot_name))
+        self.all_pub_slots_lb.setFont(my_font)
+        self.all_pub_slots_lb.setStyleSheet("color: red")
+
+    def get_all_tasks(self):
+        tasks = DbTasks().get_tasks()
+        if tasks is not None:
+            return tasks
+        else:
+            return ["-- no tasks --"]
+
+    def populate_all_pub_slots(self):
+        get_entry_tasks_names = self.get_all_tasks()
+        get_active_tasks = []
+
+        self.dependent_pub_slots_wdg.clear()
+
+        for task in get_entry_tasks_names:
+            is_active = DbTasks().is_active(task=task)
+
+            if is_active:
+                get_active_tasks.append(task)
+
+        current_task = Envars().task_name
+        get_active_tasks.remove(current_task)
+        self.add_tasks_to_list(get_active_tasks)
+
+    def add_tasks_to_list(self, tasks_list):
+        for active_task in tasks_list:
+            imp_from_pub_slots_schema = DbPubSlot().get_pub_slots(task_name=active_task)
+            item = QtWidgets.QTreeWidgetItem([active_task])
+            self.dependent_pub_slots_wdg.addTopLevelItem(item)
+
+            slot_used_by = self.get_pub_used_by(self.return_slot_name())
+            self.dependent_pub_slots_wdg.expandAll()
+
+            try:
+                for pub_slot, pub_slot_content in imp_from_pub_slots_schema.items():
+                    pub_slot_item = QtWidgets.QTreeWidgetItem([pub_slot])
+                    item.addChild(pub_slot_item)
+
+                    used_by_data_format = ".".join([active_task, pub_slot_item.text(0)])
+
+                    if used_by_data_format in slot_used_by:
+                        pub_slot_item.setCheckState(0, QtCore.Qt.Checked)
+                    else:
+                        pub_slot_item.setCheckState(0, QtCore.Qt.Unchecked)
+
+            except:
+                pass
+
+    def get_wdg_checked_items(self):
+        checked = dict()
+        root = self.dependent_pub_slots_wdg.invisibleRootItem()
+        signal_count = root.childCount()
+
+        for idx in range(signal_count):
+            signal = root.child(idx)
+            checked_sweeps = list()
+            num_children = signal.childCount()
+
+            for child_idx in range(num_children):
+                child = signal.child(child_idx)
+
+                if child.checkState(0) == QtCore.Qt.Checked:
+                    checked_sweeps.append(child.text(0))
+            checked[signal.text(0)] = checked_sweeps
+        return checked
+
+    def get_wdg_unchecked_items(self):
+        unchecked = dict()
+        root = self.dependent_pub_slots_wdg.invisibleRootItem()
+        signal_count = root.childCount()
+
+        for idx in range(signal_count):
+            signal = root.child(idx)
+            checked_sweeps = list()
+            num_children = signal.childCount()
+
+            for child_idx in range(num_children):
+                child = signal.child(child_idx)
+
+                if child.checkState(0) == QtCore.Qt.Unchecked:
+                    checked_sweeps.append(child.text(0))
+            unchecked[signal.text(0)] = checked_sweeps
+        return unchecked
+
+    def write_wdg_checked_items(self):
+        current_task = Envars().task_name
+        checked_items = self.get_wdg_checked_items()
+        unchecked_items = self.get_wdg_unchecked_items()
+        current_pub_slot = self.return_slot_name()
+
+        for task_name, task_pub_slots in checked_items.items():
+            for pub_slot in task_pub_slots:
+                used_by_data_format  = ".".join([task_name, pub_slot])
+                DbPubSlot().set_used_by(task_name=current_task,
+                                        pub_slot=current_pub_slot,
+                                        used_by_data=used_by_data_format)
+
+        for task_name, task_pub_slots in unchecked_items.items():
+            for pub_slot in task_pub_slots:
+                used_by_data_format = ".".join([task_name, pub_slot])
+                DbPubSlot().set_used_by(task_name=current_task,
+                                        pub_slot=current_pub_slot,
+                                        used_by_data=used_by_data_format,
+                                        remove_action=True)
+
+    def get_pub_used_by(self, pub_slot):
+        rel_task = DbPubSlot().get_used_by(pub_slot=pub_slot)
+        return rel_task
+
     def get_properties(self):
         pub_slots = DbPubSlot().get_pub_slots()
         return pub_slots
@@ -49,6 +183,7 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
             cnt = 0
             for name in properties:
                 self.create_pub_slots(name, cnt)
+                self.publish_slots_wdg.resizeRowsToContents()
                 cnt += 1
         return properties
 
@@ -57,29 +192,28 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         self.publish_slots_wdg.setItem(row, 0, item)
 
         self.set_type_cb = QtWidgets.QComboBox()
+        self.set_type_cb.wheelEvent = lambda event: None
         self.set_type_cb.addItems(SLOTS_TYPES)
 
         self.set_method_cb = QtWidgets.QComboBox()
+        self.set_method_cb.wheelEvent = lambda event: None
         self.set_method_cb.addItems(list(SLOTS_METHODS.values()))
 
         self.set_source_cb = QtWidgets.QComboBox()
+        self.set_source_cb.wheelEvent = lambda event: None
         self.set_source_cb.addItems(self.get_current_pub_slots())
 
         self.set_scope_cb = QtWidgets.QComboBox()
+        self.set_scope_cb.wheelEvent = lambda event: None
         self.set_scope_cb.addItems(SLOTS_SCOPE)
 
         self.set_mode_cb = QtWidgets.QComboBox()
+        self.set_mode_cb.wheelEvent = lambda event: None
         self.set_mode_cb.addItems(SLOT_MODE)
 
-        self.set_used_by_lw = QtWidgets.QListWidget()
-        curr_used_by = self.get_db_pub_attr(name, 'used_by')
-        for task in curr_used_by:
-            QtWidgets.QListWidgetItem(task, self.set_used_by_lw)
-
-        self.set_artists_lw = QtWidgets.QListWidget()
-        curr_artists = self.get_db_pub_attr(name, 'artists')
-        for artist in curr_artists:
-            QtWidgets.QListWidgetItem(artist, self.set_artists_lw)
+        self.set_artists_cb = QtWidgets.QComboBox()
+        self.set_artists_cb.wheelEvent = lambda event: None
+        self.set_artists_cb.addItems(SLOT_ARTISTS)
 
         self.set_reviewable_ckb = QtWidgets.QCheckBox()
         self.set_active_ckb = QtWidgets.QCheckBox()
@@ -90,7 +224,7 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
             self.set_source_cb.setCurrentText(str(self.get_db_pub_attr(name, 'source')))
             self.set_scope_cb.setCurrentText(str(self.get_db_pub_attr(name, 'scope')))
             self.set_mode_cb.setCurrentText(str(self.get_db_pub_attr(name, 'mode')))
-            self.set_artists_lw.setCurrentText(str(self.get_db_pub_attr(name, 'artists')))
+            self.set_artists_cb.setCurrentText(str(self.get_db_pub_attr(name, 'artists')))
             self.set_reviewable_ckb.setChecked(bool(self.get_db_pub_attr(name, 'reviewable')))
             self.set_active_ckb.setChecked(bool(self.get_db_pub_attr(name, 'active')))
 
@@ -102,10 +236,9 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         self.publish_slots_wdg.setCellWidget(row, 3, self.set_source_cb)
         self.publish_slots_wdg.setCellWidget(row, 4, self.set_scope_cb)
         self.publish_slots_wdg.setCellWidget(row, 5, self.set_mode_cb)
-        self.publish_slots_wdg.setCellWidget(row, 6, self.set_used_by_lw)
-        self.publish_slots_wdg.setCellWidget(row, 7, self.set_artists_lw)
-        self.publish_slots_wdg.setCellWidget(row, 8, self.set_reviewable_ckb)
-        self.publish_slots_wdg.setCellWidget(row, 9, self.set_active_ckb)
+        self.publish_slots_wdg.setCellWidget(row, 6, self.set_artists_cb)
+        self.publish_slots_wdg.setCellWidget(row, 7, self.set_reviewable_ckb)
+        self.publish_slots_wdg.setCellWidget(row, 8, self.set_active_ckb)
 
     def get_db_pub_attr(self, slot, attr):
         properties = self.get_properties()
@@ -120,37 +253,13 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         slot_name = self.publish_slots_wdg.item(row, column)
         return slot_name.text()
 
-    def get_slot_type(self, row, column):
-        slot_type = self.publish_slots_wdg.cellWidget(row, column)
-        return slot_type.currentText()
-
-    def get_pub_method(self, row, column):
-        slot_method = self.publish_slots_wdg.cellWidget(row, column)
-        return slot_method.currentText()
-
-    def get_pub_source(self, row, column):
-        slot_source = self.publish_slots_wdg.cellWidget(row, column)
-        return slot_source.currentText()
-
-    def get_pub_scope(self, row, column):
-        slot_scope = self.publish_slots_wdg.cellWidget(row, column)
-        return slot_scope.currentText()
-
-    def get_pub_mode(self, row, column):
-        slot_mode = self.publish_slots_wdg.cellWidget(row, column)
-        return slot_mode.currentText()
-
-    def get_pub_artists(self, row, column):
+    def get_cell_pub_cb(self, row, column):
         slot_artists = self.publish_slots_wdg.cellWidget(row, column)
         return slot_artists.currentText()
 
-    def reviewable_is_checked(self, row, column):
+    def is_checked_chkb(self, row, column):
         rev_checked = self.publish_slots_wdg.cellWidget(row, column)
         return rev_checked.isChecked()
-
-    def active_is_checked(self, row, column):
-        act_is_checked = self.publish_slots_wdg.cellWidget(row, column)
-        return act_is_checked.isChecked()
 
     def get_pub_buffer_content(self):
         items = []
@@ -164,15 +273,15 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
             else:
                 get_used_by = []
 
-            dictionary_build = {self.get_slot_name(r, 0) : {'type':self.get_slot_type(r, 1),
-                                                            'method':self.get_pub_method(r, 2),
+            dictionary_build = {self.get_slot_name(r, 0) : {'type':self.get_cell_pub_cb(r, 1),
+                                                            'method':self.get_cell_pub_cb(r, 2),
                                                             'used_by':get_used_by,
-                                                            'source':self.get_pub_source(r, 3),
-                                                            'scope':self.get_pub_scope(r, 4),
-                                                            'mode':self.get_pub_mode(r, 5),
-                                                            'artists':self.get_pub_artists(r, 7),
-                                                            'reviewable':self.reviewable_is_checked(r, 8),
-                                                            'active':self.active_is_checked(r, 9)}}
+                                                            'source':self.get_cell_pub_cb(r, 3),
+                                                            'scope':self.get_cell_pub_cb(r, 4),
+                                                            'mode':self.get_cell_pub_cb(r, 5),
+                                                            'artists':self.get_cell_pub_cb(r, 6),
+                                                            'reviewable':self.is_checked_chkb(r, 7),
+                                                            'active':self.is_checked_chkb(r, 8)}}
 
             items.append(dictionary_build)
 
@@ -184,15 +293,6 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         properties = self.get_properties()
         pub_is_used_by = properties[slot]['used_by']
         return pub_is_used_by
-
-    def get_first_cell(self):
-        clickme = QtWidgets.QApplication.focusWidget()
-        index = self.publish_slots_wdg.indexAt(clickme.pos())
-        if index.isValid():
-            get_name_cell = (index.column()-3)
-            slot_name = self.publish_slots_wdg.item(index.row(), get_name_cell)
-            print ('Open Menu for {0}'.format (slot_name.text()))
-            return slot_name.text()
 
     def get_current_pub_slots(self):
         complete_list = list()
@@ -215,9 +315,9 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
 
     def db_commit(self):
         get_wdg_content = self.get_pub_buffer_content()
-        print (get_wdg_content)
         DbPubSlot().remove_all()
         DbPubSlot().add_dict(pub_slot=get_wdg_content)
+        self.write_wdg_checked_items()
 
 # PublishSlotsWidget -- END
 
@@ -233,9 +333,9 @@ if __name__ == "__main__":
 
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
-    Envars.category = "characters"
-    Envars.entry_name = "red_hulk"
-    Envars.task_name = "modeling"
+    Envars.category = "props"
+    Envars.entry_name = "red_knife"
+    Envars.task_name = "texturing"
 
 
 

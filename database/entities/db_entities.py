@@ -1105,8 +1105,8 @@ class DbBundle:
 if __name__ == '__main__':
     Envars.show_name = "Test"
     Envars.branch_name = "assets"
-    Envars.category = "characters"
-    Envars.entry_name = "red_hulk"
+    Envars.category = "props"
+    Envars.entry_name = "red_knife"
     Envars.task_name = "modeling"
 
     # print (Envars().branch_name)
@@ -1126,7 +1126,7 @@ if __name__ == '__main__':
     # pubs = DbPubSlot().get_used_by("img")
     # print (pubs)
 
-    xxx = DbAsset().get_definition_element(definition_element="shot_type")
+    xxx = DbTasks().imports_from
     print(xxx)
 
 

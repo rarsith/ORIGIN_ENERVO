@@ -9,10 +9,10 @@ class ImportsFromWidgetBuild(QtWidgets.QTreeWidget):
     def widget_build(self):
         self.setAlternatingRowColors(True)
         self.setHeaderLabels(['task'])
-        self.setMinimumWidth(310)
-        self.setMaximumWidth(310)
+        self.setMinimumWidth(150)
+        self.setMaximumWidth(150)
         self.setMinimumHeight(300)
-        self.setColumnWidth(0, 170)
+        self.setColumnWidth(0, 130)
 
 
 
@@ -22,7 +22,7 @@ class ListEntryTasksBuild(QtWidgets.QListWidget):
         self.widget_build()
 
     def widget_build(self):
-        self.setMaximumWidth(200)
+        self.setMaximumWidth(100)
         # self.setAlternatingRowColors(True)
         self.setSelectionMode(QtWidgets.QListWidget.ExtendedSelection)
 
@@ -36,6 +36,7 @@ class TasksImportFromUI(QtWidgets.QWidget):
     def create_widgets(self):
         self.imports_from_wdg = ImportsFromWidgetBuild()
         self.existing_tasks_lwd = ListEntryTasksBuild()
+
         self.tasks_existing_lb = QtWidgets.QLabel("Existing Tasks")
         self.tasks_imports_from_properties_lb = QtWidgets.QLabel("Imports From")
         self.move_to_right_btn = QtWidgets.QPushButton(">")
@@ -51,17 +52,17 @@ class TasksImportFromUI(QtWidgets.QWidget):
         import_from_layout.addWidget(self.tasks_imports_from_properties_lb)
         import_from_layout.addWidget(self.imports_from_wdg)
 
-        widget_buttons_layout = QtWidgets.QVBoxLayout()
-        widget_buttons_layout.addWidget(self.rem_sel_item_btn)
-        widget_buttons_layout.addWidget(self.save_btn)
-        widget_buttons_layout.addWidget(self.refresh_btn)
-
         move_button_layout = QtWidgets.QHBoxLayout()
         move_button_layout.addWidget(self.move_to_right_btn)
 
         existing_tasks_layout = QtWidgets.QVBoxLayout()
         existing_tasks_layout.addWidget(self.tasks_existing_lb)
         existing_tasks_layout.addWidget(self.existing_tasks_lwd)
+
+        widget_buttons_layout = QtWidgets.QVBoxLayout()
+        widget_buttons_layout.addWidget(self.rem_sel_item_btn)
+        widget_buttons_layout.addWidget(self.save_btn)
+        widget_buttons_layout.addWidget(self.refresh_btn)
 
         windows_layout = QtWidgets.QHBoxLayout()
         windows_layout.addLayout(existing_tasks_layout)
