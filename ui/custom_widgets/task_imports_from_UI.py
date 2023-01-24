@@ -1,4 +1,4 @@
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtGui
 
 
 class ImportsFromWidgetBuild(QtWidgets.QTreeWidget):
@@ -9,11 +9,24 @@ class ImportsFromWidgetBuild(QtWidgets.QTreeWidget):
     def widget_build(self):
         self.setAlternatingRowColors(True)
         self.setHeaderLabels(['task'])
-        self.setMinimumWidth(150)
-        self.setMaximumWidth(150)
-        self.setMinimumHeight(300)
+        self.setMinimumWidth(200)
+        # self.setMaximumWidth(150)
+        # self.setMinimumHeight(300)
         self.setColumnWidth(0, 130)
 
+
+class ImportsFromAssignmentsWidgetBuild(QtWidgets.QTreeWidget):
+    def __init__(self, parent=None):
+        super(ImportsFromAssignmentsWidgetBuild, self).__init__(parent)
+        self.widget_build()
+
+    def widget_build(self):
+        self.setAlternatingRowColors(True)
+        self.setHeaderLabels(['assigned asset'])
+        self.setMinimumWidth(200)
+        # self.setMaximumWidth(150)
+        # self.setMinimumHeight(300)
+        self.setColumnWidth(0, 130)
 
 
 class ListEntryTasksBuild(QtWidgets.QListWidget):
@@ -22,7 +35,7 @@ class ListEntryTasksBuild(QtWidgets.QListWidget):
         self.widget_build()
 
     def widget_build(self):
-        self.setMaximumWidth(100)
+        self.setMinimumWidth(160)
         # self.setAlternatingRowColors(True)
         self.setSelectionMode(QtWidgets.QListWidget.ExtendedSelection)
 
@@ -35,10 +48,24 @@ class TasksImportFromUI(QtWidgets.QWidget):
 
     def create_widgets(self):
         self.imports_from_wdg = ImportsFromWidgetBuild()
+        self.imports_from_assignments = ImportsFromAssignmentsWidgetBuild()
         self.existing_tasks_lwd = ListEntryTasksBuild()
 
-        self.tasks_existing_lb = QtWidgets.QLabel("Existing Tasks")
-        self.tasks_imports_from_properties_lb = QtWidgets.QLabel("Imports From")
+
+        self.tasks_existing_lb = QtWidgets.QLabel("--select task--")
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+        self.tasks_existing_lb.setFont(my_font)
+        self.tasks_existing_lb.setStyleSheet("color: red")
+
+
+        self.tasks_imports_from_properties_lb = QtWidgets.QLabel("--select task--")
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+        self.tasks_imports_from_properties_lb.setFont(my_font)
+        self.tasks_imports_from_properties_lb.setStyleSheet("color: red")
+
+
         self.move_to_right_btn = QtWidgets.QPushButton(">")
         self.move_to_right_btn.setMinimumHeight(150)
         self.move_to_right_btn.setMinimumWidth(20)
@@ -51,6 +78,7 @@ class TasksImportFromUI(QtWidgets.QWidget):
         import_from_layout = QtWidgets.QVBoxLayout()
         import_from_layout.addWidget(self.tasks_imports_from_properties_lb)
         import_from_layout.addWidget(self.imports_from_wdg)
+        import_from_layout.addWidget(self.imports_from_assignments)
 
         move_button_layout = QtWidgets.QHBoxLayout()
         move_button_layout.addWidget(self.move_to_right_btn)

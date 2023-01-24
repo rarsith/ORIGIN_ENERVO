@@ -1,4 +1,4 @@
-from PySide2 import QtWidgets, QtGui
+from PySide2 import QtWidgets, QtGui, QtCore
 from envars.envars import Envars
 from ui.custom_widgets.task_viewer_UI import TaskViewerUI
 from database.entities.db_entities import DbTasks
@@ -16,9 +16,32 @@ class TaskViewerCore(TaskViewerUI):
         self.add_btn.clicked.connect(self.add_to_task_list)
         self.task_viewer_wdg.itemSelectionChanged.connect(self.get_task_list_current_selected)
 
+    def set_task_is_active(self):
+        # if child.checkState(0) == QtCore.Qt.Checked
+        is_active = self.task_is_active_properties_ckb.isChecked()
+        try:
+            DbTasks().current_is_active = is_active
+            self.populate_task_details()
+        except:
+            pass
+        print('{} status changed to {}'.format(self.tasks_view_lwd.get_selected_task(), is_active))
+
     def populate_tasks(self):
+        get_entry_tasks_names = self.get_tasks()
         self.task_viewer_wdg.clear()
-        self.task_viewer_wdg.addItems(self.get_tasks())
+        self.add_tasks_to_list(get_entry_tasks_names)
+
+    def add_tasks_to_list(self, task_list):
+        for task in task_list:
+            item = QtWidgets.QListWidgetItem(task)
+            self.task_viewer_wdg.addItem(item)
+
+            is_active = DbTasks().is_active(task=task)
+            if is_active:
+                item.setCheckState(QtCore.Qt.Checked)
+            else:
+                item.setCheckState(QtCore.Qt.Unchecked)
+
 
     def get_tasks(self):
         spare_it = []
@@ -100,7 +123,7 @@ if __name__ == '__main__':
     font = app.instance().setFont(QtGui.QFont())
 
     test_dialog = TaskViewerCore()
-    # test_dialog.populate_tasks()
+    test_dialog.populate_tasks()
 
     test_dialog.show()
     sys.exit(app.exec_())

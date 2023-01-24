@@ -1,3 +1,4 @@
+from bson import BSON
 from envars.envars import Envars
 from database import db_connection as mdbconn
 from database.entities.db_attributes import (DbProjectAttrPaths,
@@ -118,6 +119,22 @@ class QEntity:
         results = self.db[self.collection].find({"_id": self.db_id}, {"_id": 0, self.attribute: 1})
         return results
 
+    def attribute_type(self):
+        target_attr = f"${self.attribute}"
+        find_attr = [{"$match": {"_id": self.db_id}}, {"$project": {"fieldType": {"$type": target_attr}}}]
+        type_is = self.db[self.collection].aggregate(find_attr)
+
+        for attr in type_is:
+            return attr["fieldType"]
+
+    def attribute_type_switch(self, attr_type):
+        if attr_type == "array":
+            return []
+        elif attr_type == "object":
+            return {}
+        elif attr_type == "string":
+            return ""
+
     def get(self,
             attrib_names: bool = False,
             attrib_values: bool = False,
@@ -186,7 +203,11 @@ class QEntity:
 
     def remove_value(self, data):
         #TODO: to clean and delete
+        attr_type = self.attribute_type()
+        update_attr = self.attribute_type_switch(attr_type)
+
         self.db[self.collection].update_one({"_id": self.db_id}, {"$pull": {self.attribute: data}})
+        # self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: update_attr}})
 
     def remove_property(self):
         """Removes the entire property with all its content. This action is not recoverable"""
@@ -196,11 +217,17 @@ class QEntity:
         """Removes a Database Entry from a given Collection. This action is not recoverable"""
         self.db[self.collection].delete_one({"_id": self.db_id})
 
-    def clear(self):
-        #TODO:need to find out how to query data field type (need to get field type and restore with the original type)
+    def clear(self, override_type=[], override=False):
         """Removes the full content of an attribute by first removing the full atrribute and then recreating it empty"""
+        attr_type = self.attribute_type()
+        update_attr = self.attribute_type_switch(attr_type)
+
         self.db[self.collection].update_one({"_id": self.db_id}, {"$unset": {self.attribute: 1}})
-        # self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: {}}})
+
+        if override:
+            self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: override_type}})
+        else:
+            self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: update_attr}})
 
 
 class DbRef:
@@ -256,24 +283,35 @@ if __name__ == '__main__':
     from database.entities.db_attributes import DbEntityAttrPaths, DbTaskAttrPaths, DbPubSlotsAttrPaths
     from database.entities.db_attributes import DbMainPubAttrPaths
 
-    Envars.show_name = "Test"
+    Envars.show_name = "Green"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "red_hulk"
+    Envars.entry_name = "frog"
     Envars.task_name = "modeling"
 
-    result = QEntity(db_collection=From().entities, entry_id=DbIds.curr_entry_id(), attribute=DbEntityAttrPaths.to_definition()).get_attr_values()
+    # result = QEntity(db_collection=From().entities, entry_id=DbIds.curr_entry_id(), attribute=DbEntityAttrPaths.to_definition()).get_attr_values()
+    #
+    # origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbEntityAttrPaths.to_type()).get_attr_values()
 
-    origin = QEntity(db_collection=From().projects, entry_id=DbIds().curr_project_id(), attribute=DbEntityAttrPaths.to_type()).get_attr_values()
-
-    print (result)
+    # print (result)
     # print ("FROM ?<<{0}>> database collection,\n SELECT entity with _ID -- {1} -- ,\n use this STRING -- {2} --  to go to tasks and get them.\n\n----RESULT----\n{3} ".format(source ,entity, attr, origin))
 
-    # db = mdbconn.server[mdbconn.database_name]
-    # vv = db["show"].find({"active": True, "_id":"root.Test"}, {"_id": 0, "structure.assets": 1})
-    # for i in vv:
+    db = mdbconn.server[mdbconn.database_name]
+    # vv = db["show"].aggregate([
+    #     {"_id": "root.Green", "fieldType":{"$type":"$active"}}])
     #
-    #     print (i)
+    pipeline = [{"$match":{"_id":"root.Test"}},
+        {"$project": {"fieldType": {"$type": "$show_defaults.asset_definition.asset_lod"}}}
+    ]
+    # cc = db["show"].aggregate(pipeline)
+    # for i in cc:
+    #     print(i)
+    tasks_list = QEntity(db_collection=From().entities,
+                                 entry_id=DbIds.curr_entry_id(),
+                                 attribute=DbEntityAttrPaths.to_tasks()
+                                 ).get_attr_names()
+
+    print(tasks_list)
 
     # result = [x["structure.assets"] for x in db["show"].find({"active": True}, {"_id": 0, "structure.assets": 1})]
     # print(result)

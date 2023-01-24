@@ -292,7 +292,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.create_asset_category_action = QtWidgets.QAction("Create Asset Category...", self)
         self.remove_entry_action = QtWidgets.QAction("Remove Entry...", self)
         self.edit_entry_definition = QtWidgets.QAction("Edit Definition...", self)
-        self.save_task_schema_action = QtWidgets.QAction("Task Schema...", self)
+        self.save_task_schema_action = QtWidgets.QAction("Task Manager...", self)
         self.edit_bundle = QtWidgets.QAction("Edit Bundle...", self)
 
     def about(self):

@@ -1,5 +1,5 @@
 import sys
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 from envars.envars import Envars
 
 from ui.custom_widgets.task_imports_from_UI import TasksImportFromUI
@@ -25,12 +25,36 @@ class TasksImportFromCore(TasksImportFromUI):
         self.remove_self_task()
         self.imports_from_wdg.expandAll()
 
+    def change_label_existing_tasks(self):
+        pub_slot_name = Envars().task_name
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+
+        self.tasks_existing_lb.clear()
+        self.tasks_existing_lb.setText("{0} -> Existing Tasks".format(pub_slot_name))
+        self.tasks_existing_lb.setFont(my_font)
+        self.tasks_existing_lb.setStyleSheet("color: red")
+
+    def change_label_imports_from(self):
+        pub_slot_name = Envars().task_name
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+
+        self.tasks_imports_from_properties_lb.clear()
+        self.tasks_imports_from_properties_lb.setText("{0} -> Imports From".format(pub_slot_name))
+        self.tasks_imports_from_properties_lb.setFont(my_font)
+        self.tasks_imports_from_properties_lb.setStyleSheet("color: red")
+
+
     def get_splits(self, data: list, idx: int, delimiter: str =".") -> list:
         output_list = []
         for element in data:
-            if element.split(delimiter)[idx] not in output_list:
-                output_list.append(element.split(delimiter)[idx])
-
+            if delimiter not in element:
+                if element not in output_list:
+                    output_list.append(element)
+            else:
+                if element.split(delimiter)[idx] not in output_list:
+                    output_list.append(element.split(delimiter)[idx])
         return output_list
 
     def populate_task_import_schema(self):

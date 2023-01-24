@@ -99,8 +99,6 @@ class NotesWidget(QtWidgets.QWidget):
 
 class OriginControlCenterUI(QtWidgets.QWidget):
     WINDOW_TITLE = "Origin Control Center"
-    # db = xcon.server.xchange
-    # cursor = db.show_name
 
     def __init__(self):
         super(OriginControlCenterUI, self).__init__()
@@ -229,9 +227,16 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_slot_publishes)
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_slot_components)
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_main_publishes)
+        self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_main_publishes)
         self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.populate_main_publishes)
         self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.populate_slot_publishes)
-        self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.populate_slot_components)
+        self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_pub_slots_properties_wdg.clear_selection)
+
+        self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_pub_slots_properties_wdg.change_label_pub_slots)
+        self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_imports_from_properties_wdg.change_label_existing_tasks)
+        self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_imports_from_properties_wdg.change_label_imports_from)
+
+
 
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.get_tasks)
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.update_entry_properties_list)
@@ -464,11 +469,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
             task_index = self.stacked_properties_wdg.indexOf(self.entry_task_properties_stack)
             return task_index
 
-    # CONTEXT MENU
-    # TABS MENUS
-    def show_properties_menu(self):
-        print("First Tab")
-
 
 class MainUI(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -479,14 +479,8 @@ class MainUI(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
-
     app = QtWidgets.QApplication(sys.argv)
 
-
-    # font = app.instance().setFont(QtGui.QFont())
-    # huhu = {'full_range_in': 'ingest plate', 'full_range_out': 'ingest plate', 'frame_in': '1001', 'frame_out': '1200', 'handles_head': '8', 'handles_tail': '8', 'preroll': '10', 'shot_type': 'vfx', 'cut_in': '1009', 'cut_out': '1192', 'frame_rate': '24', 'motion_blur_high': '0.25', 'motion_blur_low': '-0.25', 'res_x': 'from plate', 'res_y': 'from plate'}
-    # huhu2 = {'full_range_in': 'ingest XXXlXXXteXX'}
     test_dialog = MainUI()
-
     test_dialog.show()
     sys.exit(app.exec_())

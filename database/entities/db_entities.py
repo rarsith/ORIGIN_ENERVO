@@ -572,11 +572,12 @@ class DbTasks:
             # print("{} task added as import_source".format(each))
 
     def rem_import_slots(self) -> None:
+        #TODO implement deleter property
         try:
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
                     attribute=DbTaskAttrPaths.imports_from()
-                    ).clear()
+                    ).clear(override=True)
         except ValueError as e:
             print("{} Error! Nothing Done!".format(e))
 
@@ -1103,11 +1104,11 @@ class DbBundle:
 
 
 if __name__ == '__main__':
-    Envars.show_name = "Test"
+    Envars.show_name = "Green"
     Envars.branch_name = "assets"
-    Envars.category = "props"
-    Envars.entry_name = "red_knife"
-    Envars.task_name = "modeling"
+    Envars.category = "characters"
+    Envars.entry_name = "frog"
+    Envars.task_name = "rigging"
 
     # print (Envars().branch_name)
     # print (Envars().show_name)
@@ -1126,7 +1127,7 @@ if __name__ == '__main__':
     # pubs = DbPubSlot().get_used_by("img")
     # print (pubs)
 
-    xxx = DbTasks().imports_from
+    xxx = DbTasks().rem_import_slots()
     print(xxx)
 
 

@@ -1,5 +1,5 @@
 import sys
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 
 
 class PublishSlotsWidgetBuild(QtWidgets.QTableWidget):
@@ -41,7 +41,7 @@ class TaskPubSlotUsedByBuild(QtWidgets.QTreeWidget):
     def widget_build(self):
         self.setAlternatingRowColors(True)
         self.setHeaderLabels(['task name'])
-        self.setMinimumWidth(150)
+        self.setMinimumWidth(250)
         self.setMaximumWidth(150)
         self.setMinimumHeight(300)
         self.setColumnWidth(0, 130)
@@ -55,7 +55,18 @@ class PublishSlotsWidgetUI(QtWidgets.QWidget):
 
     def create_widgets(self):
         self.tasks_pub_slots_properties_lb = QtWidgets.QLabel("Publishing Slots")
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+        self.tasks_pub_slots_properties_lb.setText("--select a task--")
+        self.tasks_pub_slots_properties_lb.setStyleSheet("color: red")
+        self.tasks_pub_slots_properties_lb.setFont(my_font)
+
         self.all_pub_slots_lb = QtWidgets.QLabel()
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+        self.all_pub_slots_lb.setText("--select slot--")
+        self.all_pub_slots_lb.setStyleSheet("color: red")
+        self.all_pub_slots_lb.setFont(my_font)
 
 
         self.add_pub_slot_le = QtWidgets.QLineEdit()

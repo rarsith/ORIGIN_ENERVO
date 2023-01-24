@@ -6,7 +6,7 @@ from common_utils.users import Users
 from envars.envars import Envars
 
 SLOTS_TYPES = ['abc', 'tex', 'vdb', 'bgeo', 'ptc', 'rend', 'exr', 'mat', 'pbr','img','scn', 'geo', 'csh', 'cfg']
-SLOTS_SCOPE = ["build", "shots"]
+SLOTS_SCOPE = ["local", "shots"]
 SLOT_MODE = ["layer", "non_layer"]
 SLOT_ARTISTS =["unassigned", Users().curr_user()]
 SLOTS_METHODS = {'m1':'sf_csh',
@@ -38,8 +38,20 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         self.refresh_btn.clicked.connect(self.populate_all_pub_slots)
         self.add_pub_slot_btn.clicked.connect(self.add_to_pub_list)
         self.publish_slots_wdg.cellClicked.connect(self.populate_all_pub_slots)
-        self.publish_slots_wdg.cellClicked.connect(self.change_label_text)
+        self.publish_slots_wdg.cellClicked.connect(self.change_label_used_by)
+        self.publish_slots_wdg.itemSelectionChanged.connect(self.selected_items_show)
         self.dependent_pub_slots_wdg.itemClicked.connect(self.test_action)
+
+    def clear_selection(self):
+        self.publish_slots_wdg.clearSelection()
+
+    def selected_items_show(self):
+        selected_items_list = self.publish_slots_wdg.selectedItems()
+        if len(selected_items_list) == 0:
+            self.dependent_pub_slots_wdg.clear()
+            self.all_pub_slots_lb.setText("--select slot--")
+        for item in selected_items_list:
+            return item.text()
 
     def test_action(self):
         self.write_wdg_checked_items()
@@ -53,7 +65,7 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
             slot_name = self.get_slot_name(current_row, 0)
             return slot_name
 
-    def change_label_text(self):
+    def change_label_used_by(self):
         slot_name = self.return_slot_name()
         my_font = QtGui.QFont()
         my_font.setBold(True)
@@ -63,12 +75,20 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         self.all_pub_slots_lb.setFont(my_font)
         self.all_pub_slots_lb.setStyleSheet("color: red")
 
+    def change_label_pub_slots(self):
+        pub_slot_name = Envars().task_name
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+
+        self.tasks_pub_slots_properties_lb.clear()
+        self.tasks_pub_slots_properties_lb.setText("{0} -> Publishing Slots".format(pub_slot_name))
+        self.tasks_pub_slots_properties_lb.setFont(my_font)
+        self.tasks_pub_slots_properties_lb.setStyleSheet("color: red")
+
     def get_all_tasks(self):
         tasks = DbTasks().get_tasks()
         if tasks is not None:
             return tasks
-        else:
-            return ["-- no tasks --"]
 
     def populate_all_pub_slots(self):
         get_entry_tasks_names = self.get_all_tasks()
@@ -335,7 +355,7 @@ if __name__ == "__main__":
     Envars.branch_name = "assets"
     Envars.category = "props"
     Envars.entry_name = "red_knife"
-    Envars.task_name = "texturing"
+    Envars.task_name = "sculpting"
 
 
 
