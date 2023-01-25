@@ -22,7 +22,7 @@ class ImportsFromAssignmentsWidgetBuild(QtWidgets.QTreeWidget):
 
     def widget_build(self):
         self.setAlternatingRowColors(True)
-        self.setHeaderLabels(['assigned asset'])
+        self.setHeaderLabels(['assigned entity'])
         self.setMinimumWidth(200)
         # self.setMaximumWidth(150)
         # self.setMinimumHeight(300)

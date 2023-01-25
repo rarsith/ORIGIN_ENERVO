@@ -1127,7 +1127,7 @@ if __name__ == '__main__':
     # pubs = DbPubSlot().get_used_by("img")
     # print (pubs)
 
-    xxx = DbTasks().rem_import_slots()
+    xxx = DbTasks().get_tasks_full()
     print(xxx)
 
 

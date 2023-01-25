@@ -171,8 +171,8 @@ class TasksImportFromCore(TasksImportFromUI):
                 imports_from_data_format = ".".join([task_name, "pub_slots", pub_slot])
                 save_new_import_schema.append(imports_from_data_format)
 
-        DbTasks().rem_import_slots()
-        DbTasks().imports_from = save_new_import_schema
+        return save_new_import_schema
+
 
     def remove_import_task_slot(self):
         listItems = self.imports_from_wdg.currentItem()
@@ -181,7 +181,10 @@ class TasksImportFromCore(TasksImportFromUI):
         self.imports_from_wdg.takeTopLevelItem(remove_it)
 
     def save_to_database(self):
-        self.write_wdg_checked_items()
+        extract_import_schema = self.write_wdg_checked_items()
+
+        DbTasks().rem_import_slots()
+        DbTasks().imports_from = extract_import_schema
         self.populate_main_widget()
 
     def populate_existing_tasks(self):
