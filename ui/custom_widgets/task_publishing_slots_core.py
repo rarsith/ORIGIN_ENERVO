@@ -40,7 +40,7 @@ class PublishSlotsWidgetCore(PublishSlotsWidgetUI):
         self.publish_slots_wdg.cellClicked.connect(self.populate_all_pub_slots)
         self.publish_slots_wdg.cellClicked.connect(self.change_label_used_by)
         self.publish_slots_wdg.itemSelectionChanged.connect(self.selected_items_show)
-        self.dependent_pub_slots_wdg.itemClicked.connect(self.test_action)
+        # self.dependent_pub_slots_wdg.itemClicked.connect(self.test_action)
 
     def clear_selection(self):
         self.publish_slots_wdg.clearSelection()

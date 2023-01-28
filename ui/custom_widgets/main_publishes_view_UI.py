@@ -20,7 +20,7 @@ class MainPublishesViewWidgetBuild(QtWidgets.QTableWidget):
         self.setColumnWidth(7, 0)
 
         self.setMinimumWidth(500)
-        self.setMaximumWidth(500)
+        # self.setMaximumWidth(500)
         self.setSortingEnabled(True)
 
 

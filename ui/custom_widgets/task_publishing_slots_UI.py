@@ -41,8 +41,8 @@ class TaskPubSlotUsedByBuild(QtWidgets.QTreeWidget):
     def widget_build(self):
         self.setAlternatingRowColors(True)
         self.setHeaderLabels(['task name'])
-        self.setMinimumWidth(250)
-        self.setMaximumWidth(150)
+        self.setMinimumWidth(200)
+        self.setMaximumWidth(210)
         self.setMinimumHeight(300)
         self.setColumnWidth(0, 130)
 

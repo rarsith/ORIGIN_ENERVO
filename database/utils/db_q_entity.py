@@ -58,6 +58,13 @@ class From:
     def work_files(self):
         return "work_files"
 
+    @property
+    def tasks_schemas_templates(self):
+        return "tasks_schema_templates"
+
+    @property
+    def entity_definitions_templates(self):
+        return "entity_definitions_templates"
 
 class QEntity:
     def __init__(self, db_collection: From(), entry_id: DbIds(), attribute: (DbProjectAttrPaths,

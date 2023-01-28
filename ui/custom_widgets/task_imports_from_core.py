@@ -26,25 +26,34 @@ class TasksImportFromCore(TasksImportFromUI):
         self.imports_from_wdg.expandAll()
 
     def change_label_existing_tasks(self):
-        pub_slot_name = Envars().task_name
+        current_entry_name = Envars().entry_name
         my_font = QtGui.QFont()
         my_font.setBold(True)
 
         self.tasks_existing_lb.clear()
-        self.tasks_existing_lb.setText("{0} -> Existing Tasks".format(pub_slot_name))
+        self.tasks_existing_lb.setText("{0}\nExisting Tasks".format(current_entry_name + "asset").upper())
         self.tasks_existing_lb.setFont(my_font)
         self.tasks_existing_lb.setStyleSheet("color: red")
 
     def change_label_imports_from(self):
-        pub_slot_name = Envars().task_name
+        curr_task_name = Envars().task_name
         my_font = QtGui.QFont()
         my_font.setBold(True)
 
         self.tasks_imports_from_properties_lb.clear()
-        self.tasks_imports_from_properties_lb.setText("{0} -> Imports From".format(pub_slot_name))
+        self.tasks_imports_from_properties_lb.setText("{0}\nImports From".format(curr_task_name.upper()))
         self.tasks_imports_from_properties_lb.setFont(my_font)
         self.tasks_imports_from_properties_lb.setStyleSheet("color: red")
 
+    def change_label_imports_from_assignments(self):
+        curr_task_name = Envars().task_name
+        my_font = QtGui.QFont()
+        my_font.setBold(True)
+
+        self.tasks_imports_from_assignments_lb.clear()
+        self.tasks_imports_from_assignments_lb.setText("{0}\nAssigned Generators".format(curr_task_name.upper()))
+        self.tasks_imports_from_assignments_lb.setFont(my_font)
+        self.tasks_imports_from_assignments_lb.setStyleSheet("color: red")
 
     def get_splits(self, data: list, idx: int, delimiter: str =".") -> list:
         output_list = []
@@ -65,12 +74,9 @@ class TasksImportFromCore(TasksImportFromUI):
         self.imports_from_wdg.clear()
 
         for task in get_tasks_only:
-
             is_active = DbTasks().is_active(task=task)
-
             if is_active:
                 get_active_tasks.append(task)
-
         self.add_items_to_list(get_active_tasks)
 
     def add_items_to_list(self, items):

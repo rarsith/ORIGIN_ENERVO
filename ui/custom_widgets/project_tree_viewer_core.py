@@ -4,8 +4,13 @@ from ui.custom_widgets.project_tree_viewer_UI import ProjectTreeViewerUI
 from database.entities.db_entities import DbProject
 from database.entities.db_structures import DbProjectBranch
 from common_utils import get_deep_value as gdeepval
-from ui.custom_widgets import create_show_ui, create_shot_ui, create_asset_ui, create_seq_ui, create_branch_ui, \
-    create_asset_category_ui
+from ui.custom_widgets import (create_show_ui,
+                               create_shot_ui,
+                               create_asset_ui,
+                               create_seq_ui,
+                               create_branch_ui,
+                               create_asset_category_ui,
+                               task_manager_core)
 
 
 class ProjectTreeViewerCore(ProjectTreeViewerUI):
@@ -38,6 +43,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.create_shot_action.triggered.connect(self.create_shot_menu)
         self.create_asset_action.triggered.connect(self.create_asset_menu)
         self.create_asset_category_action.triggered.connect(self.create_asset_category_menu)
+        self.save_task_schema_action.triggered.connect(self.task_manager_menu)
         self.remove_entry_action.triggered.connect(self.remove_entry_menu)
 
     def get_shows(self):
@@ -342,6 +348,9 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.ui.show_name_cb.setDisabled(True)
         self.ui.show()
 
+    def task_manager_menu(self):
+        self.ui = task_manager_core.TaskManagerMainUI()
+        self.ui.show()
 
 if __name__ == '__main__':
     import sys

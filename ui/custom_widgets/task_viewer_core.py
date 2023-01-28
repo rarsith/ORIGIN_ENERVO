@@ -112,10 +112,10 @@ class TaskViewerCore(TaskViewerUI):
 if __name__ == '__main__':
     import sys
 
-    Envars.show_name = "Test"
+    Envars.show_name = "Green"
     Envars.branch_name = "assets"
     Envars.category = "characters"
-    Envars.entry_name = "red_hulk"
+    Envars.entry_name = "monster"
     # Envars.task_name = "cfx_set"
 
 

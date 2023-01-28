@@ -32,6 +32,29 @@ class _DbProjectCode:
 
 class _DbConstructors:
 
+    def basic_constructor(self):
+        version = DBVersionControl().db_wip_files_version_increase("work_files")
+        common_id = DbIds.get_wip_file_id(version)
+        entity_attributes = dict(
+            _id=common_id,
+            show_name=Envars.show_name,
+            branch_name=Envars.branch_name,
+            category=Envars.category,
+            # entry_name=name,
+            type=DbProjectBranch().get_type,
+            status=" ",
+            assignment={},
+            tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks),
+            sync_tasks=DbSyncTasks().create_from_template(),
+            master_bundle=dict(main_stream=[]),
+            active=True,
+            definition=DbDefaults().get_show_defaults(DbDefaults().root_definitions),
+            date=DateTime().curr_date,
+            time=DateTime().curr_time,
+            owner=Users.curr_user()
+        )
+        return entity_attributes
+
     def _project_defaults(self):
         proj_defaults = dict(asset_definition=db_templates.entry_definition("build"),
                              shots_definition=db_templates.entry_definition("shot"),
@@ -399,8 +422,8 @@ class DbAsset:
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
 
-    @staticmethod
-    def get_assignment():
+    @property
+    def entities_assigned(self):
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
@@ -409,6 +432,26 @@ class DbAsset:
             return result
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
+
+    @entities_assigned.setter
+    def entities_assigned(self, assigned_list):
+        try:
+            for each in assigned_list:
+                QEntity(db_collection=From().entities,
+                        entry_id=DbIds.curr_entry_id(),
+                        attribute=DbEntityAttrPaths.to_assignments()
+                        ).add(data=each)
+        except ValueError as val:
+            raise("{} Error! Nothing Done!".format(val))
+
+    def rem_entities_assinged(self):
+        try:
+            QEntity(db_collection=From().entities,
+                    entry_id=DbIds.curr_entry_id(),
+                    attribute=DbEntityAttrPaths.to_assignments()
+                    ).clear(override=True)
+        except ValueError as e:
+            print("{} Error! Nothing Done!".format(e))
 
     @staticmethod
     def set_active(is_active=True):

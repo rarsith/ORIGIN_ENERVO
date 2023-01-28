@@ -106,7 +106,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.setWindowTitle(self.WINDOW_TITLE)
 
         self.setMinimumHeight(700)
-        self.setMinimumWidth(1900)
+        self.setMinimumWidth(2200)
 
         self.create_widgets()
 
