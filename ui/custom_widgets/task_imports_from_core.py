@@ -31,7 +31,7 @@ class TasksImportFromCore(TasksImportFromUI):
         my_font.setBold(True)
 
         self.tasks_existing_lb.clear()
-        self.tasks_existing_lb.setText("{0}\nExisting Tasks".format(current_entry_name + "asset").upper())
+        self.tasks_existing_lb.setText("{0}\nExisting Tasks".format(current_entry_name + " asset").upper())
         self.tasks_existing_lb.setFont(my_font)
         self.tasks_existing_lb.setStyleSheet("color: red")
 

@@ -16,8 +16,8 @@ class TaskViewerBuild(QtWidgets.QListWidget):
 class TaskViewerUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(TaskViewerUI, self).__init__(parent)
-        self.setMinimumWidth(150)
-        self.setMaximumWidth(150)
+        self.setMinimumWidth(120)
+        self.setMaximumWidth(130)
         self.create_widgets()
         self.create_layout()
 

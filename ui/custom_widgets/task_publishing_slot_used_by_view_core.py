@@ -1,5 +1,5 @@
 import sys
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 from envars.envars import Envars
 
 from ui.custom_widgets.task_publishing_slot_used_by_view_UI import TaskPubSlotUsedByUI
@@ -40,6 +40,7 @@ class TasksPubSlotUsedByCore(TaskPubSlotUsedByUI):
         for active_task in tasks_list:
             imp_from_pub_slots_schema = DbPubSlot().get_pub_slots(task_name=active_task)
             item = QtWidgets.QTreeWidgetItem([active_task])
+            item.setFlags(item.flags() | QtGui.Qt.ItemIsUserCheckable | QtGui.Qt.ItemIsEnabled)
             self.all_pub_slots_wdg.addTopLevelItem(item)
 
             slot_used_by = self.get_pub_used_by(imp_from_pub_slots_schema)
