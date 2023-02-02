@@ -15,7 +15,7 @@ class From:
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
 
-    def branch_type(self):
+    def current_branch_type(self):
         branch_name = Envars.branch_name
         try:
             cursor = self.db.show.find({"_id": DbIds.curr_project_id()},
@@ -25,6 +25,17 @@ class From:
 
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
+
+    def branch_type(self, branch_name):
+        try:
+            cursor = self.db.show.find({"_id": DbIds.curr_project_id()},
+                                       {'_id': 0, DbProjectAttrPaths.structure(): 1})
+            for each in list(cursor):
+                return each['structure'][branch_name]["type"]
+
+        except ValueError as val:
+            raise("{} Error! Nothing Done!".format(val))
+
 
     @property
     def projects(self):
@@ -40,7 +51,7 @@ class From:
 
     @property
     def entities(self):
-        return self.branch_type()
+        return self.current_branch_type()
 
     @property
     def publishes(self):

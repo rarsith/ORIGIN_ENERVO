@@ -31,14 +31,14 @@ class AssignmentManagerUI(QtWidgets.QWidget):
         self.assignemnt_manager_lb.setFont(my_font)
         self.assignemnt_manager_lb.setStyleSheet("color: red")
 
-        self.project_tree_viewer_wdg = AssignmentManagerBuild()
+        self.assignment_tree_viewer_wdg = AssignmentManagerBuild()
         self.save_btn = QtWidgets.QPushButton("Commit")
         self.refresh_btn = QtWidgets.QPushButton("Refresh")
 
     def create_layout(self):
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addWidget(self.assignemnt_manager_lb)
-        main_layout.addWidget(self.project_tree_viewer_wdg)
+        main_layout.addWidget(self.assignment_tree_viewer_wdg)
         main_layout.addWidget(self.save_btn)
         main_layout.addWidget(self.refresh_btn)
 

@@ -41,7 +41,7 @@ class _DbConstructors:
             branch_name=Envars.branch_name,
             category=Envars.category,
             # entry_name=name,
-            type=DbProjectBranch().get_type,
+            type=DbProjectBranch().get_current_branch_type,
             status=" ",
             assignment={},
             tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks),
@@ -91,7 +91,7 @@ class _DbConstructors:
             branch_name=Envars.branch_name,
             category=Envars.category,
             entry_name=name,
-            type=DbProjectBranch().get_type,
+            type=DbProjectBranch().get_current_branch_type,
             status=" ",
             assignment={},
             tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks),
@@ -354,7 +354,7 @@ class DbAsset:
                                              parent_doc_id=DbIds.curr_project_id(),
                                              destination_slot=insert_entry,
                                              id_to_add=created_id,
-                                             from_collection=DbProjectBranch().get_type,
+                                             from_collection=DbProjectBranch().get_current_branch_type,
                                              replace=False)
 
             print("{} Origin Asset created!".format(name))
@@ -749,7 +749,7 @@ class DbPublish:
                                              id_to_add=pub_slots_publish[0],
                                              from_collection=pub_slots_publish[1])
 
-            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_type,
+            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_current_branch_type,
                                              parent_doc_id=DbIds.curr_entry_id(),
                                              destination_slot=get_sync_path,
                                              id_to_add=pub_slots_publish[0],
@@ -782,7 +782,7 @@ class DbPublish:
                                              id_to_add=pub_slots_publish[0],
                                              from_collection=pub_slots_publish[1])
 
-            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_type,
+            DbReferences.add_db_id_reference(collection=DbProjectBranch().get_current_branch_type,
                                              parent_doc_id=DbIds.curr_entry_id(),
                                              destination_slot=get_sync_path,
                                              id_to_add=pub_slots_publish[0],
@@ -1080,7 +1080,7 @@ class DbBundle:
     def create_stream(self, name):
         try:
             asset_id = DbIds.curr_entry_id()
-            cursor = self.db[DbProjectBranch().get_type]
+            cursor = self.db[DbProjectBranch().get_current_branch_type]
             db_path = db_path_assembler.make_path(DbAttrPaths.to_master_bundle(),
                                                   (name + "_" + "stream"))
 
@@ -1097,7 +1097,7 @@ class DbBundle:
                                          bundle_id,
                                          "master_bundle.{}".format(slot),
                                          entity_id,
-                                         DbProjectBranch().get_type,
+                                         DbProjectBranch().get_current_branch_type,
                                          replace=True)
         return bundle_id
 
@@ -1116,7 +1116,7 @@ class DbBundle:
     @staticmethod
     def set_as_current(bundle_id, add_to_stream="main_stream"):
 
-        DbReferences.add_db_id_reference(DbProjectBranch().get_type,
+        DbReferences.add_db_id_reference(DbProjectBranch().get_current_branch_type,
                                          DbIds.curr_entry_id(),
                                          "master_bundle.{}".format(add_to_stream),
                                          bundle_id,
@@ -1139,7 +1139,7 @@ class DbBundle:
         try:
             task_path = DbAttrPaths.to_pub_slots()
             print(task_path)
-            cursor = self.db[DbProjectBranch().get_type]
+            cursor = self.db[DbProjectBranch().get_current_branch_type]
             cursor.update_one({"_id": DbIds.curr_entry_id()}, {"$unset": {task_path: 1}})
             cursor.update_one({"_id": DbIds.curr_entry_id()}, {"$set": {task_path: {}}})
         except:

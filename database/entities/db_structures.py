@@ -27,10 +27,13 @@ class DbProjectBranch(object):
         return branches
 
     @property
-    def get_type(self):
-        branch_type = From().branch_type()
+    def get_current_branch_type(self):
+        branch_type = From().current_branch_type()
         return branch_type
 
+    def get_branch_type(self, branch_name):
+        branch_type = From().branch_type(branch_name=branch_name)
+        return branch_type
 
 class DbAssetCategories(object):
 

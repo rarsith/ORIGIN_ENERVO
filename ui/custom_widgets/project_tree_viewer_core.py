@@ -242,7 +242,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
     def get_selection_type(self):
         curr_selected_items = self.project_tree_viewer_wdg.selectedItems()
         if curr_selected_items:
-            curr_sel_type = DbProjectBranch().get_type
+            curr_sel_type = DbProjectBranch().get_current_branch_type
             return curr_sel_type
 
     def context_menu(self):
