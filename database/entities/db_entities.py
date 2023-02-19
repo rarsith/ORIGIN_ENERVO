@@ -94,6 +94,7 @@ class _DbConstructors:
             type=DbProjectBranch().get_current_branch_type,
             status=" ",
             assignment={},
+            assigned_to=[],
             tasks=DbDefaults().get_show_defaults(DbDefaults().root_tasks),
             sync_tasks=DbSyncTasks().create_from_template(),
             master_bundle=dict(main_stream=[]),
@@ -367,7 +368,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().projects,
                              entry_id=DbIds.curr_project_id(),
-                             attribute=DbProjectAttrPaths.category_entries()
+                             attribute_path=DbProjectAttrPaths.category_entries()
                              ).get(attrib_names=True, all_active=is_active)
             return result
         except ValueError as val:
@@ -377,7 +378,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=attrib
+                             attribute_path=attrib
                              ).get_attr_names()
             return result
         except ValueError as val:
@@ -388,7 +389,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.to_definition()
+                             attribute_path=DbEntityAttrPaths.to_definition()
                              ).get_attr_values()
             if not result:
                 return ""
@@ -402,7 +403,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.to_definition(element=definition_element)
+                             attribute_path=DbEntityAttrPaths.to_definition(element=definition_element)
                              ).get_attr_names()
             return result
         except ValueError as val:
@@ -413,7 +414,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.to_type()
+                             attribute_path=DbEntityAttrPaths.to_type()
                              ).get_attr_names()
             if not result:
                 return ""
@@ -427,7 +428,7 @@ class DbAsset:
         try:
             result = QEntity(db_collection=From().entities,
                              entry_id=DbIds.curr_entry_id(),
-                             attribute=DbEntityAttrPaths.to_assignments()
+                             attribute_path=DbEntityAttrPaths.to_assignments()
                              ).get_attr_names()
             return result
         except ValueError as val:
@@ -439,7 +440,7 @@ class DbAsset:
             for each in assigned_list:
                 QEntity(db_collection=From().entities,
                         entry_id=DbIds.curr_entry_id(),
-                        attribute=DbEntityAttrPaths.to_assignments()
+                        attribute_path=DbEntityAttrPaths.to_assignments()
                         ).add(data=each)
         except ValueError as val:
             raise("{} Error! Nothing Done!".format(val))
@@ -448,7 +449,7 @@ class DbAsset:
         try:
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbEntityAttrPaths.to_assignments()
+                    attribute_path=DbEntityAttrPaths.to_assignments()
                     ).clear(override=True)
         except ValueError as e:
             print("{} Error! Nothing Done!".format(e))
@@ -457,7 +458,7 @@ class DbAsset:
     def set_active(is_active=True):
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.to_is_active()
+                attribute_path=DbEntityAttrPaths.to_is_active()
                 ).update(is_active)
 
         print("{0} active Status set to {1}!".format(DbIds.curr_entry_id(), is_active))
@@ -466,7 +467,7 @@ class DbAsset:
     def set_definition(data):
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.to_definition
+                attribute_path=DbEntityAttrPaths.to_definition
                 ).update(data)
         print("{} Definition Updated!".format(Envars.entry_name))
 
@@ -475,12 +476,12 @@ class DbAsset:
         try:
             QEntity(db_collection=From().projects,
                     entry_id=DbIds.curr_project_id(),
-                    attribute=DbProjectAttrPaths.entry()
+                    attribute_path=DbProjectAttrPaths.entry()
                     ).remove()
 
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbEntityAttrPaths.to_type()
+                    attribute_path=DbEntityAttrPaths.to_type()
                     ).remove()
 
         except ValueError as val:
@@ -492,12 +493,12 @@ class DbTasks:
     def create(self, name):
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.to_tasks()
+                attribute_path=DbEntityAttrPaths.to_tasks()
                 ).add_property(name=name, add_data=db_templates.task_defaults())
 
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.sync_tasks()
+                attribute_path=DbEntityAttrPaths.sync_tasks()
                 ).add_property(name=name, add_data={})
 
         print("{} Origin Asset Task created!".format(name))
@@ -507,7 +508,7 @@ class DbTasks:
         try:
             tasks_list = QEntity(db_collection=From().entities,
                                  entry_id=DbIds.curr_entry_id(),
-                                 attribute=DbEntityAttrPaths.to_tasks()
+                                 attribute_path=DbEntityAttrPaths.to_tasks()
                                  ).get_attr_names()
 
             return tasks_list
@@ -519,7 +520,7 @@ class DbTasks:
         try:
             tasks_list = QEntity(db_collection=From().entities,
                                  entry_id=DbIds.curr_entry_id(),
-                                 attribute=DbEntityAttrPaths.to_tasks()
+                                 attribute_path=DbEntityAttrPaths.to_tasks()
                                  ).get()
 
             return tasks_list
@@ -531,7 +532,7 @@ class DbTasks:
         try:
             is_active_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbTaskAttrPaths.is_active()
+                                     attribute_path=DbTaskAttrPaths.is_active()
                                      ).get_attr_values()
             return is_active_data
 
@@ -543,7 +544,7 @@ class DbTasks:
         try:
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbTaskAttrPaths.is_active()
+                    attribute_path=DbTaskAttrPaths.is_active()
                     ).update(data=is_active)
 
         except ValueError as e:
@@ -553,7 +554,7 @@ class DbTasks:
         try:
             is_active_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbTaskAttrPaths.is_active(task_name=task)
+                                     attribute_path=DbTaskAttrPaths.is_active(task_name=task)
                                      ).get_attr_values()
             return is_active_data
 
@@ -565,7 +566,7 @@ class DbTasks:
         try:
             status_data = QEntity(db_collection=From().entities,
                                   entry_id=DbIds.curr_entry_id(),
-                                  attribute=DbTaskAttrPaths.status()
+                                  attribute_path=DbTaskAttrPaths.status()
                                   ).get_attr_values()
             return status_data
 
@@ -576,14 +577,14 @@ class DbTasks:
     def status(self, task_status: str) -> None:
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbTaskAttrPaths.status()
+                attribute_path=DbTaskAttrPaths.status()
                 ).update(data=task_status)
 
     @property
     def task_user(self) -> str:
         user = QEntity(db_collection=From().entities,
                        entry_id=DbIds.curr_entry_id(),
-                       attribute=DbTaskAttrPaths.artist()
+                       attribute_path=DbTaskAttrPaths.artist()
                        ).get_attr_values()
         return user
 
@@ -591,7 +592,7 @@ class DbTasks:
     def task_user(self, artist_name: str) -> None:
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbTaskAttrPaths.artist()
+                attribute_path=DbTaskAttrPaths.artist()
                 ).update(data=artist_name)
 
     @property
@@ -599,7 +600,7 @@ class DbTasks:
         try:
             imports_from_data = QEntity(db_collection=From().entities,
                                         entry_id=DbIds.curr_entry_id(),
-                                        attribute=DbTaskAttrPaths.imports_from()
+                                        attribute_path=DbTaskAttrPaths.imports_from()
                                         ).get_attr_values()
             return imports_from_data
         except ValueError as e:
@@ -610,7 +611,7 @@ class DbTasks:
         for each in imports_from:
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbTaskAttrPaths.imports_from()
+                    attribute_path=DbTaskAttrPaths.imports_from()
                     ).add(data=each)
             # print("{} task added as import_source".format(each))
 
@@ -619,7 +620,7 @@ class DbTasks:
         try:
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbTaskAttrPaths.imports_from()
+                    attribute_path=DbTaskAttrPaths.imports_from()
                     ).clear(override=True)
         except ValueError as e:
             print("{} Error! Nothing Done!".format(e))
@@ -859,7 +860,7 @@ class DbPubSlot:
     def create(self, name: str) -> str:
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbTaskAttrPaths.pub_slots()
+                attribute_path=DbTaskAttrPaths.pub_slots()
                 ).add_property(name=name, add_data=db_templates.tasks_pub_slot_schema())
 
         DbSyncTasks().add_sync_task_slot(name)
@@ -878,7 +879,7 @@ class DbPubSlot:
 
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbTaskAttrPaths.pub_slots()
+                    attribute_path=DbTaskAttrPaths.pub_slots()
                     ).add_property(name=get_slot_name[0], add_data=get_slot_param[0])
 
         print("Publish Slot added succesfully!")
@@ -888,7 +889,7 @@ class DbPubSlot:
             try:
                 pub_slots_data = QEntity(db_collection=From().entities,
                                          entry_id=DbIds.curr_entry_id(),
-                                         attribute=DbTaskAttrPaths.pub_slots(task_name=task_name)
+                                         attribute_path=DbTaskAttrPaths.pub_slots(task_name=task_name)
                                          ).get_attr_values()
                 return pub_slots_data
 
@@ -899,7 +900,7 @@ class DbPubSlot:
             try:
                 pub_slots_data = QEntity(db_collection=From().entities,
                                          entry_id=DbIds.curr_entry_id(),
-                                         attribute=DbTaskAttrPaths.pub_slots()
+                                         attribute_path=DbTaskAttrPaths.pub_slots()
                                          ).get_attr_values()
                 return pub_slots_data
 
@@ -910,7 +911,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).type()
+                                     attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).type()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -921,7 +922,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).method()
+                                     attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).method()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -932,7 +933,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by()
+                                     attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -959,7 +960,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).is_reviewable()
+                                     attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).is_reviewable()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -970,7 +971,7 @@ class DbPubSlot:
         try:
             pub_slots_data = QEntity(db_collection=From().entities,
                                      entry_id=DbIds.curr_entry_id(),
-                                     attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).is_active()
+                                     attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).is_active()
                                      ).get_attr_values()
             return pub_slots_data
 
@@ -980,33 +981,43 @@ class DbPubSlot:
     def set_used_by(self, task_name: str, pub_slot: str, used_by_data: str = None, remove_action: bool = False) -> None:
         existing_used_by_data = QEntity(db_collection=From().entities,
                                         entry_id=DbIds.curr_entry_id(),
-                                        attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(
+                                        attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(
                                             parent_task_name=task_name)
                                         ).get_attr_values()
         if not remove_action:
             if used_by_data not in existing_used_by_data:
                 QEntity(db_collection=From().entities,
                         entry_id=DbIds.curr_entry_id(),
-                        attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(parent_task_name=task_name)
+                        attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(parent_task_name=task_name)
                         ).add(data=used_by_data)
 
         else:
             if used_by_data in existing_used_by_data:
                 QEntity(db_collection=From().entities,
                         entry_id=DbIds.curr_entry_id(),
-                        attribute=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(parent_task_name=task_name)
+                        attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).path_to_used_by(parent_task_name=task_name)
                         ).remove_value(data=used_by_data)
 
     def remove_all(self) -> None:
         try:
             QEntity(db_collection=From().entities,
                     entry_id=DbIds.curr_entry_id(),
-                    attribute=DbTaskAttrPaths.pub_slots(),
+                    attribute_path=DbTaskAttrPaths.pub_slots(),
                     ).clear()
 
         except Exception as e:
             raise ValueError("Error! Nothing Done! -- {}".format(e))
 
+    def get_pub_slots_scope(self, pub_slot: str):
+        try:
+            pub_slots_data = QEntity(db_collection=From().entities,
+                                     entry_id=DbIds.curr_entry_id(),
+                                     attribute_path=DbPubSlotsAttrPaths(publish_slot_name=pub_slot).scope()
+                                     ).get_attr_values()
+            return pub_slots_data
+
+        except Exception as e:
+            raise ValueError("Error! Nothing Done! -- {}".format(e))
 
 class DbSyncTasks:
     @staticmethod
@@ -1027,7 +1038,7 @@ class DbSyncTasks:
         try:
             tasks_list = QEntity(db_collection=From().entities,
                                  entry_id=DbIds.curr_entry_id(),
-                                 attribute=DbEntityAttrPaths.sync_tasks()
+                                 attribute_path=DbEntityAttrPaths.sync_tasks()
                                  ).get_attr_values()
             return tasks_list
 
@@ -1041,7 +1052,7 @@ class DbSyncTasks:
     def add_sync_task(self, name: str) -> None:
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbEntityAttrPaths.sync_tasks()
+                attribute_path=DbEntityAttrPaths.sync_tasks()
                 ).add_property(name=name, add_data={})
 
         print("{} Sync Tasks saved!".format(name))
@@ -1049,7 +1060,7 @@ class DbSyncTasks:
     def add_sync_task_slot(self, name: str) -> None:
         QEntity(db_collection=From().entities,
                 entry_id=DbIds.curr_entry_id(),
-                attribute=DbSyncTaskAttrPaths.sync_pub_slots()
+                attribute_path=DbSyncTaskAttrPaths.sync_pub_slots()
                 ).add_property(name=name, add_data={})
 
         print("{} Sync Slot saved!".format(name))
@@ -1058,7 +1069,7 @@ class DbSyncTasks:
         try:
             tasks_list = QEntity(db_collection=From().entities,
                                  entry_id=DbIds.curr_entry_id(),
-                                 attribute=DbSyncTaskAttrPaths.sync_pub_slots()
+                                 attribute_path=DbSyncTaskAttrPaths.sync_pub_slots()
                                  ).get_attr_values()
 
             return tasks_list
@@ -1147,6 +1158,8 @@ class DbBundle:
 
 
 if __name__ == '__main__':
+    import pprint
+
     Envars.show_name = "Green"
     Envars.branch_name = "assets"
     Envars.category = "characters"
@@ -1170,7 +1183,13 @@ if __name__ == '__main__':
     # pubs = DbPubSlot().get_used_by("img")
     # print (pubs)
 
-    xxx = DbTasks().get_tasks_full()
-    print(xxx)
+    xxx = DbProject().get_structure()
+    for k, v in xxx.items():
+        # print(xxx[k]["type"])
+        # x = k["type"]
+        # print(x)
+        if xxx[k]["type"]=="shots":
+            pprint.pprint(v)
+
 
 

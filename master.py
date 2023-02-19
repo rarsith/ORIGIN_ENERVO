@@ -11,7 +11,7 @@ from ui.custom_widgets.slot_component_viewer_core import SlotComponentsViewerCor
 from ui.custom_widgets.project_tree_viewer_core import ProjectTreeViewerCore
 from ui.custom_widgets.task_viewer_core import TaskViewerCore
 from ui.custom_widgets.entry_properties_editor_UI import EntryPropertiesEditorUI
-from ui.custom_widgets.assignment_manager_core import AssignmentManagerCore
+from ui.custom_widgets.assignment_manager_core import AssignmentManagerMainUI
 
 
 class BundleViewListWidget(QtWidgets.QListWidget):
@@ -134,7 +134,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.asset_bundle_view_lwd = BundleViewListWidget()
         self.asset_bundle_edit_btn = QtWidgets.QPushButton('Edit Bundle')
 
-        self.entity_assignments_manager = AssignmentManagerCore()
         self.shot_bundle_view_lwd = BundleViewListWidget()
 
         # ----------------------------------------------
@@ -231,8 +230,6 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_slot_publishes)
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_slot_components)
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.populate_main_publishes)
-        self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.entity_assignments_manager.update_label)
-        self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.entity_assignments_manager.refresh_tree_widget)
 
         self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.populate_main_publishes)
         self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.populate_slot_publishes)
@@ -241,8 +238,7 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_pub_slots_properties_wdg.change_label_pub_slots)
         self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_imports_from_properties_wdg.change_label_existing_tasks)
         self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_imports_from_properties_wdg.change_label_imports_from)
-
-
+        self.tasks_view_lwd.task_viewer_wdg.itemSelectionChanged.connect(self.tasks_imports_from_properties_wdg.change_label_imports_from_assignments)
 
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.get_tasks)
         self.show_view_twd.project_tree_viewer_wdg.itemClicked.connect(self.update_entry_properties_list)
@@ -448,9 +444,8 @@ class OriginControlCenterUI(QtWidgets.QWidget):
         shot_def_new.addWidget(self.shot_edit_definitions_btn)
 
         main_layout = QtWidgets.QHBoxLayout()
-        main_layout.addWidget(self.entity_assignments_manager)
         main_layout.addLayout(shot_def_new)
-        main_layout.addLayout(bundle_layout)
+        # main_layout.addLayout(bundle_layout)
 
         self.shots_definition_properties_stack.setLayout(main_layout)
 

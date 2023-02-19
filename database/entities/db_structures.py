@@ -11,7 +11,7 @@ class DbProjectBranch(object):
 
         QEntity(db_collection=From().projects,
                 entry_id=DbIds.curr_project_id(),
-                attribute=DbProjectAttrPaths.structure()
+                attribute_path=DbProjectAttrPaths.structure()
                 ).add_property(name=name,
                                add_data=dict({"type": branch_type}))
 
@@ -22,7 +22,7 @@ class DbProjectBranch(object):
     def get_branches():
         branches = QEntity(db_collection=From().projects,
                            entry_id=DbIds.curr_project_id(),
-                           attribute=DbProjectAttrPaths.branches()
+                           attribute_path=DbProjectAttrPaths.branches()
                            ).get_attr_names()
         return branches
 
@@ -44,18 +44,18 @@ class DbAssetCategories(object):
 
         QEntity(db_collection=From().projects,
                 entry_id=DbIds.curr_project_id(),
-                attribute=DbProjectAttrPaths.curr_branch()
+                attribute_path=DbProjectAttrPaths.curr_branch()
                 ).add_property(name=name)
 
         QEntity(db_collection=From().projects,
                 entry_id=DbIds.curr_project_id(),
-                attribute=DbProjectAttrPaths.show_defaults()
+                attribute_path=DbProjectAttrPaths.show_defaults()
                 ).add_property(name=category_tasks_type,
                                add_data=db_templates.tasks_schema(tasks_type))
 
         QEntity(db_collection=From().projects,
                 entry_id=DbIds.curr_project_id(),
-                attribute=DbProjectAttrPaths.show_defaults()
+                attribute_path=DbProjectAttrPaths.show_defaults()
                 ).add_property(name=category_definition,
                                add_data=db_templates.entry_definition(tasks_type))
 
@@ -66,7 +66,7 @@ class DbAssetCategories(object):
     def get_categories():
         categories = QEntity(db_collection=From().projects,
                              entry_id=DbIds.curr_project_id(),
-                             attribute=DbProjectAttrPaths.categories()
+                             attribute_path=DbProjectAttrPaths.categories()
                              ).get_attr_names()
         categories.remove("type")
         return categories

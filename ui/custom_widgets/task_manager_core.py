@@ -116,6 +116,7 @@ class TaskManagerCore(QtWidgets.QWidget):
 
     def show_all_entries(self):
         self.update_info_label(message_in="Loading all Entries")
+
     def save_schema_to_disk(self):
         #TODO version control and file name composition
         category = Envars().category
@@ -138,7 +139,7 @@ class TaskManagerCore(QtWidgets.QWidget):
 
         QEntity(db_collection=From().projects,
                 entry_id=DbIds.curr_project_id(),
-                attribute=DbProjectAttrPaths.show_defaults()
+                attribute_path=DbProjectAttrPaths.show_defaults()
                 ).add_property(name=category_tasks_type,
                                add_data=tasks_schema)
 
@@ -153,15 +154,13 @@ class TaskManagerCore(QtWidgets.QWidget):
             entity_id = entity_ref.split(",")[1]
             QEntity(db_collection=From().entities,
                     entry_id=entity_id,
-                    attribute=DbEntityAttrPaths.to_tasks()
+                    attribute_path=DbEntityAttrPaths.to_tasks()
                     ).update(data=tasks_schema)
 
         self.update_info_label(message_in="All Assets In {0} Category Have been Updated To Current Task Schema".format((Envars.category).upper()))
 
-
     def save_as_db_template(self):
         self.update_info_label(message_in="Current Task Schema is Saved As Show Template for {} Category".format((Envars.category).upper()))
-
 
     def get_task_type(self):
         task_name = self.tasks_view_lwd.get_selected_task()
@@ -204,7 +203,7 @@ class TaskManagerMainUI(QtWidgets.QMainWindow):
         window_name = " -> ".join([self.WINDOW_TITLE, show_name, branch_name, category, entity_name])
         return window_name
 
-
+# TODO to implement Loading assignments from a given entity
 
 
 if __name__ == "__main__":

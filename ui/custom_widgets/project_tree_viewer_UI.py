@@ -9,10 +9,14 @@ class ProjectTreeViewerBuild(QtWidgets.QTreeWidget):
 
     def widget_build(self):
         self.setHeaderHidden(True)
-
         self.expandAll()
         self.setSelectionMode(QtWidgets.QListWidget.ExtendedSelection)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+
+
+class ProjectsBoxBuild(QtWidgets.QComboBox):
+    def __init__(self, parent=None):
+        super(ProjectsBoxBuild, self).__init__(parent)
 
 
 class ProjectTreeViewerUI(QtWidgets.QWidget):
@@ -25,7 +29,7 @@ class ProjectTreeViewerUI(QtWidgets.QWidget):
         self.create_layout()
 
     def create_widgets(self):
-        self.show_select_cb = QtWidgets.QComboBox()
+        self.show_select_cb = ProjectsBoxBuild()
         self.project_tree_viewer_wdg = ProjectTreeViewerBuild()
 
     def create_layout(self):

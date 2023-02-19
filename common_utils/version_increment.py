@@ -2,17 +2,21 @@ import re
 import os
 
 
-def version_increment(versions_list=[]):
-    if not len(versions_list) < 1:
+def number_increment(versions_numbers_list=[]):
+    if not len(versions_numbers_list) < 1:
         conv_to_int = []
-        for versions in versions_list:
+        for versions in versions_numbers_list:
             conv_to_int.append(versions)
         highest = max(conv_to_int)
         get_digit = re.findall('\d+', highest)
-        return "{0}{1:04d}".format("v", (int(get_digit[0]) + 1))
-
+        return "{0:04d}".format(int(get_digit[0]) + 1)
     else:
-        return "{0}{1:04d}".format("v", (int(1)))
+        return "{0:04d}".format(int(1))
+
+
+def version_increment(versions_list, prefix_symbol='v'):
+    get_digits = number_increment(versions_numbers_list=versions_list)
+    return "{0}{1:04d}".format(prefix_symbol, int(get_digits))
 
 
 def next_file_version(path_to_query, delimiter="_"):

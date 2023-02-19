@@ -46,12 +46,12 @@ class TasksImportFromCore(TasksImportFromUI):
         self.tasks_imports_from_properties_lb.setStyleSheet("color: red")
 
     def change_label_imports_from_assignments(self):
-        curr_task_name = Envars().task_name
+        current_entry_name = Envars().entry_name
         my_font = QtGui.QFont()
         my_font.setBold(True)
 
         self.tasks_imports_from_assignments_lb.clear()
-        self.tasks_imports_from_assignments_lb.setText("{0}\nAssigned Generators".format(curr_task_name.upper()))
+        self.tasks_imports_from_assignments_lb.setText("{0}\nAssigned Generators".format(current_entry_name.upper()))
         self.tasks_imports_from_assignments_lb.setFont(my_font)
         self.tasks_imports_from_assignments_lb.setStyleSheet("color: red")
 

@@ -10,6 +10,53 @@ from database.entities.db_attributes import (DbProjectAttrPaths,
 from database.db_ids import DbIds
 
 
+class DbRef:
+    def __init__(self, collection="", entity_id=""):
+        self.collection = collection
+        self.entity_id = entity_id
+        self.db = mdbconn.server[mdbconn.database_name]
+
+    @property
+    def db_ref(self):
+        gen_id = ",".join([self.collection, self.entity_id])
+        return str(gen_id)
+
+    def db_deref(self, ref_string, get_field=None):
+        extr_collection, extr_entity_id = ref_string.split(",")
+        if not get_field:
+            return extr_collection, extr_entity_id
+        elif get_field:
+            cursor = self.db[extr_collection]
+            db_field = cursor.find_one({"_id":extr_entity_id})
+            return db_field[get_field]
+
+
+class DbReferences:
+    def __init__(self):
+        self.db = mdbconn.server[mdbconn.database_name]
+
+    @classmethod
+    def add_db_id_reference(cls, collection, parent_doc_id, destination_slot, id_to_add, from_collection, replace=False):
+        db = mdbconn.server[mdbconn.database_name]
+        if not replace:
+            db[collection].update_one({"_id": parent_doc_id},
+                                      {"$push": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
+        else:
+            db[collection].update_one({"_id": parent_doc_id},
+                                      {"$set": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
+
+    def get_db_referenced_attr(self, src_collection, src_id, src_attr, attr_to_find):
+        list_attr = list()
+        if not src_id or src_id == None:
+            return
+        else:
+            id_list = self.db[src_collection].find_one({"_id": src_id})
+            for each_id in id_list[src_attr]:
+                attr_data = DbRef().db_deref(each_id, attr_to_find)
+                list_attr.append(attr_data)
+            return list_attr
+
+
 class From:
 
     def __init__(self):
@@ -78,15 +125,15 @@ class From:
         return "entity_definitions_templates"
 
 class QEntity:
-    def __init__(self, db_collection: From(), entry_id: DbIds(), attribute: (DbProjectAttrPaths,
-                                                                             DbEntityAttrPaths,
-                                                                             DbTaskAttrPaths,
-                                                                             DbPubSlotsAttrPaths,
-                                                                             DbMainPubAttrPaths,
-                                                                             DbBundleAttrPaths)):
+    def __init__(self, db_collection: From(), entry_id: DbIds(), attribute_path: (DbProjectAttrPaths,
+                                                                                  DbEntityAttrPaths,
+                                                                                  DbTaskAttrPaths,
+                                                                                  DbPubSlotsAttrPaths,
+                                                                                  DbMainPubAttrPaths,
+                                                                                  DbBundleAttrPaths)):
         self.db = mdbconn.server[mdbconn.database_name]
         self.collection = db_collection
-        self.attribute = attribute
+        self.attribute = attribute_path
         self.db_id = entry_id
 
     def _string_to_list(self, data, splitter="."):
@@ -153,11 +200,7 @@ class QEntity:
         elif attr_type == "string":
             return ""
 
-    def get(self,
-            attrib_names: bool = False,
-            attrib_values: bool = False,
-            all: bool = False,
-            all_active: bool = False):
+    def get(self, attrib_names: bool = False, attrib_values: bool = False, all: bool = False, all_active: bool = False):
         """
             will find all the key values from a collection and returns them as a dictionary
         """
@@ -247,52 +290,15 @@ class QEntity:
         else:
             self.db[self.collection].update_one({"_id": self.db_id}, {"$set": {self.attribute: update_attr}})
 
-
-class DbRef:
-    def __init__(self, collection="", entity_id=""):
-        self.collection = collection
-        self.entity_id = entity_id
-        self.db = mdbconn.server[mdbconn.database_name]
-
-    @property
-    def db_ref(self):
-        gen_id = ",".join([self.collection, self.entity_id])
-        return str(gen_id)
-
-    def db_deref(self, ref_string, get_field=None):
-        extr_collection, extr_entity_id = ref_string.split(",")
-        if not get_field:
-            return extr_collection, extr_entity_id
-        elif get_field:
-            cursor = self.db[extr_collection]
-            db_field = cursor.find_one({"_id":extr_entity_id})
-            return db_field[get_field]
-
-
-class DbReferences:
-    def __init__(self):
-        self.db = mdbconn.server[mdbconn.database_name]
-
     @classmethod
-    def add_db_id_reference(cls, collection, parent_doc_id, destination_slot, id_to_add, from_collection, replace=False):
-        db = mdbconn.server[mdbconn.database_name]
+    def add_db_id_reference(cls, collection, parent_doc_id, destination_slot, id_to_add, from_collection,
+                            replace=False):
         if not replace:
             db[collection].update_one({"_id": parent_doc_id},
                                       {"$push": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
         else:
             db[collection].update_one({"_id": parent_doc_id},
                                       {"$set": {destination_slot: DbRef(from_collection, id_to_add).db_ref}})
-
-    def get_db_referenced_attr(self, src_collection, src_id, src_attr, attr_to_find):
-        list_attr = list()
-        if not src_id or src_id == None:
-            return
-        else:
-            id_list = self.db[src_collection].find_one({"_id": src_id})
-            for each_id in id_list[src_attr]:
-                attr_data = DbRef().db_deref(each_id, attr_to_find)
-                list_attr.append(attr_data)
-            return list_attr
 
 
 #TODO: refactor Origin to From --> create a decoarator to return data from the database
@@ -325,9 +331,9 @@ if __name__ == '__main__':
     # for i in cc:
     #     print(i)
     tasks_list = QEntity(db_collection=From().entities,
-                                 entry_id=DbIds.curr_entry_id(),
-                                 attribute=DbEntityAttrPaths.to_tasks()
-                                 ).get_attr_names()
+                         entry_id=DbIds.curr_entry_id(),
+                         attribute_path=DbEntityAttrPaths.to_tasks()
+                         ).get_attr_names()
 
     print(tasks_list)
 

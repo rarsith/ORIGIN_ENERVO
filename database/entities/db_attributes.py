@@ -209,6 +209,10 @@ class DbEntityAttrPaths:
         return "assignment"
 
     @classmethod
+    def to_assigned_to(cls):
+        return "assigned_to"
+
+    @classmethod
     def to_definition(cls, element=None):
         if element:
             return db_path_assembler.make_path("definition", element)
@@ -373,6 +377,11 @@ class DbPubSlotsAttrPaths:
         if parent_task_name:
             return db_path_assembler.make_path("tasks", parent_task_name, "pub_slots", self.pub_slot_name, "reviewable")
         return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "reviewable")
+
+    def scope(self, parent_task_name=None):
+        if parent_task_name:
+            return db_path_assembler.make_path("tasks", parent_task_name, "pub_slots", self.pub_slot_name, "scope")
+        return db_path_assembler.make_path("tasks", Envars.task_name, "pub_slots", self.pub_slot_name, "scope")
 
     def path_to_used_by(self, parent_task_name=None):
         if parent_task_name:

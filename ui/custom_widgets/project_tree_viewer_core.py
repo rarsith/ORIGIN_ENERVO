@@ -10,7 +10,11 @@ from ui.custom_widgets import (create_show_ui,
                                create_seq_ui,
                                create_branch_ui,
                                create_asset_category_ui,
-                               task_manager_core)
+                               task_manager_core,
+                               assignment_manager_core)
+
+
+
 
 
 class ProjectTreeViewerCore(ProjectTreeViewerUI):
@@ -44,6 +48,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.create_asset_action.triggered.connect(self.create_asset_menu)
         self.create_asset_category_action.triggered.connect(self.create_asset_category_menu)
         self.save_task_schema_action.triggered.connect(self.task_manager_menu)
+        self.assignment_manager_action.triggered.connect(self.assignment_manager_menu)
         self.remove_entry_action.triggered.connect(self.remove_entry_menu)
 
     def get_shows(self):
@@ -283,6 +288,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             context_menu.addAction(self.edit_bundle)
             context_menu.addSeparator()
             context_menu.addAction(self.save_task_schema_action)
+            context_menu.addAction(self.assignment_manager_action)
 
             context_menu.addSeparator()
             context_menu.addAction(self.remove_entry_action)
@@ -299,6 +305,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.remove_entry_action = QtWidgets.QAction("Remove Entry...", self)
         self.edit_entry_definition = QtWidgets.QAction("Edit Definition...", self)
         self.save_task_schema_action = QtWidgets.QAction("Task Manager...", self)
+        self.assignment_manager_action = QtWidgets.QAction("Assignment Manager...", self)
         self.edit_bundle = QtWidgets.QAction("Edit Bundle...", self)
 
     def about(self):
@@ -350,6 +357,10 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
 
     def task_manager_menu(self):
         self.ui = task_manager_core.TaskManagerMainUI()
+        self.ui.show()
+
+    def assignment_manager_menu(self):
+        self.ui = assignment_manager_core.AssignmentManagerMainUI()
         self.ui.show()
 
 if __name__ == '__main__':
