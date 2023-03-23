@@ -1,5 +1,6 @@
 import sys
 from PySide2 import QtWidgets
+from database.entities.db_entities import DbAsset, DbProject
 from envars.envars import Envars
 
 

@@ -12,11 +12,11 @@ class CreateShowBranchUI(QtWidgets.QDialog):
         super(CreateShowBranchUI, self).__init__(parent)
 
         self.setWindowTitle("Create Show Category")
-        self.setMinimumSize(550, 650)
-        self.setMaximumSize(550, 650)
+        # self.setMinimumSize(550, 650)
+        # self.setMaximumSize(550, 650)
 
-        self.setMinimumHeight(900)
-        self.setMaximumHeight(900)
+        # self.setMinimumHeight(900)
+        # self.setMaximumHeight(900)
 
         self.create_widgets()
         self.create_layout()

@@ -54,7 +54,6 @@ class AssignmentsViewerBuild(QtWidgets.QTreeWidget):
         self.setFocusPolicy(QtCore.Qt.NoFocus)
 
 
-
 class AssignmentManagerUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(AssignmentManagerUI, self).__init__(parent)

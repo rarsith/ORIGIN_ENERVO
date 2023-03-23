@@ -157,11 +157,6 @@ class AssignmentManagerCore(AssignmentManagerUI):
         if assigned_entities_list:
             return assigned_entities_list
 
-    def get_assigned_entities_names(self):
-        assigned_entities_list = self.get_assigned_entities()
-        if assigned_entities_list:
-            return list(assigned_entities_list.keys())
-
     def get_next_entry(self, list_to_iter, dict_to_iter):
         next_entries = []
         for categories, assets in dict_to_iter.items():
@@ -239,20 +234,6 @@ class AssignmentManagerCore(AssignmentManagerUI):
         except:
             pass
 
-    def get_selected_shot(self):
-        selected = self.project_shots_viewer_wdg.selectedItems()
-        return selected
-
-    def get_selected_assets(self):
-        selected_assets = []
-        selected = self.project_assets_viewer_wdg.selectedItems()
-        if len(selected) == 0:
-            return []
-        elif len(selected) >= 1:
-            for sel_asset in selected:
-                selected_assets.append(sel_asset.text(0))
-        return selected_assets
-
     def get_selected_name_and_parent(self) -> dict:
         get_selected_objects = self.project_assets_viewer_wdg.selectedItems()
         if len(get_selected_objects) == 0:
@@ -266,6 +247,7 @@ class AssignmentManagerCore(AssignmentManagerUI):
 
     def extract_wdg_content(self, wdg):
         root = wdg.invisibleRootItem()
+
         def tree_to_dict(parent):
             childCount = parent.childCount()
             if not childCount:
@@ -328,6 +310,7 @@ class AssignmentManagerCore(AssignmentManagerUI):
                                        entry_id=DbIds.curr_entry_id(),
                                        attribute_path=DbEntityAttrPaths.to_assignments()).get_attr_values()
         return existing_assignments
+
     def get_db_assigned_ref_ids(self):
         assigned_ids = []
         existing_assignments = QEntity(db_collection=From().current_branch_type(),
@@ -339,27 +322,6 @@ class AssignmentManagerCore(AssignmentManagerUI):
             entry_reference_path = self.buffer_ids[base_name]
             assigned_ids.append(entry_reference_path)
         return set(assigned_ids)
-
-    def get_wdg_checked_items(self):
-        checked = list()
-        checked_ids = list()
-        root = self.project_shots_viewer_wdg.invisibleRootItem()
-        root_level = root.childCount()
-        for idx in range(root_level):
-            branch_seq_level = root.child(idx)
-            seq_cnt = branch_seq_level.childCount()
-            for seq in range(seq_cnt):
-                sequences = branch_seq_level.child(seq)
-                shots_cnt = sequences.childCount()
-                for shots in range(shots_cnt):
-                    shot = sequences.child(shots)
-                    if shot.checkState(0) == QtCore.Qt.Checked:
-                        checked.append(sequences.text(0)+"_"+shot.text(0))
-
-        for shot in checked:
-            checked_ids.append(self.buffer_ids[shot])
-
-        return checked_ids
 
     def insert_assignee_entry(self, collection, entity_id, attr_path, data_to_add):
         QEntity(db_collection=collection,

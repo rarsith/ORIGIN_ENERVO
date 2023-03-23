@@ -22,7 +22,7 @@ def tasks_schema(category):
 
 def tasks_pub_slot_schema():
     json_load = json_utils.open_json(path_resolver.get_path("pub_slot_basic_schemas.json"))
-    tasks_read = read_json.read_dictionary(json_load, "pub_slot")
+    tasks_read = json_utils.read_dictionary(json_load, "pub_slot")
     return tasks_read
 
 
