@@ -1,9 +1,16 @@
 from database import db_connection as mdbconn
 
 
-class DbQCollection(object):
+class DbCollection(object):
     def __init__(self):
         self.db = mdbconn.server[mdbconn.database_name]
+
+    def db_add(self, db_collection, **kwargs) -> None:
+        """
+        will add a new entry to a collection
+        """
+        cursor = self.db[db_collection]
+        cursor.insert_one(kwargs)
 
     def db_find(self, db_collection, item_to_search, **kwargs) -> list:
         """

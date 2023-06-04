@@ -561,6 +561,16 @@ class DbTasks:
         except ValueError as e:
             print("{} Error! Nothing Done!".format(e))
 
+    def set_active(self, task: str, is_active: bool) -> None:
+        try:
+            QEntity(db_collection=From().entities,
+                    entry_id=DbIds.curr_entry_id(),
+                    attribute_path=DbTaskAttrPaths.is_active(task_name=task)
+                    ).update(data=is_active)
+
+        except ValueError as e:
+            print("{} Error! Nothing Done!".format(e))
+
     @property
     def status(self) -> str:
         try:
@@ -1018,6 +1028,7 @@ class DbPubSlot:
 
         except Exception as e:
             raise ValueError("Error! Nothing Done! -- {}".format(e))
+
 
 class DbSyncTasks:
     @staticmethod

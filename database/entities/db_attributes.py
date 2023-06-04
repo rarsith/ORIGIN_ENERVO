@@ -432,6 +432,7 @@ class DbBundleAttrPaths:
         return db_path_assembler.make_path(cls._pub_slot, Envars.task_name, "type")
 
 
+
 if __name__ == '__main__':
     Envars.show_name="Test"
     Envars.branch_name="assets"

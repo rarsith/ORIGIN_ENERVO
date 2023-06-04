@@ -3,7 +3,6 @@ from database.utils.db_q_entity import From, QEntity
 from database.entities.db_attributes import DbProjectAttrPaths
 from database.db_ids import DbIds
 
-
 class DbProjectBranch(object):
 
     @staticmethod
@@ -34,6 +33,20 @@ class DbProjectBranch(object):
     def get_branch_type(self, branch_name):
         branch_type = From().branch_type(branch_name=branch_name)
         return branch_type
+
+    def get_branches_by_type(self, branch_type):
+        branches = QEntity(db_collection=From().projects,
+                           entry_id=DbIds.curr_project_id(),
+                           attribute_path=DbProjectAttrPaths.branches()
+                           ).get_attr_names()
+
+        branches_by_type = []
+        for branch in branches:
+            if self.get_branch_type(branch) == branch_type:
+                branches_by_type.append(branch)
+
+        return branches_by_type
+
 
 class DbAssetCategories(object):
 

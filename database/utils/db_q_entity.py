@@ -192,6 +192,7 @@ class QEntity:
         for attr in type_is:
             return attr["fieldType"]
 
+
     def attribute_type_switch(self, attr_type):
         if attr_type == "array":
             return []

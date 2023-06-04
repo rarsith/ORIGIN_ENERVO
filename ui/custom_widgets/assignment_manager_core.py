@@ -1,6 +1,7 @@
 from PySide2 import QtWidgets, QtGui, QtCore
 from envars.envars import Envars
 from ui.custom_widgets.assignment_manager_UI import AssignmentManagerUI
+from database.db_types import BranchTypes
 from database.entities.db_entities import DbProject
 from database.utils.db_q_entity import *
 from database.db_ids import DbIds
@@ -44,13 +45,14 @@ class AssignmentManagerCore(AssignmentManagerUI):
 
 # POPULATE THE WIDGET -- START
     def populate_shots_widget(self):
+        valid_shot_branch = BranchTypes.sequences()
         try:
             self.project_shots_viewer_wdg.clear()
             get_branches = DbProjectBranch.get_branches()
 
             for branch in get_branches:
                 branch_type = DbProjectBranch().get_branch_type(branch)
-                if branch_type == "shots" :
+                if branch_type == valid_shot_branch:
                     item = self.show_tree_create_item(branch)
                     self.project_shots_viewer_wdg.addTopLevelItem(item)
                     self.project_shots_viewer_wdg.expandAll()
@@ -59,13 +61,14 @@ class AssignmentManagerCore(AssignmentManagerUI):
             print (f"Something wrong in refresh_tree_widget: {e}")
 
     def populate_assets_widget(self):
+        valid_build_branch = BranchTypes.build()
         try:
             self.project_assets_viewer_wdg.clear()
             get_branches = DbProjectBranch.get_branches()
 
             for branch in get_branches:
                 branch_type = DbProjectBranch().get_branch_type(branch)
-                if branch_type == "build":
+                if branch_type == valid_build_branch:
                     item = self.show_tree_create_item(branch)
                     self.project_assets_viewer_wdg.addTopLevelItem(item)
                     self.project_assets_viewer_wdg.expandAll()

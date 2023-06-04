@@ -18,7 +18,7 @@ class CreateAssetUI(QtWidgets.QDialog):
 
     def create_widgets(self):
         self.show_name_le = QtWidgets.QLabel()
-        self.show_name_le.setText(DbProject.current())
+        self.show_name_le.setText("/".join([Envars().show_name, Envars().branch_name, Envars().category]) + "/")
 
         self.category_cb = QtWidgets.QComboBox()
         self.category_cb.addItems(self.get_asset_categories())
@@ -30,7 +30,7 @@ class CreateAssetUI(QtWidgets.QDialog):
 
     def create_layout(self):
         form_layout = QtWidgets.QFormLayout()
-        form_layout.addRow("Project: ", self.show_name_le)
+        form_layout.addRow("Entry Path: ", self.show_name_le)
         form_layout.addRow("Entry Name:", self.asset_name_le)
 
         buttons_layout = QtWidgets.QHBoxLayout()

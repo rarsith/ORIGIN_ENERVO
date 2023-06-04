@@ -14,15 +14,9 @@ from ui.custom_widgets import (create_show_ui,
                                assignment_manager_core)
 
 
-
-
-
 class ProjectTreeViewerCore(ProjectTreeViewerUI):
-
     def __init__(self, parent=None):
         super(ProjectTreeViewerCore, self).__init__(parent)
-
-
 
         self.create_show_actions()
         self.create_connections()
@@ -31,6 +25,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.context_menu()
 
     def create_connections(self):
+        """Creates all the connections for the UI"""
         self.show_select_cb.currentIndexChanged.connect(self.curr_sel_show)
         self.show_select_cb.currentIndexChanged.connect(self.refresh_tree_widget)
 
@@ -52,10 +47,12 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.remove_entry_action.triggered.connect(self.remove_entry_menu)
 
     def get_shows(self):
+        """Returns a list of all shows in the database"""
         get_all_shows = DbProject().get_all()
         return sorted(get_all_shows)
 
     def refresh_shows(self):
+        """Refreshes the combobox with the current shows in the database"""
         store = []
         current_selected_show = self.curr_sel_show()
         get_versions = DbProject().get_all()
@@ -69,6 +66,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         return sorted(store)
 
     def curr_sel_show(self):
+        """Returns the current selected show in the combobox"""
         text = self.show_select_cb.currentText()
         Envars.show_name = text
         return text
@@ -77,9 +75,11 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         self.show_select_cb.addItems(self.get_shows())
 
     def set_show_to(self):
+        """Sets the show to the current show in the combobox"""
         self.show_select_cb.setCurrentText(self.show_name)
 
     def refresh_tree_widget(self):
+        """Refreshes the tree widget with the current show selected in the combobox"""
         try:
             self.project_tree_viewer_wdg.clear()
             get_branches = DbProjectBranch.get_branches()
@@ -91,18 +91,21 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             print ("Something wrong in refresh_tree_widget")
 
     def show_tree_create_item(self, name):
+        """Creates a tree widget item with the name passed in"""
         iso_name = self.get_entry_name_from_id(name)
         item = QtWidgets.QTreeWidgetItem([iso_name])
         self.add_children(item)
         return item
 
     def get_entry_name_from_id(self, name: str, delimiter=".") -> str:
+        """Returns the last item in a string separated by a delimiter"""
         if delimiter not in name:
             return name
         isolate_last = name.split(delimiter)[-1]
         return isolate_last
 
     def add_children(self, item):
+        """Adds children to the tree widget item passed in"""
         get_children = gdeepval.deep_values(item.text(0), self.get_show_structure())
         for children in get_children:
             for child in sorted(children):
@@ -111,6 +114,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                     item.addChild(child_item)
 
     def get_show_structure(self):
+        """Returns the structure of the show selected in the combobox"""
         try:
             entity = DbProject.get_structure()
             return entity
@@ -148,6 +152,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                     pass
 
     def get_sel_show_branch(self):
+        """Returns the branch of the selected item in the tree widget"""
         get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
         if len(get_selected_objects) == 0:
             return
@@ -161,12 +166,14 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                     pass
 
     def get_parent(self):
+        """Returns the parent of the selected item in the tree widget"""
         get_selected_objects = self.project_tree_viewer_wdg.currentItem()
         parent = get_selected_objects.parent()
         if parent:
             return parent.text(0)
 
     def get_grandparent(self):
+        """Returns the grandparent of the selected item in the tree widget"""
         get_selected_objects = self.project_tree_viewer_wdg.currentItem()
         parent = get_selected_objects.parent()
         try:
@@ -176,6 +183,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             pass
 
     def get_sel_data(self):
+        """Returns the selected data in the tree widget"""
         branch = list()
         branch_type = str()
         category = list()
@@ -223,6 +231,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         # print(Envars.show_name, Envars.branch_name, Envars.category, Envars.entry_name)
 
     def get_selected_entry_name(self):
+        """Returns the name of the current selection"""
         names = []
         get_selected_objects = self.project_tree_viewer_wdg.selectedItems()
         if len(get_selected_objects) == 0:
@@ -233,6 +242,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             return names[0]
 
     def get_sel_parent(self):
+        """Returns the parent of the current selection"""
         get_selected_entry_objects = self.project_tree_viewer_wdg.selectedItems()
         if len(get_selected_entry_objects) == 0:
             return []
@@ -245,15 +255,18 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
                     return []
 
     def get_selection_type(self):
+        """Returns the type of the current selection"""
         curr_selected_items = self.project_tree_viewer_wdg.selectedItems()
         if curr_selected_items:
             curr_sel_type = DbProjectBranch().get_current_branch_type
             return curr_sel_type
 
     def context_menu(self):
+        """Creates the context menu for the project tree viewer"""
         self.project_tree_viewer_wdg.customContextMenuRequested.connect(self.show_tree_con_menu)
 
     def show_tree_con_menu(self, point):
+        """Shows the context menu for the project tree viewer"""
         self.get_sel_data()
 
         context_menu = QtWidgets.QMenu()
@@ -295,6 +308,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             context_menu.exec_(self.mapToGlobal(point))
 
     def create_show_actions(self):
+        """Create actions for the context menu."""
         self.about_action = QtWidgets.QAction("About", self)
         self.create_show_action = QtWidgets.QAction("Create Show...", self)
         self.create_show_branch_action = QtWidgets.QAction("Create Show Branch...", self)
@@ -312,6 +326,7 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
         QtWidgets.QMessageBox.about(self, "About Simple Stuff", "Add About Text Here")
 
     def remove_entry_menu(self):
+        """Remove entry from the database."""
         custom_dialog = QtWidgets.QMessageBox()
         custom_dialog.setText("Operation is not undoable!")
         custom_dialog.setInformativeText("Do you want to continue?")
@@ -329,37 +344,45 @@ class ProjectTreeViewerCore(ProjectTreeViewerUI):
             custom_dialog.close()
 
     def create_show_menu(self):
+        """Create show menu."""
         self.ui = create_show_ui.CreateShowUI()
         self.ui.show()
 
     def create_show_branches_menu(self):
+        """Create show branches menu."""
         self.ui = create_branch_ui.CreateShowBranchUI()
         self.ui.show_name_cb.setDisabled(True)
         self.ui.show()
 
     def create_seq_menu(self):
+        """Create seq menu."""
         self.ui = create_seq_ui.CreateSeqUI()
         self.ui.show()
 
     def create_shot_menu(self):
+        """Create shot menu."""
         self.ui = create_shot_ui.CreateShotUI()
         self.ui.show()
 
     def create_asset_menu(self):
+        """Create asset menu."""
         self.ui = create_asset_ui.CreateAssetUI()
         self.ui.show()
 
     def create_asset_category_menu(self):
+        """Create asset category menu."""
         self.ui = create_asset_category_ui.CreateAssetCategoryUI()
         self.ui.show_name_cb.setCurrentText(self.show_select_cb.currentText())
         self.ui.show_name_cb.setDisabled(True)
         self.ui.show()
 
     def task_manager_menu(self):
+        """Task manager menu."""
         self.ui = task_manager_core.TaskManagerMainUI()
         self.ui.show()
 
     def assignment_manager_menu(self):
+        """Assignment manager menu."""
         self.ui = assignment_manager_core.AssignmentManagerMainUI()
         self.ui.show()
 

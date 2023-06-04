@@ -1,9 +1,11 @@
 from common_utils.date_time import DateTime
 from database import db_connection as mdbconn
 
-
 class DbUsers:
+    '''this class is used to create users in the database'''
+
     def __init__(self, first_name, last_name, personal_email, job_title, access_level):
+        '''initialize the DbUsers class'''
         self.db = mdbconn.server.xchange
         self.main_domain = "origin.com"
 
@@ -15,6 +17,8 @@ class DbUsers:
 
 
     def create_user(self):
+        '''create a user in the database'''
+
         self.db.users.insert_one(
             {
                 "first_name": self.first_name,
@@ -33,7 +37,9 @@ class DbUsers:
         pass
 
     def user_company_email(self):
+        '''create a user company email'''
         pass
 
     def user_internal(self):
+        '''create a user internal name'''
         pass

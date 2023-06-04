@@ -15,8 +15,7 @@ from ui.custom_widgets.task_publishing_slots_core import PublishSlotsWidgetCore
 from ui.custom_widgets.task_viewer_core import TaskViewerCore
 
 import pprint
-def dive_deep(key_attr_path, dict_data):
-    delimiter = "."
+def dive_deep(key_attr_path, dict_data, delimiter="."):
     if delimiter in key_attr_path:
         get_keys = key_attr_path.split(delimiter)
         return [reduce(dict.get, get_keys, dict_data)]
