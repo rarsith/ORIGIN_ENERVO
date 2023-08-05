@@ -243,6 +243,10 @@ class DbProjectAttrPaths:
         return "entry_name"
 
     @classmethod
+    def curr_show(cls):
+        return Envars().show_name
+
+    @classmethod
     def branches(cls):
         """Access path to all branches of the current project"""
         return "structure"
@@ -254,9 +258,9 @@ class DbProjectAttrPaths:
         return access_path
 
     @classmethod
-    def curr_branch(cls):
+    def curr_branch(cls, branch_name=Envars.branch_name):
         """Access path to current branch of the current project"""
-        curr_branch_path = db_path_assembler.make_path("structure", Envars.branch_name)
+        curr_branch_path = db_path_assembler.make_path("structure", branch_name)
         return curr_branch_path
 
     @classmethod
@@ -300,7 +304,7 @@ class DbTaskAttrPaths:
 
     @classmethod
     def custom(cls, attr):
-        """Access path to get the Type of an Entity"""
+        """returns the @attr parameter as inputted"""
         return attr
 
     @classmethod

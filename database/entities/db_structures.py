@@ -1,4 +1,5 @@
 from database import db_templates
+from envars.envars import Envars
 from database.utils.db_q_entity import From, QEntity
 from database.entities.db_attributes import DbProjectAttrPaths
 from database.db_ids import DbIds
@@ -47,6 +48,14 @@ class DbProjectBranch(object):
 
         return branches_by_type
 
+    def get_all_entries_in_branch(self, branch_name=Envars.branch_name):
+        entries = QEntity(db_collection=From().projects,
+                          entry_id=DbIds.curr_project_id(),
+                          attribute_path=DbProjectAttrPaths.curr_branch(branch_name=branch_name)
+                          ).get_attr_names()
+
+        return entries
+
 
 class DbAssetCategories(object):
 
@@ -83,6 +92,15 @@ class DbAssetCategories(object):
                              ).get_attr_names()
         categories.remove("type")
         return categories
+
+    @staticmethod
+    def get_all_in_category(category: str):
+        all_entries = QEntity(db_collection=From().projects,
+                              entry_id=DbIds.curr_project_id(),
+                              attribute_path=DbProjectAttrPaths.category_entries(category=category)
+                              ).get_attr_names()
+
+        return all_entries
 
 
 

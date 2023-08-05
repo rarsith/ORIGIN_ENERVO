@@ -3,15 +3,14 @@ from PySide2 import QtWidgets, QtCore
 
 from database.entities.db_entities import DbTasks, DbAsset
 from database.db_statuses import DbStatuses
-from ui.custom_widgets.task_imports_from_core import TasksImportFromCore
-from ui.custom_widgets.task_publishing_slots_core import PublishSlotsWidgetCore
-from ui.custom_widgets.main_publishes_view_core import MainPublishesViewCore
-from ui.custom_widgets.slots_publishes_view_core import SlotPublishesViewCore
-from ui.custom_widgets.slot_component_viewer_core import SlotComponentsViewerCore
-from ui.custom_widgets.project_tree_viewer_core import ProjectTreeViewerCore
-from ui.custom_widgets.task_viewer_core import TaskViewerCore
-from ui.custom_widgets.entry_properties_editor_UI import EntryPropertiesEditorUI
-from ui.custom_widgets.assignment_manager_core import AssignmentManagerMainUI
+from ui.task_imports_from_core import TasksImportFromCore
+from ui.task_publishing_slots_core import PublishSlotsWidgetCore
+from ui.main_publishes_view_core import MainPublishesViewCore
+from ui.slots_publishes_view_core import SlotPublishesViewCore
+from ui.slot_component_viewer_core import SlotComponentsViewerCore
+from ui.project_tree_viewer_core import ProjectTreeViewerCore
+from ui.task_viewer_core import TaskViewerCore
+from ui.entry_properties_editor_UI import EntryPropertiesEditorUI
 
 
 class BundleViewListWidget(QtWidgets.QListWidget):

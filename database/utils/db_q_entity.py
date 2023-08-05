@@ -1,6 +1,7 @@
 from bson import BSON
 from envars.envars import Envars
 from database import db_connection as mdbconn
+from common_utils import json_utils
 from database.entities.db_attributes import (DbProjectAttrPaths,
                                              DbEntityAttrPaths,
                                              DbTaskAttrPaths,
@@ -124,6 +125,7 @@ class From:
     def entity_definitions_templates(self):
         return "entity_definitions_templates"
 
+
 class QEntity:
     def __init__(self, db_collection: From(), entry_id: DbIds(), attribute_path: (DbProjectAttrPaths,
                                                                                   DbEntityAttrPaths,
@@ -192,7 +194,6 @@ class QEntity:
         for attr in type_is:
             return attr["fieldType"]
 
-
     def attribute_type_switch(self, attr_type):
         if attr_type == "array":
             return []
@@ -235,7 +236,13 @@ class QEntity:
         return self._get_values(self.db_results())
 
     def get_all(self):
-        result = [x[self.attribute] for x in self.db[self.collection].find({}, {"_id": 0, self.attribute: 1})]
+        result = self.db[self.collection].find({"_id": self.db_id}, {"_id": 0, self.attribute: 1})
+        for i in result:
+            clean_result = json_utils.get_deep_value(key_attr_path=self.attribute, dict_data=i)
+            return clean_result
+
+    def get_all_ids_collection(self, condition: dict = {}):
+        result = self.db[self.collection].find(condition, {"_id": 1, self.attribute: 1})
         return result
 
     def get_all_active(self):
@@ -304,7 +311,7 @@ class QEntity:
 
 #TODO: refactor Origin to From --> create a decoarator to return data from the database
 if __name__ == '__main__':
-
+    import pprint
     from database.entities.db_attributes import DbEntityAttrPaths, DbTaskAttrPaths, DbPubSlotsAttrPaths
     from database.entities.db_attributes import DbMainPubAttrPaths
 
@@ -312,7 +319,7 @@ if __name__ == '__main__':
     Envars.branch_name = "assets"
     Envars.category = "characters"
     Envars.entry_name = "frog"
-    Envars.task_name = "modeling"
+    Envars.task_name = "groom"
 
     # result = QEntity(db_collection=From().entities, entry_id=DbIds.curr_entry_id(), attribute=DbEntityAttrPaths.to_definition()).get_attr_values()
     #
@@ -331,12 +338,15 @@ if __name__ == '__main__':
     # cc = db["show"].aggregate(pipeline)
     # for i in cc:
     #     print(i)
-    tasks_list = QEntity(db_collection=From().entities,
-                         entry_id=DbIds.curr_entry_id(),
-                         attribute_path=DbEntityAttrPaths.to_tasks()
-                         ).get_attr_names()
+    tasks_list = QEntity(db_collection=From().builds,
+                         entry_id=DbIds.all_in_collection(),
+                         attribute_path=DbProjectAttrPaths.curr_show()
+                         ).get_all_ids_collection(condition={"show_name": Envars().show_name})
 
-    print(tasks_list)
+
+
+
+    pprint.pprint(list(tasks_list))
 
     # result = [x["structure.assets"] for x in db["show"].find({"active": True}, {"_id": 0, "structure.assets": 1})]
     # print(result)

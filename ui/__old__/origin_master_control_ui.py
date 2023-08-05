@@ -8,13 +8,13 @@ from database import db_connection as mdbconn
 # from origin_utilities import utils as xutil
 # from origin_ui import edit_entry_definition_ui
 
-from ui.custom_widgets.task_imports_from_core import TasksImportFromCore
-from ui.custom_widgets.task_publishing_slots_core import PublishSlotsWidgetCore
-from ui.custom_widgets.main_publishes_view_core import MainPublishesViewCore
-from ui.custom_widgets.slots_publishes_view_core import SlotPublishesViewCore
-from ui.custom_widgets.project_tree_viewer_core import ProjectTreeViewerCore
-from ui.custom_widgets.task_viewer_core import TaskViewerCore
-from ui.custom_widgets.slot_component_viewer_core import SlotComponentsViewerCore
+from ui.task_imports_from_core import TasksImportFromCore
+from ui.task_publishing_slots_core import PublishSlotsWidgetCore
+from ui.main_publishes_view_core import MainPublishesViewCore
+from ui.slots_publishes_view_core import SlotPublishesViewCore
+from ui.project_tree_viewer_core import ProjectTreeViewerCore
+from ui.task_viewer_core import TaskViewerCore
+from ui.slot_component_viewer_core import SlotComponentsViewerCore
 
 
 
