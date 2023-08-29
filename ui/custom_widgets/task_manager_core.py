@@ -207,9 +207,9 @@ class TaskManagerMainUI(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     Envars.show_name = "Green"
-    Envars.branch_name = "sequences"
-    Envars.category = "XPM"
-    Envars.entry_name = "0150"
+    Envars.branch_name = "assets"
+    Envars.category = "characters"
+    Envars.entry_name = "hulk"
 
     app = QtWidgets.QApplication(sys.argv)
 
