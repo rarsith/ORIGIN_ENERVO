@@ -19,7 +19,8 @@ class MongoDBAPI:
         return self.db[collection_name].distinct("category")
 
     def get_assets_by_category(self, collection_name, category):
-        return [doc['name'] for doc in self.db[collection_name].find({"category": category}, {"name": 1})]
+        print([doc['entry_name'] for doc in self.db[collection_name].find({"category": category}, {"entry_name": 1})])
+        return [doc['entry_name'] for doc in self.db[collection_name].find({"category": category}, {"entry_name": 1})]
 
 
 class AssetSchema:
@@ -84,16 +85,16 @@ class AssetLazyLoadView(QMainWindow):
 if __name__ == "__main__":
     app = QApplication([])
 
-    mongo_api = MongoDBAPI("mongodb://localhost:27017", "your_database_name")
-    mongo_api.create_category_index("assets")
+    mongo_api = MongoDBAPI("mongodb://localhost:27017", "Origin")
+    mongo_api.create_category_index("shots")
 
 
-    asset_view_model = AssetViewModel(mongo_api, "assets")
+    asset_view_model = AssetViewModel(mongo_api, "shots")
     asset_lazy_load_view = AssetLazyLoadView(asset_view_model)
 
-    # for _ in range(100000):
+    # for _ in range(250):
     #     category = random.choice(["characters", "props", "environment"])
-    #     asset_name = f"Asset{random.randint(1, 100000)}"
+    #     asset_name = f"Asset{random.randint(1, 250)}"
     #     asset_view_model.insert_asset(asset_name, "Description", category)
 
     asset_lazy_load_view.show()
