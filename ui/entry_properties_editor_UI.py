@@ -27,7 +27,7 @@ class EntryPropertiesEditorUI(QtWidgets.QWidget):
         for row in range(self.properties_viewer.rowCount()):
             self.properties_viewer.setRowHeight(row, 10)
 
-        self.properties_viewer.setAlternatingRowColors(True)
+        self.properties_viewer.setAlternatingRowColors(False)
 
         header = self.properties_viewer.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)

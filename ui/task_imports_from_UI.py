@@ -7,7 +7,7 @@ class ImportsFromWidgetBuild(QtWidgets.QTreeWidget):
         self.widget_build()
 
     def widget_build(self):
-        self.setAlternatingRowColors(True)
+        self.setAlternatingRowColors(False)
         self.setHeaderLabels(['task'])
         self.setMinimumWidth(150)
         self.setMaximumWidth(160)
@@ -21,7 +21,7 @@ class ImportsFromAssignmentsWidgetBuild(QtWidgets.QTreeWidget):
         self.widget_build()
 
     def widget_build(self):
-        self.setAlternatingRowColors(True)
+        self.setAlternatingRowColors(False)
         self.setHeaderLabels(['assigned entity'])
         self.setMinimumWidth(150)
         self.setMaximumWidth(160)

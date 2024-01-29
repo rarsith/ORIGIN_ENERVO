@@ -47,7 +47,7 @@ class AssignmentsViewerBuild(QtWidgets.QTreeWidget):
         self.setColumnWidth(0, 250)
 
         self.setHeaderLabels(["Slot Name", "Value"])
-        self.setAlternatingRowColors(True)
+        self.setAlternatingRowColors(False)
         self.resizeColumnToContents(1)
         self.expandAll()
         self.setSelectionMode(QtWidgets.QListWidget.ExtendedSelection)

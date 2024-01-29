@@ -65,17 +65,17 @@ def main():
     _CreateShot(shot, outputDir, options.baseLayer)
 
 def _CreateShot(shotName, shotDir, baseLayer):
-    shotFilePath = os.path.join(shotDir, '%s.usd' % shotName)
+    shotFilePath = os.path.join(shotDir, '%s.usda' % shotName)
 
     from pxr import Usd, UsdGeom
     shotStage = Usd.Stage.CreateNew(shotFilePath)
     print("Creating shot at %s" % shotFilePath)
 
     _CreateAndAddSubLayers(shotStage, shotName, shotDir, [
-        './%s_sim.usd' % shotName,
-        './%s_anim.usd' % shotName,
-        './%s_layout.usd' % shotName,
-        './%s_sets.usd' % shotName,
+        './%s_sim.usda' % shotName,
+        './%s_anim.usda' % shotName,
+        './%s_layout.usda' % shotName,
+        './%s_sets.usda' % shotName,
         ])
 
     if baseLayer:
@@ -100,4 +100,12 @@ def _CreateAndAddSubLayers(stage, shotName, shotDir, subLayers):
     #print(rootLayer.ExportToString())
 
 if __name__ == '__main__':
-    main()
+    from pxr import Kind
+    shot_name = "1001_shot"
+    shot_dir = "D:\\__SANDBOX\\USD"
+    asset_kind = Kind.Tokens.component
+    asset_shading_variant = True
+    
+    _CreateShot(shot_name, shot_dir, "duplo")
+    
+    # main()
