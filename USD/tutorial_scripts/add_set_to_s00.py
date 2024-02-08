@@ -50,8 +50,7 @@ def main():
     # in previous examples, we've been using GetReferences().AddReference(...).  The
     # following uses .SetItems() instead which lets us explicitly set (replace)
     # the references at once instead of adding.
-    stage.DefinePrim('/World/sets/Room_set').GetReferences().SetReferences([
-        Sdf.Reference(os.path.join(ASSET_BASE, 'Room_set/Room_set.usd'))])
+    stage.DefinePrim('/World/sets/Room_set').GetReferences().SetReferences([Sdf.Reference(os.path.join(ASSET_BASE, 'Room_set/Room_set.usd'))])
 
     stage.GetEditTarget().GetLayer().Save()
 

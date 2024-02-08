@@ -35,7 +35,7 @@ the shadingVariants.
 
 '''
 import os
-ASSET_BASE = os.path.join(os.getcwd(), 'models')
+ASSET_BASE = os.path.join(os.getcwd(), '../models')
 
 def main():
     from pxr import Usd

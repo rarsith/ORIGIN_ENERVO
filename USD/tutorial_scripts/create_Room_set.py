@@ -38,14 +38,14 @@ It will create a new "set" (aggregate) model, Room_set at
 from __future__ import division
 
 import os
-ASSET_BASE = os.path.join(os.getcwd(), 'models')
+ASSET_BASE = os.path.join(os.getcwd(), '../models')
 TABLE_HEIGHT = 74.5
 BALL_RADIUS = 5.715 * 0.5
 
 def main():
     from pxr import Kind, Usd, UsdGeom
 
-    setFilePath = os.path.join(ASSET_BASE, 'Room_set/Room_set.usd')
+    setFilePath = os.path.join(ASSET_BASE, 'Room_set/Room_set.usda')
 
     # Create the model stage, the model prim, and also make the modelPrim the
     # default prim so that the layer can be referenced without specifying a
